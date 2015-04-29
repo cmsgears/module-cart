@@ -55,7 +55,7 @@ CREATE TABLE `cmg_cart_outlet` (
   PRIMARY KEY (`id`),
   KEY `fk_cart_outlet_1` (`merchantId`),
   KEY `fk_cart_outlet_2` (`locationId`),
-  CONSTRAINT `fk_cart_outlet_1` FOREIGN KEY (`merchantId`) REFERENCES `cmg_cart_merchant` (`id`)
+  CONSTRAINT `fk_cart_outlet_1` FOREIGN KEY (`merchantId`) REFERENCES `cmg_cart_merchant` (`id`),
   CONSTRAINT `fk_cart_outlet_2` FOREIGN KEY (`locationId`) REFERENCES `cmg_address` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -191,8 +191,12 @@ CREATE TABLE `cmg_cart_sub` (
   `lastPaymentDate` date DEFAULT NULL,
   `nextPaymentDate` date DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_cart_product_plan_1` (`productId`),
-  CONSTRAINT `fk_cart_product_plan_1` FOREIGN KEY (`productId`) REFERENCES `cmg_cart_product` (`id`)
+  KEY `fk_cart_sub_1` (`userId`),
+  KEY `fk_cart_sub_2` (`productId`),
+  KEY `fk_cart_sub_3` (`planId`),
+  CONSTRAINT `fk_cart_sub_1` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`),
+  CONSTRAINT `fk_cart_sub_2` FOREIGN KEY (`productId`) REFERENCES `cmg_cart_product` (`id`),
+  CONSTRAINT `fk_cart_sub_3` FOREIGN KEY (`planId`) REFERENCES `cmg_cart_product_plan` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
