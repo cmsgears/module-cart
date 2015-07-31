@@ -2,9 +2,12 @@
 namespace cmsgears\cart\common\models\entities;
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cart\common\config\CartGlobal;
+
 use cmsgears\core\common\models\entities\NamedCmgEntity;
 
-class Coupon extends NamedCmgEntity {
+class Voucher extends NamedCmgEntity {
 
 	const TYPE_CART				=  0;
 	const TYPE_CART_PERCENT		=  5;
@@ -13,9 +16,6 @@ class Coupon extends NamedCmgEntity {
 
 	const TAX_BEFORE_DISCOUNT	= 0;
 	const TAX_AFTER_DISCOUNT	= 5;
-
-	const SHIPPING_PAID			= 0;
-	const SHIPPING_FREE			= 5;
 
 	public static $typesMap = array(
 	    self::TYPE_CART  => "Cart $",
@@ -41,12 +41,6 @@ class Coupon extends NamedCmgEntity {
 	    "After discount" => self::TAX_AFTER_DISCOUNT
 	   	);
 
-	public static $shippingTypeMap = array(
-	    EmblmCoupon::SHIPPING_PAID  => "Paid",
-	    EmblmCoupon::SHIPPING_FREE => "Free"
-	   	);
-
-
 	// Instance Methods --------------------------------------------
 
 	// yii\base\Model --------------------
@@ -54,28 +48,29 @@ class Coupon extends NamedCmgEntity {
 	public function rules() {
 
         return [
-            [ [ 'name', 'type', 'amount', 'taxType', 'shippingType', 'minPurchase', 'maxDiscount', 'usageLimit' ], 'required' ],
-            [ [ 'id', 'description', 'usageCount' ], 'safe' ],
+            [ [ 'name', 'type', 'amount', 'taxType', 'freeShipping', 'minPurchase', 'maxDiscount' ], 'required' ],
+            [ [ 'id', 'description', 'usageLimit', 'usageCount' ], 'safe' ],
             [ 'name', 'alphanumhyphenspace' ],
             [ 'name', 'validateNameCreate', 'on' => [ 'create' ] ],
             [ 'name', 'validateNameUpdate', 'on' => [ 'update' ] ],
-            [ [ 'taxType', 'shippingType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true ],
-            [ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ]
+            [ [ 'taxType', 'freeShipping', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true ],
+            [ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],
+            [ [ 'startTime', 'endTime', 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
 	public function attributeLabels() {
 
 		return [
-			'name' => 'Name',
-			'description' => 'Description',
-			'amount' => 'Amount',
-			'taxType' => 'Tax Type',
-			'shippingType' => 'Shipping Type',
-			'minPurchase' => 'Minimum Purchase', 
-			'maxDiscount' => 'Maximum Discount',
-			'usageLimit' => 'Usage Limit',
-			'usageCount' => 'Usage Count'
+			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'description' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
+			'amount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_AMOUNT ),
+			'taxType' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TAX_TYPE ),
+			'shippingType' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_SHIPPING_TYPE ),
+			'minPurchase' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_MIN_PURCHASE ),
+			'maxDiscount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_MAX_DISCOUNT ),
+			'usageLimit' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_USAGE_LIMIT ),
+			'usageCount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_USAGE_COUNT ),
 		];
 	}
 
@@ -85,11 +80,11 @@ class Coupon extends NamedCmgEntity {
 
 	public static function tableName() {
 
-		return CartTables::TABLE_COUPON;
+		return CartTables::TABLE_VOUCHER;
 	}
 
-	// Coupon ---------------------------
-		
+	// Voucher --------------------------
+
 }
 
 ?>

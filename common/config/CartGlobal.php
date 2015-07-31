@@ -3,17 +3,58 @@ namespace cmsgears\cart\common\config;
 
 class CartGlobal {
 
-	// Categories
-	const CATEGORY_TYPE_PRODUCT		= 1751;
+	// Model Traits - Metas, Attachments, Addresses --------------------
+	
+	const TYPE_ORDER					= 'order';
 
-	// Metas
-	const META_TYPE_PRODUCT			= 1751;
+	// Config ----------------------------------------------------------
 
-	// Permissions
-	const PERM_OUTLET			= "outlet";
-	const PERM_CATALOG			= "catelog";
-	const PERM_ORDER			= "order";
-	const PERM_SUBSCRIPTION		= "subscription";
+	// Roles -----------------------------------------------------------
+
+	// Permissions -----------------------------------------------------
+
+	// Admin Permissions
+	const PERM_CART						= 'cart';
+
+	// Website Permissions
+
+	// Messages --------------------------------------------------------
+
+	// Errors ----------------------------------------------------------
+
+	// Model Fields ----------------------------------------------------
+
+	// Generic Fields
+	const FIELD_AMOUNT					= 'amountField';
+	const FIELD_TAX_TYPE				= 'taxTypeField';
+	const FIELD_SHIPPING_TYPE			= 'shippingTypeField';
+	const FIELD_MIN_PURCHASE			= 'minPurchaseField';
+	const FIELD_MAX_DISCOUNT			= 'maxDiscountField';
+	const FIELD_USAGE_LIMIT				= 'usageLimitField';
+	const FIELD_USAGE_COUNT				= 'usageCountField';
+
+	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
+	const FIELD_UNIT_METRIC				= 'metricUnitField';
+	const FIELD_PRICE					= 'priceField';
+	const FIELD_QUANTITY				= 'quantityField';
+	const FIELD_WEIGHT					= 'weightField';
+	const FIELD_LENGTH					= 'lengthField';
+	const FIELD_WIDTH					= 'widthField';
+	const FIELD_HEIGHT					= 'heightField';
+
+	const FIELD_TOTAL_SUB				= 'subTotalField';
+	const FIELD_TAX						= 'taxField';
+	const FIELD_SHIPPING				= 'shippingField';
+	const FIELD_TOTAL					= 'totalField';
+	const FIELD_DISCOUNT				= 'discountField';
+	const FIELD_TOTAL_GRAND				= 'grandTotalField';
+	
+	const FIELD_ORDER					= 'orderField';
+	const FIELD_DISCOUNT				= 'discountField';
+	
+	const FIELD_TXN_CODE				= 'txnCodeField';
+	const FIELD_TXN_TYPE				= 'txnTypeField';
+	const FIELD_TXN_MODE				= 'txnModeField';
 }
 
 ?>

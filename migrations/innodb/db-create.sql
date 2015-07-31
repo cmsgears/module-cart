@@ -1,211 +1,248 @@
-SET FOREIGN_KEY_CHECKS=0;
-
--- ================ Mall, Merchant and Outlets =================
+/* ===================================== CMSGears Cart ====================================== */
 
 --
--- Table structure for table `cmg_cart_vmall`
+-- Table structure for table `cmg_cart`
 --
 
-DROP TABLE IF EXISTS `cmg_cart_vmall`;
+DROP TABLE IF EXISTS `cmg_cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_vmall` (
+CREATE TABLE `cmg_cart` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `mode` smallint(6) DEFAULT 0,
-  `chargeType` smallint(6) DEFAULT 0,
-  `chargeAmount` float(8,2) DEFAULT '0.00',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `cmg_cart_merchant`
---
-
-DROP TABLE IF EXISTS `cmg_cart_merchant`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_merchant` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `userId` bigint(20) NOT NULL,
-  `mallId` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_cart_merchant_1` (`userId`),
-  KEY `fk_cart_merchant_2` (`mallId`),
-  CONSTRAINT `fk_cart_merchant_1` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`),
-  CONSTRAINT `fk_cart_merchant_2` FOREIGN KEY (`mallId`) REFERENCES `cmg_cart_vmall` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `cmg_cart_outlet`
---
-
-DROP TABLE IF EXISTS `cmg_cart_outlet`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_outlet` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `merchantId` bigint(20) NOT NULL,
-  `locationId` bigint(20) DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_cart_outlet_1` (`merchantId`),
-  KEY `fk_cart_outlet_2` (`locationId`),
-  CONSTRAINT `fk_cart_outlet_1` FOREIGN KEY (`merchantId`) REFERENCES `cmg_cart_merchant` (`id`),
-  CONSTRAINT `fk_cart_outlet_2` FOREIGN KEY (`locationId`) REFERENCES `cmg_address` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
--- ================ Product =================
-
---
--- Table structure for table `cmg_cart_product`
---
-
-DROP TABLE IF EXISTS `cmg_cart_product`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_product` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `outletId` bigint(20) NOT NULL,
   `createdBy` bigint(20) NOT NULL,
   `modifiedBy` bigint(20) DEFAULT NULL,
-  `bannerId` bigint(20) DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `slug` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `type` smallint(6) DEFAULT NULL,
-  `status` smallint(6) DEFAULT NULL,
-  `visibility` smallint(6) DEFAULT NULL,
-  `summary` text COLLATE utf8_unicode_ci,
-  `content` longtext COLLATE utf8_unicode_ci,
-  `price` float(8,2) DEFAULT '0.00',
+  `parentId` bigint(20) DEFAULT NULL,
+  `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_cart_product_1` (`outletId`),
-  KEY `fk_cart_product_2` (`createdBy`),
-  KEY `fk_cart_product_3` (`modifiedBy`),
-  KEY `fk_cart_product_4` (`bannerId`),
-  CONSTRAINT `fk_cart_product_1` FOREIGN KEY (`outletId`) REFERENCES `cmg_cart_outlet` (`id`),
-  CONSTRAINT `fk_cart_product_2` FOREIGN KEY (`createdBy`) REFERENCES `cmg_user` (`id`),
-  CONSTRAINT `fk_cart_product_3` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_user` (`id`),
-  CONSTRAINT `fk_cart_product_4` FOREIGN KEY (`bannerId`) REFERENCES `cmg_file` (`id`)
+  KEY `fk_cmg_cart_1` (`createdBy`),
+  KEY `fk_cmg_cart_2` (`modifiedBy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `cmg_cart_product_variation`
+-- Table structure for table `cmg_cart_item`
 --
 
-DROP TABLE IF EXISTS `cmg_cart_product_variation`;
+DROP TABLE IF EXISTS `cmg_cart_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_product_variation` (
+CREATE TABLE `cmg_cart_item` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `productId` bigint(20) NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `value` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `price` float(8,2) DEFAULT '0.00',
-  `increment` tinyint(1) DEFAULT 1,
-  PRIMARY KEY (`id`),
-  KEY `fk_cart_product_variation_1` (`productId`),
-  CONSTRAINT `fk_cart_product_variation_1` FOREIGN KEY (`productId`) REFERENCES `cmg_cart_product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `cmg_cart_product_plan`
---
-
-DROP TABLE IF EXISTS `cmg_cart_product_plan`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_product_plan` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `productId` bigint(20) NOT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `period` smallint(6) DEFAULT 0,
-  `trial` smallint(6) DEFAULT 0,
-  `price` float(8,2) DEFAULT '0.00',
-  `interval` smallint(6) DEFAULT 0,
-  PRIMARY KEY (`id`),
-  KEY `fk_cart_product_plan_1` (`productId`),
-  CONSTRAINT `fk_cart_product_plan_1` FOREIGN KEY (`productId`) REFERENCES `cmg_cart_product` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
--- ================ Coupon =================
-
---
--- Table structure for table `cmg_cart_coupon`
---
-
-DROP TABLE IF EXISTS `cmg_cart_coupon`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_coupon` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `type` smallint(6) DEFAULT 0,
-  `amount` float(8,2) DEFAULT '0.00',
-  `taxType` smallint(6) DEFAULT 0,
-  `shippingType` smallint(6) DEFAULT 0,
-  `minPurchase` float(8,2) DEFAULT '0.00',
-  `maxDiscount` float(8,2) DEFAULT '0.00',
+  `weightUnitId` bigint(20) DEFAULT NULL,
+  `metricUnitId` bigint(20) DEFAULT NULL,
+  `createdBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) DEFAULT NULL,
+  `parentId` bigint(20) DEFAULT NULL,
+  `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `price` float(8,2) NOT NULL DEFAULT 0,
+  `quantity` float(8,2) NOT NULL DEFAULT 0.0,
+  `weight` float(8,2) NOT NULL DEFAULT 0.0,
+  `length` float(8,2) NOT NULL DEFAULT 0.0,
+  `width` float(8,2) NOT NULL DEFAULT 0.0,
+  `height` float(8,2) NOT NULL DEFAULT 0.0,
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime DEFAULT NULL,
-  `expireAt` datetime DEFAULT NULL,
-  `usageLimit` smallint(6) DEFAULT 0,
-  `usageCount` smallint(6) DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fk_cmg_cart_item_1` (`weightUnitId`),
+  KEY `fk_cmg_cart_item_2` (`metricUnitId`),
+  KEY `fk_cmg_cart_item_3` (`createdBy`),
+  KEY `fk_cmg_cart_item_4` (`modifiedBy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
--- ================ Subscriptions =================
-
 --
--- Table structure for table `cmg_cart_sub`
+-- Table structure for table `cmg_cart_order`
 --
 
-DROP TABLE IF EXISTS `cmg_cart_sub`;
+DROP TABLE IF EXISTS `cmg_cart_order`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `cmg_cart_sub` (
+CREATE TABLE `cmg_cart_order` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `userId` bigint(20) NOT NULL,
-  `productId` bigint(20) NOT NULL,
-  `planId` bigint(20) NOT NULL,
-  `period` smallint(6) DEFAULT 0,
-  `trial` smallint(6) DEFAULT 0,
-  `price` float(8,2) DEFAULT '0.00',
-  `interval` smallint(6) DEFAULT 0,
-  `startDate` date NOT NULL,
-  `lastPaymentDate` date DEFAULT NULL,
-  `nextPaymentDate` date DEFAULT NULL,
+  `createdBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) DEFAULT NULL,
+  `parentId` bigint(20) DEFAULT NULL,
+  `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `status` smallint(6) NOT NULL DEFAULT 0,
+  `subTotal` float(8,2) NOT NULL DEFAULT 0.0,
+  `tax` float(8,2) NOT NULL DEFAULT 0.0,
+  `shipping` float(8,2) NOT NULL DEFAULT 0.0,
+  `total` float(8,2) NOT NULL DEFAULT 0.0,
+  `discount` float(8,2) NOT NULL DEFAULT 0.0,
+  `grandTotal` float(8,2) NOT NULL DEFAULT 0.0,
+  `createdAt` datetime NOT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_cart_sub_1` (`userId`),
-  KEY `fk_cart_sub_2` (`productId`),
-  KEY `fk_cart_sub_3` (`planId`),
-  CONSTRAINT `fk_cart_sub_1` FOREIGN KEY (`userId`) REFERENCES `cmg_user` (`id`),
-  CONSTRAINT `fk_cart_sub_2` FOREIGN KEY (`productId`) REFERENCES `cmg_cart_product` (`id`),
-  CONSTRAINT `fk_cart_sub_3` FOREIGN KEY (`planId`) REFERENCES `cmg_cart_product_plan` (`id`)
+  KEY `fk_cmg_cart_order_1` (`createdBy`),
+  KEY `fk_cmg_cart_order_2` (`modifiedBy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
--- ================ Cart =================
+--
+-- Table structure for table `cmg_cart_order_history`
+--
 
+DROP TABLE IF EXISTS `cmg_cart_order_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cmg_cart_order_history` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `orderId` bigint(20) NOT NULL,
+  `createdBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) NOT NULL,
+  `status` smallint(6) NOT NULL DEFAULT 0,
+  `createdAt` datetime NOT NULL,
+  `modifiedAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_cmg_cart_order_history_1` (`orderId`),
+  KEY `fk_cmg_cart_order_history_2` (`createdBy`),
+  KEY `fk_cmg_cart_order_history_3` (`modifiedBy`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `cmg_cart_order_txn`
+--
 
--- ================ Order =================
+DROP TABLE IF EXISTS `cmg_cart_order_txn`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cmg_cart_order_txn` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `orderId` bigint(20) NOT NULL,
+  `code` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` smallint(6) DEFAULT '0',
+  `mode` smallint(6) DEFAULT '0',
+  `amount` float(8,2) NOT NULL DEFAULT '0',
+  `createdAt` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_cmg_cart_order_txn_1` (`orderId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `cmg_cart_order_item`
+--
 
+DROP TABLE IF EXISTS `cmg_cart_order_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cmg_cart_order_item` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `orderId` bigint(20) NOT NULL,
+  `weightUnitId` bigint(20) DEFAULT NULL,
+  `metricUnitId` bigint(20) DEFAULT NULL,
+  `createdBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) DEFAULT NULL,
+  `parentId` bigint(20) DEFAULT NULL,
+  `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `price` float(8,2) NOT NULL DEFAULT 0,
+  `discount` float(8,2) NOT NULL DEFAULT 0,
+  `quantity` smallint(6) NOT NULL DEFAULT 0,
+  `weight` float(8,2) NOT NULL DEFAULT 0.0,
+  `length` float(8,2) NOT NULL DEFAULT 0.0,
+  `width` float(8,2) NOT NULL DEFAULT 0.0,
+  `height` float(8,2) NOT NULL DEFAULT 0.0,
+  `createdAt` datetime NOT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_cmg_cart_order_item_1` (`orderId`),
+  KEY `fk_cmg_cart_order_item_2` (`weightUnitId`),
+  KEY `fk_cmg_cart_order_item_3` (`metricUnitId`),
+  KEY `fk_cmg_cart_order_item_4` (`createdBy`),
+  KEY `fk_cmg_cart_order_item_5` (`modifiedBy`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `cmg_cart_voucher`
+--
+
+DROP TABLE IF EXISTS `cmg_cart_voucher`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cmg_cart_voucher` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `createdBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) DEFAULT NULL,
+  `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` smallint(6) NOT NULL DEFAULT 0,
+  `amount` float(8,2) NOT NULL DEFAULT 0,
+  `taxType` smallint(6) NOT NULL DEFAULT 0,
+  `freeShipping` tinyint(1) NOT NULL DEFAULT 0,
+  `minPurchase` float(8,2) NOT NULL DEFAULT 0.0,
+  `maxDiscount` float(8,2) NOT NULL DEFAULT 0.0,
+  `startTime` datetime NOT NULL,
+  `endTime` datetime DEFAULT NULL,
+  `usageLimit` smallint(6) NOT NULL DEFAULT 0,
+  `usageCount` smallint(6) NOT NULL DEFAULT 0,
+  `createdAt` datetime NOT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_cmg_cart_voucher_1` (`createdBy`),
+  KEY `fk_cmg_cart_voucher_2` (`modifiedBy`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+SET FOREIGN_KEY_CHECKS=0;
+
+--
+-- Constraints for table `cmg_cart`
+--
+ALTER TABLE `cmg_cart`
+	ADD CONSTRAINT `fk_cmg_cart_1` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_2` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+
+--
+-- Constraints for table `cmg_cart_item`
+--
+ALTER TABLE `cmg_cart_item`
+	ADD CONSTRAINT `fk_cmg_cart_item_1` FOREIGN KEY (`weightUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_2` FOREIGN KEY (`metricUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_3` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_4` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+
+--
+-- Constraints for table `cmg_cart_order`
+--
+ALTER TABLE `cmg_cart_order`
+	ADD CONSTRAINT `fk_cmg_cart_order_1` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_2` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+
+--
+-- Constraints for table `cmg_cart_order_history`
+--
+ALTER TABLE `cmg_cart_order_history`
+	ADD CONSTRAINT `fk_cmg_cart_order_history_1` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_history_2` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_history_3` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+
+--
+-- Constraints for table `cmg_cart_order_txn`
+--
+ALTER TABLE `cmg_cart_order_txn`
+	ADD CONSTRAINT `fk_cmg_cart_order_txn_1` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`);
+
+--
+-- Constraints for table `cmg_cart_order_item`
+--
+ALTER TABLE `cmg_cart_order_item`
+	ADD CONSTRAINT `fk_cmg_cart_order_item_1` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_2` FOREIGN KEY (`weightUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_3` FOREIGN KEY (`metricUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_4` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_5` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+
+--
+-- Constraints for table `cmg_cart_voucher`
+--
+ALTER TABLE `cmg_cart_voucher`
+	ADD CONSTRAINT `fk_cmg_cart_voucher_1` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_voucher_2` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
 
 SET FOREIGN_KEY_CHECKS=1;
