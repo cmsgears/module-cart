@@ -18,6 +18,7 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  *
  * @property integer $id
  * @property integer $orderId
+ * @property integer $quantityUnitId
  * @property integer $weightUnitId
  * @property integer $metricUnitId
  * @property integer $createdBy
@@ -39,6 +40,13 @@ class OrderItem extends CmgEntity {
 	use CreateModifyTrait;
 
 	// Instance methods --------------------------------------------------
+
+	public function getTotalPrice() {
+		
+		$price	= $this->quantity * $this->price;
+		
+		return round( $price, 2 );
+	}
 
 	// yii\base\Component ----------------
 
@@ -67,7 +75,7 @@ class OrderItem extends CmgEntity {
 
         return [
         	[ [ 'orderId', 'price', 'quantity' ], 'required' ],
-			[ [ 'id', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'discount', 'weight', 'length', 'width', 'height' ], 'safe' ],
+			[ [ 'id', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'discount', 'weight', 'length', 'width', 'height' ], 'safe' ],
             [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'price', 'quantity', 'weight', 'length', 'width', 'height' ], 'number', 'min' => 0 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
@@ -84,6 +92,7 @@ class OrderItem extends CmgEntity {
 			'parentId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
 			'createdBy' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'quantityUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
 			'metricUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
 			'price' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_PRICE ),
@@ -107,6 +116,10 @@ class OrderItem extends CmgEntity {
 
 	// CartItem -------------------------
 
+	public static function findByOrderId( $oderId ) {
+		
+		return self::find()->where( 'orderId=:id', [ ':id' => $oderId ] )->all();
+	}
 }
 
 ?>

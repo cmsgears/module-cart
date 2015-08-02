@@ -31,6 +31,8 @@ DROP TABLE IF EXISTS `cmg_cart_item`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cmg_cart_item` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `cartId` bigint(20) DEFAULT NULL,
+  `quantityUnitId` bigint(20) DEFAULT NULL,
   `weightUnitId` bigint(20) DEFAULT NULL,
   `metricUnitId` bigint(20) DEFAULT NULL,
   `createdBy` bigint(20) NOT NULL,
@@ -46,10 +48,12 @@ CREATE TABLE `cmg_cart_item` (
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_cmg_cart_item_1` (`weightUnitId`),
-  KEY `fk_cmg_cart_item_2` (`metricUnitId`),
-  KEY `fk_cmg_cart_item_3` (`createdBy`),
-  KEY `fk_cmg_cart_item_4` (`modifiedBy`)
+  KEY `fk_cmg_cart_item_1` (`cartId`),
+  KEY `fk_cmg_cart_item_2` (`quantityUnitId`),
+  KEY `fk_cmg_cart_item_3` (`weightUnitId`),
+  KEY `fk_cmg_cart_item_4` (`metricUnitId`),
+  KEY `fk_cmg_cart_item_5` (`createdBy`),
+  KEY `fk_cmg_cart_item_6` (`modifiedBy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -74,6 +78,7 @@ CREATE TABLE `cmg_cart_order` (
   `total` float(8,2) NOT NULL DEFAULT 0.0,
   `discount` float(8,2) NOT NULL DEFAULT 0.0,
   `grandTotal` float(8,2) NOT NULL DEFAULT 0.0,
+  `deliveryDate` date DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -134,6 +139,7 @@ DROP TABLE IF EXISTS `cmg_cart_order_item`;
 CREATE TABLE `cmg_cart_order_item` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `orderId` bigint(20) NOT NULL,
+  `quantityUnitId` bigint(20) DEFAULT NULL,
   `weightUnitId` bigint(20) DEFAULT NULL,
   `metricUnitId` bigint(20) DEFAULT NULL,
   `createdBy` bigint(20) NOT NULL,
@@ -151,10 +157,11 @@ CREATE TABLE `cmg_cart_order_item` (
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmg_cart_order_item_1` (`orderId`),
-  KEY `fk_cmg_cart_order_item_2` (`weightUnitId`),
-  KEY `fk_cmg_cart_order_item_3` (`metricUnitId`),
-  KEY `fk_cmg_cart_order_item_4` (`createdBy`),
-  KEY `fk_cmg_cart_order_item_5` (`modifiedBy`)
+  KEY `fk_cmg_cart_order_item_2` (`quantityUnitId`),
+  KEY `fk_cmg_cart_order_item_3` (`weightUnitId`),
+  KEY `fk_cmg_cart_order_item_4` (`metricUnitId`),
+  KEY `fk_cmg_cart_order_item_5` (`createdBy`),
+  KEY `fk_cmg_cart_order_item_6` (`modifiedBy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -202,10 +209,12 @@ ALTER TABLE `cmg_cart`
 -- Constraints for table `cmg_cart_item`
 --
 ALTER TABLE `cmg_cart_item`
-	ADD CONSTRAINT `fk_cmg_cart_item_1` FOREIGN KEY (`weightUnitId`) REFERENCES `cmg_core_option` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_item_2` FOREIGN KEY (`metricUnitId`) REFERENCES `cmg_core_option` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_item_3` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_item_4` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+	ADD CONSTRAINT `fk_cmg_cart_item_1` FOREIGN KEY (`cartId`) REFERENCES `cmg_cart` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_2` FOREIGN KEY (`quantityUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_3` FOREIGN KEY (`weightUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_4` FOREIGN KEY (`metricUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_5` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_item_6` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
 
 --
 -- Constraints for table `cmg_cart_order`
@@ -232,11 +241,12 @@ ALTER TABLE `cmg_cart_order_txn`
 -- Constraints for table `cmg_cart_order_item`
 --
 ALTER TABLE `cmg_cart_order_item`
-	ADD CONSTRAINT `fk_cmg_cart_order_item_1` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_order_item_2` FOREIGN KEY (`weightUnitId`) REFERENCES `cmg_core_option` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_order_item_3` FOREIGN KEY (`metricUnitId`) REFERENCES `cmg_core_option` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_order_item_4` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_order_item_5` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+	ADD CONSTRAINT `fk_cmg_cart_order_item_1` FOREIGN KEY (`quantityUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_2` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_3` FOREIGN KEY (`weightUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_4` FOREIGN KEY (`metricUnitId`) REFERENCES `cmg_core_option` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_5` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_item_6` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
 
 --
 -- Constraints for table `cmg_cart_voucher`

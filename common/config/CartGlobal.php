@@ -33,6 +33,7 @@ class CartGlobal {
 	const FIELD_USAGE_LIMIT				= 'usageLimitField';
 	const FIELD_USAGE_COUNT				= 'usageCountField';
 
+	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
 	const FIELD_UNIT_METRIC				= 'metricUnitField';
 	const FIELD_PRICE					= 'priceField';
@@ -50,8 +51,8 @@ class CartGlobal {
 	const FIELD_TOTAL_GRAND				= 'grandTotalField';
 	
 	const FIELD_ORDER					= 'orderField';
-	const FIELD_DISCOUNT				= 'discountField';
-	
+	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
+
 	const FIELD_TXN_CODE				= 'txnCodeField';
 	const FIELD_TXN_TYPE				= 'txnTypeField';
 	const FIELD_TXN_MODE				= 'txnModeField';

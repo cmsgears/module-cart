@@ -12,12 +12,12 @@ class Module extends \yii\base\Module {
 
         parent::init();
 
-        $this->setViewPath( '@cmsgears/module-cart/admin/views' );
-    }
-	
+        $this->setViewPath( '@cmsgears/cart/admin/views' );
+	}
+
 	public function getSidebarHtml() {
-		
-		$path	= Yii::getAlias( "@cmsgears" ) . "/module-cart/admin/views/sidebar.php";
+
+		$path	= Yii::getAlias( '@cmsgears' ) . "/cart/admin/views/sidebar.php";
 
 		return $path;
 	}

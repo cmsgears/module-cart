@@ -31,6 +31,23 @@ class Cart extends CmgEntity {
 
 	// Instance methods --------------------------------------------------
 
+	public function generateName() {
+
+		$this->name = Yii::$app->security->generateRandomString();;
+	}
+	
+	public function getCartTotal( $items ) {
+		
+		$cartTotal	= 0;
+
+		foreach ( $items as $item ) {
+			
+			$cartTotal += $item->getTotalPrice();
+		}
+		
+		return $cartTotal;
+	}
+
 	// yii\base\Component ----------------
 
     /**
@@ -87,6 +104,10 @@ class Cart extends CmgEntity {
 
 	// Cart ------------------------------
 
+	public static function findByParentIdParentType( $parentId, $parentType ) {
+
+		return self::find()->where( 'parentId=:id AND parentType=:type', [ ':id' => $parentId, ':type' => $parentType ] )->one();
+	}
 }
 
 ?>

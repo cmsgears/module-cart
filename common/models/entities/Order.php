@@ -31,6 +31,7 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $total
  * @property integer $discount
  * @property integer $grandTotal
+ * @property date $deliveryDate
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  */
@@ -62,6 +63,16 @@ class Order extends CmgEntity {
 
 	// Instance methods --------------------------------------------------
 
+	public function generateName() {
+
+		$this->name = Yii::$app->security->generateRandomString();;
+	}
+	
+	public function isNew() {
+		
+		return $this->status == self::STATUS_NEW;
+	}
+
 	// yii\base\Component ----------------
 
     /**
@@ -91,7 +102,8 @@ class Order extends CmgEntity {
 			[ [ 'id', 'parentId', 'parentType', 'name', 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'safe' ],
             [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
+			[ [ 'deliveryDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ]
         ];
     }
 
@@ -111,7 +123,8 @@ class Order extends CmgEntity {
 			'shipping' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
 			'total' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'discount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
-			'grandTotal' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND )
+			'grandTotal' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
+			'deliveryDate' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
 		];
 	}
 
