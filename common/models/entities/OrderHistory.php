@@ -59,6 +59,7 @@ class OrderHistory extends CmgEntity {
         return [
 			[ [ 'id', 'status' ], 'safe' ],
             [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+            [ [ 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
@@ -79,7 +80,7 @@ class OrderHistory extends CmgEntity {
 
 	public static function tableName() {
 
-		return CartTables::TABLE_ORDER;
+		return CartTables::TABLE_ORDER_HISTORY;
 	}
 
 	// OrderHistory ----------------------

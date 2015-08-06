@@ -25,6 +25,8 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $modifiedBy
  * @property integer $parentId
  * @property integer $parentType 
+ * @property integer $name
+ * @property integer $sku
  * @property integer $price
  * @property integer $quantity
  * @property integer $weight
@@ -75,8 +77,8 @@ class CartItem extends CmgEntity {
 	public function rules() {
 
         return [
-        	[ [ 'price', 'quantity' ], 'required' ],
-			[ [ 'id', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'weight', 'length', 'width', 'height' ], 'safe' ],
+        	[ [ 'price', 'quantity', 'name' ], 'required' ],
+			[ [ 'id', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'sku', 'weight', 'length', 'width', 'height' ], 'safe' ],
             [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'price', 'quantity', 'weight', 'length', 'width', 'height' ], 'number', 'min' => 0 ],
             [ 'addToCart', 'number', 'min' => 0, 'max' => 1 ],
@@ -98,6 +100,8 @@ class CartItem extends CmgEntity {
 			'quantityUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
 			'metricUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
+			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'sku' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_SKU ),
 			'price' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'quantity' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
 			'weight' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),

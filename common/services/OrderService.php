@@ -14,6 +14,7 @@ use cmsgears\cart\common\models\entities\Order;
 use cmsgears\cart\common\models\entities\OrderItem;
 
 use cmsgears\core\common\services\ModelAddressService;
+use cmsgears\cart\common\services\OrderHistoryService;
 
 class OrderService extends \cmsgears\core\common\services\Service {
 
@@ -39,13 +40,14 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 	// Create -----------
 
-	public static function create( $order, $shippingAddress, $cart, $cartItems, $additionalParams = [] ) {
+	public static function create( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
 		// Set Attributes
 		$user				= Yii::$app->user->getIdentity();
 
 		$order->createdBy	= $user->id;
 		$order->status		= Order::STATUS_NEW;
+		$order->description	= $message;
 
 		// Generate uid
 		$order->generateName();
@@ -82,6 +84,9 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 		// Delete Cart
 		CartService::delete( $cart );
+		
+		// Create Order History
+		OrderHistoryService::create( $order );
 
 		// Return Order
 		return $order;
@@ -89,6 +94,34 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 	// Update ----------- 
 
+	public static function updateStatus( $order, $status ) {
+
+		$user				= Yii::$app->user->getIdentity();
+		$order				= self::findById( $order->id );
+
+		$order->modifiedBy	= $user->id;
+		$order->status		= $status;
+
+		$order->update();
+
+		// Create Order History
+		OrderHistoryService::create( $order );
+	}
+
+	public static function confirmOrder( $order ) {
+
+		self::updateStatus( $order, Order::STATUS_CONFIRMED );
+	}
+
+	public static function placeOrder( $order ) {
+		
+		self::updateStatus( $order, Order::STATUS_PLACED );
+	}
+
+	public static function updateStatusToPaid( $order ) {
+
+		self::updateStatus( $order, Order::STATUS_PAID );
+	}
 }
 
 ?>

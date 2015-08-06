@@ -39,6 +39,8 @@ CREATE TABLE `cmg_cart_item` (
   `modifiedBy` bigint(20) DEFAULT NULL,
   `parentId` bigint(20) DEFAULT NULL,
   `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sku` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `price` float(8,2) NOT NULL DEFAULT 0,
   `quantity` float(8,2) NOT NULL DEFAULT 0.0,
   `weight` float(8,2) NOT NULL DEFAULT 0.0,
@@ -71,6 +73,7 @@ CREATE TABLE `cmg_cart_order` (
   `parentId` bigint(20) DEFAULT NULL,
   `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `status` smallint(6) NOT NULL DEFAULT 0,
   `subTotal` float(8,2) NOT NULL DEFAULT 0.0,
   `tax` float(8,2) NOT NULL DEFAULT 0.0,
@@ -98,10 +101,10 @@ CREATE TABLE `cmg_cart_order_history` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `orderId` bigint(20) NOT NULL,
   `createdBy` bigint(20) NOT NULL,
-  `modifiedBy` bigint(20) NOT NULL,
+  `modifiedBy` bigint(20) DEFAULT NULL,
   `status` smallint(6) NOT NULL DEFAULT 0,
   `createdAt` datetime NOT NULL,
-  `modifiedAt` datetime NOT NULL,
+  `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmg_cart_order_history_1` (`orderId`),
   KEY `fk_cmg_cart_order_history_2` (`createdBy`),
@@ -119,13 +122,16 @@ DROP TABLE IF EXISTS `cmg_cart_order_txn`;
 CREATE TABLE `cmg_cart_order_txn` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `orderId` bigint(20) NOT NULL,
+  `createdBy` bigint(20) NOT NULL,
   `code` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `type` smallint(6) DEFAULT '0',
-  `mode` smallint(6) DEFAULT '0',
+  `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `mode` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `amount` float(8,2) NOT NULL DEFAULT '0',
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_cmg_cart_order_txn_1` (`orderId`)
+  KEY `fk_cmg_cart_order_txn_1` (`createdBy`),
+  KEY `fk_cmg_cart_order_txn_2` (`orderId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -146,6 +152,8 @@ CREATE TABLE `cmg_cart_order_item` (
   `modifiedBy` bigint(20) DEFAULT NULL,
   `parentId` bigint(20) DEFAULT NULL,
   `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sku` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `price` float(8,2) NOT NULL DEFAULT 0,
   `discount` float(8,2) NOT NULL DEFAULT 0,
   `quantity` smallint(6) NOT NULL DEFAULT 0,
@@ -235,7 +243,8 @@ ALTER TABLE `cmg_cart_order_history`
 -- Constraints for table `cmg_cart_order_txn`
 --
 ALTER TABLE `cmg_cart_order_txn`
-	ADD CONSTRAINT `fk_cmg_cart_order_txn_1` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`);
+	ADD CONSTRAINT `fk_cmg_cart_order_txn_1` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_txn_2` FOREIGN KEY (`orderId`) REFERENCES `cmg_cart_order` (`id`);
 
 --
 -- Constraints for table `cmg_cart_order_item`

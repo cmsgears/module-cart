@@ -24,6 +24,7 @@ class MessageSource extends Component {
 		CartGlobal::FIELD_UNIT_QUANTITY => 'Quantity Unit',
 		CartGlobal::FIELD_UNIT_WEIGHT => 'Weight Unit',
 		CartGlobal::FIELD_UNIT_METRIC => 'Metrict Unit',
+		CartGlobal::FIELD_SKU => 'Sku',
 		CartGlobal::FIELD_PRICE => 'Price',
 		CartGlobal::FIELD_QUANTITY => 'Quantity',
 		CartGlobal::FIELD_WEIGHT => 'Weight',

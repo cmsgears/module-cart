@@ -49,7 +49,7 @@ class OrderItemService extends \cmsgears\core\common\services\Service {
 		$orderItem->createdBy	= $user->id;
 
 		// Regular Params
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+		$orderItem->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
 		// Additional Params
 		if( count( $additionalParams ) > 0 ) {

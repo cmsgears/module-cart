@@ -20,11 +20,11 @@ class OrderService extends \cmsgears\cart\common\services\OrderService {
 
 	    $sort = new Sort([
 	        'attributes' => [
-	            'name' => [
-	                'asc' => [ 'name' => SORT_ASC ],
-	                'desc' => ['name' => SORT_DESC ],
+	            'status' => [
+	                'asc' => [ 'status' => SORT_ASC ],
+	                'desc' => ['status' => SORT_DESC ],
 	                'default' => SORT_DESC,
-	                'label' => 'name',
+	                'label' => 'status',
 	            ]
 	        ]
 	    ]);

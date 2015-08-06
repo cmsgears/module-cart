@@ -37,13 +37,13 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  */
 class Order extends CmgEntity {
 
-	const STATUS_NEW			=  0;
-	const STATUS_CONFIRMED		= 10;
-	const STATUS_CANCELLED		= 20;
-	const STATUS_PLACED			= 30;
-	const STATUS_PAID			= 40;
-	const STATUS_DELIVERED		= 50;
-	const STATUS_RETURNED		= 60;
+	const STATUS_NEW				=  0;
+	const STATUS_CONFIRMED			= 10;
+	const STATUS_CANCELLED			= 20;
+	const STATUS_PLACED				= 30;
+	const STATUS_PAID				= 40;
+	const STATUS_DELIVERED			= 50;
+	const STATUS_RETURNED			= 60;
 
 	public static $statusMap = array(
 	    self::STATUS_NEW  => 'New',
@@ -63,14 +63,54 @@ class Order extends CmgEntity {
 
 	// Instance methods --------------------------------------------------
 
+	public function getItems() {
+	
+    	return $this->hasMany( OrderItem::className(), [ 'orderId' => 'id' ] );
+	}
+
 	public function generateName() {
 
 		$this->name = Yii::$app->security->generateRandomString();;
 	}
-	
+
+	public function getStatusStr() {
+		
+		return self::$statusMap[ $this->status ];
+	}
+
 	public function isNew() {
 		
 		return $this->status == self::STATUS_NEW;
+	}
+
+	public function isConfirmed() {
+		
+		return $this->status == self::STATUS_CONFIRMED;
+	}
+
+	public function isCancelled() {
+		
+		return $this->status == self::STATUS_CANCELLED;
+	}
+
+	public function isPlaced() {
+		
+		return $this->status == self::STATUS_PLACED;
+	}
+
+	public function isPaid() {
+		
+		return $this->status == self::STATUS_PAID;
+	}
+
+	public function isDelivered() {
+		
+		return $this->status == self::STATUS_DELIVERED;
+	}
+	
+	public function isReturned() {
+		
+		return $this->status == self::STATUS_RETURNED;
 	}
 
 	// yii\base\Component ----------------

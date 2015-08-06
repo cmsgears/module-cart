@@ -15,7 +15,9 @@ use cmsgears\core\common\models\entities\CmgEntity;
  *
  * @property integer $id
  * @property integer $orderId
+ * @property integer $createdBy
  * @property string $code
+ * @property string $description
  * @property integer $type
  * @property string $mode
  * @property datetime $createdAt
@@ -32,8 +34,8 @@ class OrderTransaction extends CmgEntity {
 	public function rules() {
 
         return [
-        	[ [ 'orderId', 'type', 'mode' ] => 'required' ],
-			[ [ 'id', 'status', 'code' ], 'safe' ],
+        	[ [ 'orderId', 'code', 'type' ], 'required' ],
+			[ [ 'id', 'description', 'mode' ], 'safe' ],
 			[ [ 'createdAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
@@ -44,8 +46,8 @@ class OrderTransaction extends CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'status' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TXN_CODE ),
-			'code' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TXN_TYPE ),
+			'code' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TXN_CODE ),
+			'type' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TXN_TYPE ),
 			'mode' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TXN_MODE )
 		];
 	}

@@ -2,7 +2,11 @@
 namespace cmsgears\cart\common\config;
 
 class CartGlobal {
-
+	
+	// Transactions ----------------------------------------------------
+	
+	const TXN_MODE_ORDER_PAYMENT		= 'Order Payment';
+	
 	// Model Traits - Metas, Attachments, Addresses --------------------
 	
 	const TYPE_ORDER					= 'order';
@@ -36,6 +40,7 @@ class CartGlobal {
 	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
 	const FIELD_UNIT_METRIC				= 'metricUnitField';
+	const FIELD_SKU						= 'skuField';
 	const FIELD_PRICE					= 'priceField';
 	const FIELD_QUANTITY				= 'quantityField';
 	const FIELD_WEIGHT					= 'weightField';
