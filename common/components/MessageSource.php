@@ -37,6 +37,7 @@ class MessageSource extends Component {
 		CartGlobal::FIELD_TOTAL => 'Total',
 		CartGlobal::FIELD_DISCOUNT => 'Discount',
 		CartGlobal::FIELD_TOTAL_GRAND => 'Grand Total',
+		CartGlobal::FIELD_PARENT_ORDER => 'Parent Order',
 		CartGlobal::FIELD_ORDER => 'Order',
 		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date',
 		CartGlobal::FIELD_TXN_CODE => 'Code',

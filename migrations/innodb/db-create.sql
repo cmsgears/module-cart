@@ -70,6 +70,7 @@ CREATE TABLE `cmg_cart_order` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `createdBy` bigint(20) NOT NULL,
   `modifiedBy` bigint(20) DEFAULT NULL,
+  `parentOrderId` bigint(20) DEFAULT NULL,
   `parentId` bigint(20) DEFAULT NULL,
   `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
@@ -86,7 +87,8 @@ CREATE TABLE `cmg_cart_order` (
   `modifiedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmg_cart_order_1` (`createdBy`),
-  KEY `fk_cmg_cart_order_2` (`modifiedBy`)
+  KEY `fk_cmg_cart_order_2` (`modifiedBy`),
+  KEY `fk_cmg_cart_order_3` (`parentOrderId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -229,7 +231,8 @@ ALTER TABLE `cmg_cart_item`
 --
 ALTER TABLE `cmg_cart_order`
 	ADD CONSTRAINT `fk_cmg_cart_order_1` FOREIGN KEY (`createdBy`) REFERENCES `cmg_core_user` (`id`),
-	ADD CONSTRAINT `fk_cmg_cart_order_2` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`);
+	ADD CONSTRAINT `fk_cmg_cart_order_2` FOREIGN KEY (`modifiedBy`) REFERENCES `cmg_core_user` (`id`),
+	ADD CONSTRAINT `fk_cmg_cart_order_3` FOREIGN KEY (`parentOrderId`) REFERENCES `cmg_cart_order` (`id`);
 
 --
 -- Constraints for table `cmg_cart_order_history`

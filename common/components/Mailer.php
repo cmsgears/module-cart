@@ -3,75 +3,41 @@ namespace cmsgears\cart\common\components;
 
 // Yii Imports
 use \Yii;
-use yii\base\Component;
 
-class Mailer extends Component {
+// CMG Imports
+use cmsgears\cart\common\config\CartGlobal;
 
-	// Various mail views used by the component
-	//const MAIL_SUPPLIER_CREATE	= 'supplier-create';
-
-    public $htmlLayout 	= '@cmsgears/cart/common/mails/layouts/html';
-    public $textLayout 	= '@cmsgears/cart/common/mails/layouts/text';
-    public $viewPath 	= '@cmsgears/cart/common/mails/views';
-
-	private $mailer;
-
-	/**
-	 * Initialise the CMG Core Mailer.
-	 */
-    public function init() {
-
-        parent::init();
-
-        $this->mailer = Yii::$app->getMailer();
-
-        $this->mailer->htmlLayout 	= $this->htmlLayout;
-        $this->mailer->textLayout 	= $this->textLayout;
-        $this->mailer->viewPath 	= $this->viewPath;
-    }
-
-	/**
-	 * @return core mailer
-	 */
-	public function getMailer() {
-
-		return $this->mailer;
-	}
-
-	// Admin Mails --------------
-
-/*
-	public function sendCreateDistrictMail( $coreProperties, $mailProperties, $district, $director ) {
-
-		$fromEmail 	= $mailProperties->getSenderEmail();
-		$fromName 	= $mailProperties->getSenderName();
-
-		// Send Mail
-        $this->getMailer()->compose( self::MAIL_DISTRICT_CREATE, [ 'coreProperties' => $coreProperties, 'district' => $district, 'director' => $director ] )
-            ->setTo( $director->email )
-            ->setFrom( [ $fromEmail => $fromName ] )
-            ->setSubject( "District Registration | " . $coreProperties->getSiteName() )
-            //->setTextBody( "heroor" )
-            ->send();
-	}
-*/
-	// Website Mails ------------
-/*
-	public function sendCreateEmployeeMail( $coreProperties, $mailProperties, $district, $employee ) {
-
-		$fromEmail 	= $mailProperties->getSenderEmail();
-		$fromName 	= $mailProperties->getSenderName();
-
-		// Send Mail
-        $this->getMailer()->compose( self::MAIL_EMPLOYEE_CREATE, [ 'coreProperties' => $coreProperties, 'district' => $district, 'employee' => $employee ] )
-            ->setTo( $employee->email )
-            ->setFrom( [ $fromEmail => $fromName ] )
-            ->setSubject( "Employee Registration | " . $coreProperties->getSiteName() )
-            //->setTextBody( "heroor" )
-            ->send();
-	} 
+/**
+ * The mail component for CMSGears cms module. It must be initialised for app using the name cmgCmsMailer. 
  */
+class Mailer extends \cmsgears\core\common\base\Mailer {
 
+	// Various mail views
+	//const MAIL_CONTACT			= "contact";
+
+    public $htmlLayout 		= '@cmsgears/module-cart/common/mails/layouts/html';
+    public $textLayout 		= '@cmsgears/module-cart/common/mails/layouts/text';
+    public $viewPath 		= '@cmsgears/module-cart/common/mails/views';
+
+	/*
+    public function sendContactMail( $contactForm ) {
+		
+		$mailProperties	= $this->mailProperties;
+		$adminEmail		= $mailProperties->getSenderEmail();
+		$adminName		= $mailProperties->getSenderName();
+
+		$fromEmail 		= $mailProperties->getContactEmail();
+		$fromName 		= $mailProperties->getContactName();
+
+		// User Mail
+        $this->getMailer()->compose( self::MAIL_CONTACT, [ 'coreProperties' => $this->coreProperties, FormsGlobal::FORM_CONTACT => $contactForm ] )
+            ->setTo( $contactForm->email )
+            ->setFrom( [ $fromEmail => $fromName ] )
+            ->setSubject( $contactForm->subject )
+            //->setTextBody( $contact->contact_message )
+            ->send();
+    }
+	*/
 }
 
 ?>

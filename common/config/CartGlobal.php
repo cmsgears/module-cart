@@ -56,6 +56,7 @@ class CartGlobal {
 	const FIELD_TOTAL_GRAND				= 'grandTotalField';
 	
 	const FIELD_ORDER					= 'orderField';
+	const FIELD_PARENT_ORDER			= 'parentOrderField';
 	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
 
 	const FIELD_TXN_CODE				= 'txnCodeField';

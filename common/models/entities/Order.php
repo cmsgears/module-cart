@@ -51,7 +51,7 @@ class Order extends CmgEntity {
 	    self::STATUS_CANCELLED => 'Cancelled',
 	    self::STATUS_PLACED => 'Placed',
 	    self::STATUS_PAID => 'Paid',
-	    self::STATUS_DELIVERED => 'delivered',
+	    self::STATUS_DELIVERED => 'Delivered',
 	    self::STATUS_RETURNED => 'Returned'
 	   	);
 
@@ -62,6 +62,16 @@ class Order extends CmgEntity {
 	use CreateModifyTrait;
 
 	// Instance methods --------------------------------------------------
+
+	public function getParentOrder() {
+
+		return $this->hasOne( Order::className(), [ 'id' => 'parentOrderId' ] );
+	}
+
+	public function getChildOrders() {
+
+		return $this->hasMany( Order::className(), [ 'parentOrderId' => 'id' ] );
+	}
 
 	public function getItems() {
 	
@@ -113,6 +123,11 @@ class Order extends CmgEntity {
 		return $this->status == self::STATUS_RETURNED;
 	}
 
+	public function isPrintable() {
+
+		return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED ] );
+	}
+
 	// yii\base\Component ----------------
 
     /**
@@ -140,7 +155,7 @@ class Order extends CmgEntity {
 
         return [
 			[ [ 'id', 'parentId', 'parentType', 'name', 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'safe' ],
-            [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+            [ [ 'parentId', 'parentOrderId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ [ 'deliveryDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ]
@@ -154,6 +169,7 @@ class Order extends CmgEntity {
 
 		return [
 			'parentId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
+			'parentOrderId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
 			'parentType' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
 			'createdBy' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME ),

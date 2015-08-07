@@ -30,6 +30,11 @@ class OrderHistory extends CmgEntity {
 	use CreateModifyTrait;
 
 	// Instance methods --------------------------------------------------
+	
+	public function getStatusStr() {
+		
+		return Order::$statusMap[ $this->status ];		
+	}
 
 	// yii\base\Component ----------------
 
@@ -85,6 +90,10 @@ class OrderHistory extends CmgEntity {
 
 	// OrderHistory ----------------------
 
+	public static function findWithOwner() {
+
+		return self::find()->joinWith( 'creator' );
+	}
 }
 
 ?>

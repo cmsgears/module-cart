@@ -7,11 +7,8 @@ use \Yii;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\entities\Address;
- 
 use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\Order;
-use cmsgears\cart\common\models\entities\OrderItem;
 
 use cmsgears\core\common\services\ModelAddressService;
 use cmsgears\cart\common\services\OrderHistoryService;
@@ -40,7 +37,7 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 	// Create -----------
 
-	public static function create( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
+	public static function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
 		// Set Attributes
 		$user				= Yii::$app->user->getIdentity();
@@ -65,20 +62,14 @@ class OrderService extends \cmsgears\core\common\services\Service {
 		$order->save();
 
 		// Save Shipping Address
-		$address			= new Address();
-
-		$address->copyForUpdateFrom( $shippingAddress, [ 'countryId', 'provinceId', 'line1', 'line2', 'line3', 'city', 'zip', 'firstName', 'lastName', 'phone', 'email', 'fax' ] );
-
-		ModelAddressService::create( $address, $order->id, CartGlobal::TYPE_ORDER, Address::TYPE_SHIPPING );
+		ModelAddressService::copyToShipping( $shippingAddress, $order->id, CartGlobal::TYPE_ORDER );
 
 		// Create Order Items
 		foreach ( $cartItems as $cartItem ) {
 
-			$orderItem	= new OrderItem();
-
-			OrderItemService::create( $order->id, $orderItem, $cartItem, $additionalParams );
+			OrderItemService::createFromCartItem( $order->id, $cartItem, $additionalParams );
 		}
-		
+
 		// Delete Cart Items
 		CartItemService::deleteByCartId( $cart->id );
 
@@ -106,6 +97,8 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 		// Create Order History
 		OrderHistoryService::create( $order );
+
+		return true;
 	}
 
 	public static function confirmOrder( $order ) {

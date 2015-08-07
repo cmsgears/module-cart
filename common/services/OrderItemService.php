@@ -39,12 +39,14 @@ class OrderItemService extends \cmsgears\core\common\services\Service {
 	}
 
 	// Create -----------
-
-	public static function create( $orderId, $orderItem, $cartItem, $additionalParams = [] ) {
+	
+	// Clone Order Item from cart item
+	public static function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
 
 		// Set Attributes
 		$user					= Yii::$app->user->getIdentity();
-
+		
+		$orderItem				= new OrderItem();
 		$orderItem->orderId		= $orderId;
 		$orderItem->createdBy	= $user->id;
 
@@ -61,6 +63,34 @@ class OrderItemService extends \cmsgears\core\common\services\Service {
 
 		// Return OrderItem
 		return $orderItem;
+	}
+
+	// Clone Order Item from other order's item
+	public static function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] ) {
+
+		// Set Attributes
+		$user					= Yii::$app->user->getIdentity();
+
+		unset( $orderItem->id );
+
+		$orderItemToSave				= new OrderItem();
+
+		$orderItemToSave->orderId		= $orderId;
+		$orderItemToSave->createdBy		= $user->id;
+
+		// Regular Params
+		$orderItemToSave->copyForUpdateFrom( $orderItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+
+		// Additional Params
+		if( count( $additionalParams ) > 0 ) {
+
+			$orderItemToSave->copyForUpdateFrom( $orderItem, $additionalParams );
+		}
+
+		$orderItemToSave->save();
+
+		// Return OrderItem
+		return $orderItemToSave;
 	}
 
 	// Update ----------- 
