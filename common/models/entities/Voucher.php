@@ -1,6 +1,11 @@
 <?php
 namespace cmsgears\cart\common\models\entities;
 
+// Yii Imports
+use \Yii;
+use yii\validators\FilterValidator;
+use yii\helpers\ArrayHelper;
+
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
@@ -47,7 +52,14 @@ class Voucher extends NamedCmgEntity {
 
 	public function rules() {
 
-        return [
+		$trim		= [];
+
+		if( Yii::$app->cmgCore->trimFieldValue ) {
+
+			$trim[] = [ [ 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+		}
+
+        $rules = [
             [ [ 'name', 'type', 'amount', 'taxType', 'freeShipping', 'minPurchase', 'maxDiscount' ], 'required' ],
             [ [ 'id', 'description', 'usageLimit', 'usageCount' ], 'safe' ],
             [ 'name', 'alphanumhyphenspace' ],
@@ -57,6 +69,13 @@ class Voucher extends NamedCmgEntity {
             [ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],
             [ [ 'startTime', 'endTime', 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
+
+		if( Yii::$app->cmgCore->trimFieldValue ) {
+
+			return ArrayHelper::merge( $trim, $rules );
+		}
+
+		return $rules;
     }
 
 	public function attributeLabels() {
