@@ -4,7 +4,7 @@
 	"homepage": "http://www.cmsgears.com", 
 	"type": "package",
 	"keywords": [ "yii2", "cmsgears", "module", "cart" ],
-	"license": "http://www.cmsgears.com/license",
+	"license": "GPLv3",
 	"authors": [
 		{
 			"name": "Bhagwat Singh Chouhan",
