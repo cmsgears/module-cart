@@ -5,18 +5,8 @@
 	"type": "package",
 	"keywords": [ "yii2", "cmsgears", "module", "cart" ],
 	"license": "GPLv3",
-	"authors": [
-		{
-			"name": "Bhagwat Singh Chouhan",
-			"email": "bhagwat.chouhan@vulpinecode.com",
-			"homepage": "http://www.cmsgears.org/",
-			"role": "Founder and project lead."
-		}
-	],
 	"support": {
-		"forum": "http://forum.cmsgears.com/",
-		"issues": "https://www.amazingdesk.com/cmsgears/issues/",
-		"blog": "http://cmsgears.tutorials24x7.com/"
+		"resources": "http://www.cmsgears.org"
 	},
 	"autoload": {
 		"psr-4": {
