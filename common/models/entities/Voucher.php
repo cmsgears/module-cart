@@ -15,36 +15,36 @@ use cmsgears\core\common\models\entities\NamedCmgEntity;
 class Voucher extends NamedCmgEntity {
 
 	const TYPE_CART				=  0;
-	const TYPE_CART_PERCENT		=  5;
-	const TYPE_PRODUCT			= 10;
-	const TYPE_PRODUCT_PERCENT	= 15;
+	const TYPE_CART_PERCENT		= 10;
+	const TYPE_PRODUCT			= 20;
+	const TYPE_PRODUCT_PERCENT	= 30;
 
-	const TAX_BEFORE_DISCOUNT	= 0;
-	const TAX_AFTER_DISCOUNT	= 5;
+	const TAX_BEFORE_DISCOUNT	=  0;
+	const TAX_AFTER_DISCOUNT	= 10;
 
-	public static $typesMap = array(
-	    self::TYPE_CART  => "Cart $",
-	    self::TYPE_CART_PERCENT => "Cart %",
-	    self::TYPE_PRODUCT => "Product $",
-	    self::TYPE_PRODUCT_PERCENT => "Product %"
-	   	);
+	public static $typesMap = [
+	    self::TYPE_CART  => 'Cart $',
+	    self::TYPE_CART_PERCENT => 'Cart %',
+	    self::TYPE_PRODUCT => 'Product $',
+	    self::TYPE_PRODUCT_PERCENT => 'Product %'
+	];
 
-	public static $typesMapRev = array(
-	    "Cart $" => self::TYPE_CART,
-	    "Cart %" => self::TYPE_CART_PERCENT,
-	    "Product $" => self::TYPE_PRODUCT,
-	    "Product %" => self::TYPE_PRODUCT_PERCENT
-	   	);
+	public static $typesMapRev = [
+	    'Cart $' => self::TYPE_CART,
+	    'Cart %' => self::TYPE_CART_PERCENT,
+	    'Product $' => self::TYPE_PRODUCT,
+	    'Product %' => self::TYPE_PRODUCT_PERCENT
+	];
 
-	public static $taxTypeMap = array(
-	    self::TAX_BEFORE_DISCOUNT  => "Before discount",
-	    self::TAX_AFTER_DISCOUNT => "After discount"
-	   	);
+	public static $taxTypeMap = [
+	    self::TAX_BEFORE_DISCOUNT  => 'Before discount',
+	    self::TAX_AFTER_DISCOUNT => 'After discount'
+	];
 
-	public static $taxTypeMapRev = array(
-	    "Before discount" => self::TAX_BEFORE_DISCOUNT,
-	    "After discount" => self::TAX_AFTER_DISCOUNT
-	   	);
+	public static $taxTypeMapRev = [
+	    'Before discount' => self::TAX_BEFORE_DISCOUNT,
+	    'After discount' => self::TAX_AFTER_DISCOUNT
+	];
 
 	// Instance Methods --------------------------------------------
 
