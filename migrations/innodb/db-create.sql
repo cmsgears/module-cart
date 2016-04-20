@@ -166,6 +166,8 @@ CREATE TABLE `cmg_cart_voucher` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `createdBy` bigint(20) NOT NULL,
   `modifiedBy` bigint(20) DEFAULT NULL,
+  `parentId` bigint(20) DEFAULT NULL,
+  `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `type` smallint(6) NOT NULL DEFAULT 0,
