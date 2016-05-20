@@ -16,6 +16,8 @@ CREATE TABLE `cmg_cart` (
   `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime DEFAULT NULL,
+  `token` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` int(11) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cmg_cart_1` (`createdBy`),
   KEY `fk_cmg_cart_2` (`modifiedBy`)
