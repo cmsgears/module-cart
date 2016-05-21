@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS `cmg_cart`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cmg_cart` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `createdBy` bigint(20) NOT NULL,
+  `createdBy` bigint(20) DEFAULT NULL,
   `modifiedBy` bigint(20) DEFAULT NULL,
   `parentId` bigint(20) DEFAULT NULL,
   `parentType` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,

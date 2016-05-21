@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\core\common\models\base\CmgEntity;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
 
@@ -24,7 +24,7 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
- * @property integer $parentType 
+ * @property integer $parentType
  * @property integer $name
  * @property integer $sku
  * @property integer $price
@@ -43,11 +43,11 @@ class CartItem extends CmgEntity {
 	public $addToCart;
 
 	// Instance methods --------------------------------------------------
-	
+
 	public function getTotalPrice() {
-		
+
 		$price	= $this->quantity * $this->price;
-		
+
 		return round( $price, 2 );
 	}
 
@@ -110,7 +110,7 @@ class CartItem extends CmgEntity {
 			'height' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_HEIGHT )
 		];
 	}
-	
+
 	// CartItem --------------
 
 	/**
@@ -136,8 +136,8 @@ class CartItem extends CmgEntity {
 
 			$existingItem = self::findByParentAndCartId( $this->parentId, $this->parentType, $this->cartId );
 
-			if( isset( $existingItem ) && $existingItem->id != $this->id && 
-				$existingItem->parentId == $this->parentType && strcmp( $existingItem->parentType, $this->parentType ) == 0 && 
+			if( isset( $existingItem ) && $existingItem->id != $this->id &&
+				$existingItem->parentId == $this->parentType && strcmp( $existingItem->parentType, $this->parentType ) == 0 &&
 				$existingItem->cartId == $this->cartId ) {
 
 				$this->addError( $attribute, Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
@@ -163,7 +163,7 @@ class CartItem extends CmgEntity {
 
 	public static function findByParentAndCartId( $parentId, $parentType, $cartId ) {
 
-		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid', 
+		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid',
 				[ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] )->one();
 	}
 
@@ -173,9 +173,9 @@ class CartItem extends CmgEntity {
 
 		return isset( $cartItem );
 	}
-	
+
 	public static function deleteByCartId( $cartId ) {
-		
+
 		self::deleteAll( 'cartId=:id', [ ':id' => $cartId ] );
 	}
 }

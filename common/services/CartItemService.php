@@ -8,17 +8,17 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\entities\CartTables; 
+use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\CartItem;
 
-class CartItemService extends \cmsgears\core\common\services\Service {
+class CartItemService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
-	 
-	// Read ---------------- 
+
+	// Read ----------------
 
 	public static function findById( $id ) {
-		
+
 		return CartItem::findById( $id );
 	}
 
@@ -26,11 +26,16 @@ class CartItemService extends \cmsgears\core\common\services\Service {
 
 		$cart			= CartService::findAndCreateByUserId( $userId );
 
-		return CartItem::findByCartId( $cart->id );
+		return self::findByCartId( $cart->id );
 	}
 
+    public static function findByParentAndCartId( $parentId, $parentType, $cartId ) {
+
+        return CartItem::findByParentAndCartId( $parentId, $parentType, $cartId );
+    }
+
 	public static function getObjectMapByUserId( $userId ) {
-		
+
 		$cart			= CartService::findAndCreateByUserId( $userId );
 
 		return self::findObjectMap( 'parentId', new CartItem(), [ 'conditions' => [ 'cartId' => $cart->id ] ] );
@@ -49,20 +54,23 @@ class CartItemService extends \cmsgears\core\common\services\Service {
 
 	// Create -----------
 
-	public static function create( $cartItem ) {
+	public static function create( $cart, $model = [ ] ) {
 
-		// Set Attributes
-		$user					= Yii::$app->user->getIdentity();
+		$cartItem = new CartItem();
 
-		$cartItem->createdBy	= $user->id;
+        $cartItem->cartId       = $cart->id;
+        $cartItem->quantity     = $model[ 'quantity' ];
+        $cartItem->createdBy    = $cart->createdBy;
+        $cartItem->name         = $model[ 'name' ];
+        $cartItem->price        = $model[ 'price' ];
+        $cartItem->parentId     = $model[ 'parentId' ];
+        $cartItem->parentType   = $model[ 'parentType' ];
+        $cartItem->save();
 
-		$cartItem->save();
-
-		// Return CartItem
-		return $cartItem;
+        return $cartItem;
 	}
 
-	// Update ----------- 
+	// Update -----------
 
 	public static function update( $cartItem, $additionalParams = [] ) {
 
@@ -83,7 +91,7 @@ class CartItemService extends \cmsgears\core\common\services\Service {
 		// Return CartItem
 		return $cartItemToUpdate;
 	}
- 
+
 	// Delete -----------
 
 	public static function delete( $cartItem ) {
@@ -96,9 +104,9 @@ class CartItemService extends \cmsgears\core\common\services\Service {
 		// Return true
 		return true;
 	}
-	
+
 	public static function deleteByCartId( $cartId ) {
-		
+
 		CartItem::deleteByCartId( $cartId );
 	}
 }

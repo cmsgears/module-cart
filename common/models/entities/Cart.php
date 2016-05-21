@@ -9,7 +9,7 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\core\common\models\base\CmgEntity;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
 
@@ -33,22 +33,20 @@ class Cart extends CmgEntity {
 
     // Constants/Statics --
 
-    const STATUS_NEW            = 10;
+    const STATUS_ACTIVE         = 10;
     const STATUS_USER_CHECKOUT  = 20;
     const STATUS_PAYMENT        = 30;
     const STATUS_SUCCESS        = 40;
     const STATUS_FAILED         = 50;
     const STATUS_ABANDONED      = 60;
-    const STATUS_ACTIVE         = 70;
 
     public static $statusMap = [
-        self::STATUS_NEW => 'New',
+        self::STATUS_ACTIVE => 'Active',
         self::STATUS_USER_CHECKOUT => 'User Checkout',
         self::STATUS_PAYMENT => 'Payment',
         self::STATUS_SUCCESS => 'Success',
         self::STATUS_FAILED => 'Failed',
-        self::STATUS_ABANDONED => 'Abandoned',
-        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_ABANDONED => 'Abandoned'
     ];
 
     // Public -------------
@@ -106,7 +104,7 @@ class Cart extends CmgEntity {
     public function rules() {
 
         return [
-            [ [ 'id', 'parentId', 'parentType', 'name' ], 'safe' ],
+            [ [ 'id', 'parentId', 'parentType', 'name', 'status', 'token' ], 'safe' ],
             [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
@@ -136,14 +134,19 @@ class Cart extends CmgEntity {
 
     // Cart ------------------------------
 
+    // Create -------------
+
+    // Read ---------------
+
     public static function findByParentIdParentType( $parentId, $parentType ) {
 
         return self::find()->where( 'parentId=:id AND parentType=:type', [ ':id' => $parentId, ':type' => $parentType ] )->one();
     }
 
-    // Create -------------
+    public static function findByToken( $token ) {
 
-    // Read ---------------
+        return self::find()->where( 'token=:token', [ 'token' => $token ] )->one();
+    }
 
     // Update -------------
 

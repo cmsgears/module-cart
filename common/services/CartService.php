@@ -8,26 +8,31 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\entities\CartTables; 
+use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\Cart;
 
-class CartService extends \cmsgears\core\common\services\Service {
+class CartService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
-	 
-	// Read ---------------- 
+
+	// Read ----------------
 
 	public static function findById( $id ) {
-		
+
 		return Cart::findById( $id );
 	}
+
+    public static function findByToken( $token ) {
+
+        return Cart::findByToken( $token );
+    }
 
 	/**
 	 * Find cart if exist for the given user
 	 */
 	public static function findByUserId( $userId ) {
 
-		return Cart::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+		return self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
 	}
 
 	/**
@@ -35,15 +40,21 @@ class CartService extends \cmsgears\core\common\services\Service {
 	 */
 	public static function findAndCreateByUserId( $userId ) {
 
-		$cart = Cart::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
-		
+
+		$cart = self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+
 		if( !isset( $cart ) ) {
-			
+
 			$cart = self::createForUserId( $userId );
 		}
-		
+
 		return $cart;
 	}
+
+    public static function findByParentIdParentType( $parentId, $parentType ) {
+
+        return Cart::findByParentIdParentType( $parentId, $parentType );
+    }
 
 	// Data Provider ------
 
@@ -58,7 +69,7 @@ class CartService extends \cmsgears\core\common\services\Service {
 
 	// Create -----------
 
-	public static function create( $cart ) {
+	/*public static function create( $cart ) {
 
 		// Set Attributes
 		$user				= Yii::$app->user->getIdentity();
@@ -70,6 +81,20 @@ class CartService extends \cmsgears\core\common\services\Service {
 
 		// Return Cart
 		return $cart;
+	}*/
+
+	public static function create( $parentId, $parentType, $user = null, $name = null ) {
+
+        $cart   = new Cart();
+
+        $cart->parentId     = $parentId;
+        $cart->parentType   = $parentType;
+        $cart->name         = $name;
+        $cart->status       = Cart::STATUS_ACTIVE;
+        $cart->token        = Yii::$app->security->generateRandomString();
+        $cart->save();
+
+        return $cart;
 	}
 
 	public static function createForUserId( $userId ) {
@@ -90,7 +115,7 @@ class CartService extends \cmsgears\core\common\services\Service {
 		return $cart;
 	}
 
-	// Update ----------- 
+	// Update -----------
 
 	public static function update( $cart ) {
 
@@ -108,7 +133,20 @@ class CartService extends \cmsgears\core\common\services\Service {
 		return $cartToUpdate;
 	}
 
-	// Update ----------- 
+    public static function setAbandoned( $existingCart = null ) {
+
+        Cart::updateAll( [ 'status' => Cart::STATUS_ABANDONED ] );
+
+        if( $existingCart != null ) {
+
+            $existingCart->status   = Cart::STATUS_ACTIVE;
+            $existingCart->update();
+        }
+
+        return true;
+    }
+
+	// Delete -----------
 
 	public static function delete( $cart ) {
 
