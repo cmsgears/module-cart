@@ -8,22 +8,22 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\entities\CartTables; 
+use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\OrderItem;
 
-class OrderItemService extends \cmsgears\core\common\services\Service {
+class OrderItemService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
-	 
-	// Read ---------------- 
+
+	// Read ----------------
 
 	public static function findById( $id ) {
-		
+
 		return OrderItem::findById( $id );
 	}
 
 	public static function findByOrderId( $oderId ) {
-		
+
 		return OrderItem::findByOrderId( $oderId );
 	}
 
@@ -39,13 +39,13 @@ class OrderItemService extends \cmsgears\core\common\services\Service {
 	}
 
 	// Create -----------
-	
+
 	// Clone Order Item from cart item
 	public static function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
 
 		// Set Attributes
 		$user					= Yii::$app->user->getIdentity();
-		
+
 		$orderItem				= new OrderItem();
 		$orderItem->orderId		= $orderId;
 		$orderItem->createdBy	= $user->id;
@@ -93,7 +93,7 @@ class OrderItemService extends \cmsgears\core\common\services\Service {
 		return $orderItemToSave;
 	}
 
-	// Update ----------- 
+	// Update -----------
 
 	// Delete -----------
 

@@ -146,15 +146,26 @@ class CartService extends \cmsgears\core\common\services\base\Service {
         return true;
     }
 
+    public static function updateStatus( $cart, $status ) {
+
+        $cart->status   = $status;
+        $cart->update();
+
+        return $cart;
+    }
+
 	// Delete -----------
 
 	public static function delete( $cart ) {
 
 		$cartToDelete	= self::findById( $cart->id );
 
-		$cartToDelete->delete();
+        if( isset( $cartToDelete ) ) {
 
-		return true;
+		  $cartToDelete->delete();
+
+		  return true;
+        }
 	}
 
 	// Item Management

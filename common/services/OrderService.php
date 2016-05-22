@@ -10,17 +10,16 @@ use cmsgears\cart\common\config\CartGlobal;
 use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\Order;
 
-use cmsgears\core\common\services\ModelAddressService;
-use cmsgears\cart\common\services\OrderHistoryService;
+use cmsgears\core\common\services\mappers\ModelAddressService;
 
-class OrderService extends \cmsgears\core\common\services\Service {
+class OrderService extends \cmsgears\core\common\services\base\Service {
 
 	// Static Methods ----------------------------------------------
-	 
-	// Read ---------------- 
+
+	// Read ----------------
 
 	public static function findById( $id ) {
-		
+
 		return Order::findById( $id );
 	}
 
@@ -75,15 +74,12 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 		// Delete Cart
 		CartService::delete( $cart );
-		
-		// Create Order History
-		OrderHistoryService::create( $order );
 
 		// Return Order
 		return $order;
 	}
 
-	// Update ----------- 
+	// Update -----------
 
 	public static function updateStatus( $order, $status ) {
 
@@ -95,9 +91,6 @@ class OrderService extends \cmsgears\core\common\services\Service {
 
 		$order->update();
 
-		// Create Order History
-		OrderHistoryService::create( $order );
-
 		return true;
 	}
 
@@ -107,7 +100,7 @@ class OrderService extends \cmsgears\core\common\services\Service {
 	}
 
 	public static function placeOrder( $order ) {
-		
+
 		self::updateStatus( $order, Order::STATUS_PLACED );
 	}
 

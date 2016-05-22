@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\core\common\models\base\CmgEntity;
 
 use cmsgears\core\common\models\traits\AddressTrait;
 use cmsgears\core\common\models\traits\CreateModifyTrait;
@@ -22,7 +22,7 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
- * @property integer $parentType 
+ * @property integer $parentType
  * @property string $name
  * @property integer $status
  * @property integer $subTotal
@@ -74,7 +74,7 @@ class Order extends CmgEntity {
 	}
 
 	public function getItems() {
-	
+
     	return $this->hasMany( OrderItem::className(), [ 'orderId' => 'id' ] );
 	}
 
@@ -84,42 +84,42 @@ class Order extends CmgEntity {
 	}
 
 	public function getStatusStr() {
-		
+
 		return self::$statusMap[ $this->status ];
 	}
 
 	public function isNew() {
-		
+
 		return $this->status == self::STATUS_NEW;
 	}
 
 	public function isConfirmed() {
-		
+
 		return $this->status == self::STATUS_CONFIRMED;
 	}
 
 	public function isCancelled() {
-		
+
 		return $this->status == self::STATUS_CANCELLED;
 	}
 
 	public function isPlaced() {
-		
+
 		return $this->status == self::STATUS_PLACED;
 	}
 
 	public function isPaid() {
-		
+
 		return $this->status == self::STATUS_PAID;
 	}
 
 	public function isDelivered() {
-		
+
 		return $this->status == self::STATUS_DELIVERED;
 	}
-	
+
 	public function isReturned() {
-		
+
 		return $this->status == self::STATUS_RETURNED;
 	}
 

@@ -29,6 +29,11 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
 		return self::findByCartId( $cart->id );
 	}
 
+    public static function findByCartId( $id ) {
+
+        return CartItem::findByCartId( $id );
+    }
+
     public static function findByParentAndCartId( $parentId, $parentType, $cartId ) {
 
         return CartItem::findByParentAndCartId( $parentId, $parentType, $cartId );

@@ -9,7 +9,7 @@ use yii\behaviors\TimestampBehavior;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\core\common\models\base\CmgEntity;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
 
@@ -44,9 +44,9 @@ class OrderItem extends CmgEntity {
 	// Instance methods --------------------------------------------------
 
 	public function getTotalPrice() {
-		
+
 		$price	= $this->quantity * $this->price;
-		
+
 		return round( $price, 2 );
 	}
 
@@ -121,7 +121,7 @@ class OrderItem extends CmgEntity {
 	// CartItem -------------------------
 
 	public static function findByOrderId( $oderId ) {
-		
+
 		return self::find()->where( 'orderId=:id', [ ':id' => $oderId ] )->all();
 	}
 }
