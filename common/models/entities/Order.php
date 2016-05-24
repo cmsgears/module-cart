@@ -186,6 +186,11 @@ class Order extends CmgEntity {
 
 	// Static Methods ----------------------------------------------
 
+	public static function findByName( $name ) {
+
+        return self::find()->where( 'name=:name', [ ':name' => $name ] )->one();
+	}
+
 	// yii\db\ActiveRecord ---------------
 
 	public static function tableName() {

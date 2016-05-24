@@ -23,6 +23,11 @@ class OrderService extends \cmsgears\core\common\services\base\Service {
 		return Order::findById( $id );
 	}
 
+    public static function findByName( $name ) {
+
+        return Order::findByName( $name );
+    }
+
 	// Data Provider ------
 
 	/**
@@ -52,6 +57,8 @@ class OrderService extends \cmsgears\core\common\services\base\Service {
 		$cartTotal			= $cart->getCartTotal( $cartItems );
 
 		$order->subTotal	= $cartTotal;
+        $order->parentId    = $cart->parentId;
+        $order->parentType  = $cart->parentType;
 		$order->tax			= 0;
 		$order->shipping	= 0;
 		$order->total		= $cartTotal;
