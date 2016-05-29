@@ -44,7 +44,7 @@ class OrderService extends \cmsgears\core\common\services\base\Service {
 	public static function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user				= Yii::$app->user->getIdentity();
+		$user				= Yii::$app->cmgCore->getAppUser();
 
 		$order->createdBy	= $user->id;
 		$order->status		= Order::STATUS_NEW;
@@ -90,7 +90,7 @@ class OrderService extends \cmsgears\core\common\services\base\Service {
 
 	public static function updateStatus( $order, $status ) {
 
-		$user				= Yii::$app->user->getIdentity();
+		$user				= Yii::$app->cmgCore->getAppUser();
 		$order				= self::findById( $order->id );
 
 		$order->modifiedBy	= $user->id;

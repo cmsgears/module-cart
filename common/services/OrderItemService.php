@@ -44,7 +44,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\Service {
 	public static function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user					= Yii::$app->user->getIdentity();
+		$user					= Yii::$app->cmgCore->getAppUser();
 
 		$orderItem				= new OrderItem();
 		$orderItem->orderId		= $orderId;
@@ -69,7 +69,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\Service {
 	public static function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user					= Yii::$app->user->getIdentity();
+		$user					= Yii::$app->cmgCore->getAppUser();
 
 		unset( $orderItem->id );
 

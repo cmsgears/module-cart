@@ -31,7 +31,7 @@ class GuestService extends \cmsgears\core\common\services\base\Service {
 
         if( isset( $user ) ) {
 
-            Yii::$app->user->setIdentity( $user );
+            Yii::$app->cmgCore->setAppUser( $user );
 
             return $user;
         }

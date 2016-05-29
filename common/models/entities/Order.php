@@ -11,6 +11,7 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\base\CmgEntity;
+use cmsgears\payment\common\models\entities\Payment;
 
 use cmsgears\core\common\models\traits\AddressTrait;
 use cmsgears\core\common\models\traits\CreateModifyTrait;
@@ -67,6 +68,11 @@ class Order extends CmgEntity {
 
 		return $this->hasOne( Order::className(), [ 'id' => 'parentOrderId' ] );
 	}
+
+    public function getPayment(){
+
+        return $this->hasOne( Payment::className(),[ 'parentId' => 'id' ] );
+    }
 
 	public function getChildOrders() {
 

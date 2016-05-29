@@ -79,7 +79,7 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
 
 	public static function update( $cartItem, $additionalParams = [] ) {
 
-		$user				= Yii::$app->user->getIdentity();
+		$user				= Yii::$app->cmgCore->getAppUser();
 		$cartItemToUpdate	= self::findById( $cartItem->id );
 
 		$cartItemToUpdate->modifiedBy	= $user->id;

@@ -100,7 +100,7 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 	public static function createForUserId( $userId ) {
 
 		// Set Attributes
-		$user				= Yii::$app->user->getIdentity();
+		$user				= Yii::$app->cmgCore->getAppUser();
 		$cart				= new Cart();
 
 		$cart->createdBy	= $user->id;
@@ -119,7 +119,7 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
 	public static function update( $cart ) {
 
-		$user			= Yii::$app->user->getIdentity();
+		$user			= Yii::$app->cmgCore->getAppUser();
 		$cartToUpdate	= self::findById( $cart->id );
 
 		$cartToUpdate->modifiedBy	= $user->id;
@@ -172,7 +172,7 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
 	public static function addItemToCart( $cart, $cartItem, $additionalParams = [] ) {
 
-		$user				= Yii::$app->user->getIdentity();
+		$user				= Yii::$app->cmgCore->getAppUser();
 		$cartItem->cartId	= $cart->id;
 
 		// remove if exist
