@@ -32,6 +32,7 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $total
  * @property integer $discount
  * @property integer $grandTotal
+ * @property string $notes
  * @property date $deliveryDate
  * @property datetime $createdAt
  * @property datetime $modifiedAt
@@ -69,10 +70,10 @@ class Order extends CmgEntity {
 		return $this->hasOne( Order::className(), [ 'id' => 'parentOrderId' ] );
 	}
 
-    public function getPayment(){
+	public function getPayment(){
 
-        return $this->hasOne( Payment::className(),[ 'parentId' => 'id' ] );
-    }
+		return $this->hasOne( Payment::className(),[ 'parentId' => 'id' ] );
+	}
 
 	public function getChildOrders() {
 
@@ -160,7 +161,7 @@ class Order extends CmgEntity {
 	public function rules() {
 
         return [
-			[ [ 'id', 'parentId', 'parentType', 'name', 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'safe' ],
+			[ [ 'id', 'parentId', 'parentType', 'name', 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal', 'notes' ], 'safe' ],
             [ [ 'parentId', 'parentOrderId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
