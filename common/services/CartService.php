@@ -69,20 +69,6 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
 	// Create -----------
 
-	/*public static function create( $cart ) {
-
-		// Set Attributes
-		$user				= Yii::$app->user->getIdentity();
-
-		$cart->createdBy	= $user->id;
-		$cart->status		= Order::STATUS_NEW;
-
-		$cart->save();
-
-		// Return Cart
-		return $cart;
-	}*/
-
 	public static function create( $parentId, $parentType, $user = null, $name = null ) {
 
         $cart   = new Cart();
@@ -139,8 +125,13 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
         if( $existingCart != null ) {
 
-            $existingCart->status   = Cart::STATUS_ACTIVE;
-            $existingCart->update();
+            $cart   = self::findById( $existingCart->id );
+
+            if( isset( $cart ) ) {
+
+                $cart->status   = Cart::STATUS_ACTIVE;
+                $cart->update();
+            }
         }
 
         return true;
