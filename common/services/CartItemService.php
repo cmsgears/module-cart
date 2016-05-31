@@ -82,7 +82,10 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
 		$user				= Yii::$app->cmgCore->getAppUser();
 		$cartItemToUpdate	= self::findById( $cartItem->id );
 
-		$cartItemToUpdate->modifiedBy	= $user->id;
+        if( $user != null ) {
+
+		  $cartItemToUpdate->modifiedBy	= $user->id;
+        }
 
 		// Copy required params
 		$cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );

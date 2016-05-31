@@ -84,7 +84,6 @@ CREATE TABLE `cmg_cart_order` (
   `total` float(8,2) NOT NULL DEFAULT 0.0,
   `discount` float(8,2) NOT NULL DEFAULT 0.0,
   `grandTotal` float(8,2) NOT NULL DEFAULT 0.0,
-  `notes` text COLLATE utf8_unicode_ci NOT NULL,
   `deliveryDate` date DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `modifiedAt` datetime DEFAULT NULL,
