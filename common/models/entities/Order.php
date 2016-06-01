@@ -197,6 +197,11 @@ class Order extends CmgEntity {
         return self::find()->where( 'name=:name', [ ':name' => $name ] )->one();
 	}
 
+    public static function queryByParent( $parentId, $parentType ) {
+
+        return self::find()->where( 'parentId=:pid AND parentType=:ptype', [ ':pid' => $parentId, ':ptype' => $parentType ] );
+    }
+
 	// yii\db\ActiveRecord ---------------
 
 	public static function tableName() {

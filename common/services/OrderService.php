@@ -28,6 +28,11 @@ class OrderService extends \cmsgears\core\common\services\base\Service {
         return Order::findByName( $name );
     }
 
+    public static function queryByParent( $parentId, $parentType ) {
+
+        return Order::queryByParent( $parentId, $parentType );
+    }
+
 	// Data Provider ------
 
 	/**
