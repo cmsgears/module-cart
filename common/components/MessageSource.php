@@ -3,14 +3,20 @@ namespace cmsgears\cart\common\components;
 
 // Yii Imports
 use \Yii;
-use yii\base\Component;
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-class MessageSource extends Component {
+class MessageSource extends \yii\base\Component {
 
-	// Variables ---------------------------------------------------
+	// Global -----------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
 
 	private $messageDb = [
 		// Generic Fields
@@ -45,18 +51,18 @@ class MessageSource extends Component {
 		CartGlobal::FIELD_TXN_MODE => 'Mode'
 	];
 
-	/**
-	 * Initialise the Cms Message DB Component.
-	 */
-    public function init() {
+	// Constructor and Initialisation ------------------------------
 
-        parent::init();
-    }
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// CMG parent classes --------------------
+
+	// MessageSource -------------------------
 
 	public function getMessage( $messageKey, $params = [], $language = null ) {
 
 		return $this->messageDb[ $messageKey ];
 	}
 }
-
-?>
