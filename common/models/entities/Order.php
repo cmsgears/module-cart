@@ -10,21 +10,27 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\base\CmgEntity;
 use cmsgears\payment\common\models\entities\Payment;
+use cmsgears\cart\common\models\base\CartTables;
 
-use cmsgears\core\common\models\traits\AddressTrait;
 use cmsgears\core\common\models\traits\CreateModifyTrait;
+use cmsgears\core\common\models\traits\ResourceTrait;
+use cmsgears\core\common\models\traits\mappers\AddressTrait;
+
+use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
  * Order Entity - The primary class.
  *
  * @property integer $id
+ * @property integer $baseId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
  * @property integer $parentType
- * @property string $name
+ * @property string $type
+ * @property string $title
+ * @property string $description
  * @property integer $status
  * @property integer $subTotal
  * @property integer $tax
@@ -32,19 +38,28 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $total
  * @property integer $discount
  * @property integer $grandTotal
- * @property date $deliveryDate
  * @property datetime $createdAt
  * @property datetime $modifiedAt
+ * @property datetime $eta
+ * @property datetime $deliveredAt
  */
-class Order extends CmgEntity {
+class Order extends \cmsgears\core\common\models\base\Entity {
 
-	const STATUS_NEW				=  0;
-	const STATUS_CONFIRMED			= 10;
-	const STATUS_CANCELLED			= 20;
-	const STATUS_PLACED				= 30;
-	const STATUS_PAID				= 40;
-	const STATUS_DELIVERED			= 50;
-	const STATUS_RETURNED			= 60;
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	const STATUS_NEW				=    0;
+	const STATUS_CONFIRMED			= 1000;
+	const STATUS_CANCELLED			= 2000;
+	const STATUS_PLACED				= 3000;
+	const STATUS_PAID				= 4000;
+	const STATUS_DELIVERED			= 5000;
+	const STATUS_RETURNED			= 6000;
+
+	// Public -----------------
 
 	public static $statusMap = array(
 	    self::STATUS_NEW  => 'New',
@@ -56,27 +71,117 @@ class Order extends CmgEntity {
 	    self::STATUS_RETURNED => 'Returned'
 	   	);
 
-	public $addressType		= CartGlobal::TYPE_ORDER;
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	public $addressType	= CartGlobal::TYPE_ORDER;
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
 
 	use AddressTrait;
-
 	use CreateModifyTrait;
+	use ResourceTrait;
 
-	// Instance methods --------------------------------------------------
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+
+        return [
+            'authorBehavior' => [
+                'class' => AuthorBehavior::className()
+            ],
+            'timestampBehavior' => [
+                'class' => TimestampBehavior::className(),
+				'createdAtAttribute' => 'createdAt',
+ 				'updatedAtAttribute' => 'modifiedAt',
+ 				'value' => new Expression('NOW()')
+            ]
+        ];
+    }
+
+	// yii\base\Model ---------
+
+    /**
+     * @inheritdoc
+     */
+	public function rules() {
+
+        return [
+        	[ 'title', 'required' ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
+            [ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+            [ [ 'title', 'description'], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+            [ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+            [ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+	public function attributeLabels() {
+
+		return [
+			'baseId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
+			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
+			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'subTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
+			'tax' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'shipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
+			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
+			'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+		];
+	}
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// Order ---------------------------------
 
 	public function getParentOrder() {
 
-		return $this->hasOne( Order::className(), [ 'id' => 'parentOrderId' ] );
+		return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] );
 	}
 
-    public function getPayment(){
+    public function getPayment() {
 
-        return $this->hasOne( Payment::className(),[ 'parentId' => 'id' ] );
+        return $this->hasOne( Payment::className(), [ 'parentId' => 'id' ] )->where( 'parentType=' . CartGlobal::TYPE_ORDER );
     }
 
 	public function getChildOrders() {
 
-		return $this->hasMany( Order::className(), [ 'parentOrderId' => 'id' ] );
+		return $this->hasMany( Order::className(), [ 'baseId' => 'id' ] );
 	}
 
 	public function getItems() {
@@ -86,7 +191,7 @@ class Order extends CmgEntity {
 
 	public function generateName() {
 
-		$this->name = Yii::$app->security->generateRandomString();;
+		$this->title = Yii::$app->security->generateRandomString( 16 );
 	}
 
 	public function getStatusStr() {
@@ -134,83 +239,36 @@ class Order extends CmgEntity {
 		return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED ] );
 	}
 
-	// yii\base\Component ----------------
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors() {
-
-        return [
-
-            'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
-				'createdAtAttribute' => 'createdAt',
- 				'updatedAtAttribute' => 'modifiedAt',
- 				'value' => new Expression('NOW()')
-            ]
-        ];
-    }
-
-	// yii\base\Model --------------------
-
-    /**
-     * @inheritdoc
-     */
-	public function rules() {
-
-        return [
-			[ [ 'id', 'parentId', 'parentType', 'name', 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'safe' ],
-            [ [ 'parentId', 'parentOrderId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
-			[ [ 'deliveryDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ]
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-	public function attributeLabels() {
-
-		return [
-			'parentId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
-			'parentOrderId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
-			'parentType' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
-			'createdBy' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
-			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME ),
-			'status' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
-			'subTotal' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
-			'tax' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TAX ),
-			'shipping' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
-			'total' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
-			'discount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
-			'grandTotal' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
-			'deliveryDate' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
-		];
-	}
-
 	// Static Methods ----------------------------------------------
 
-	public static function findByName( $name ) {
+	// Yii parent classes --------------------
 
-        return self::find()->where( 'name=:name', [ ':name' => $name ] )->one();
-	}
-
-    public static function queryByParent( $parentId, $parentType ) {
-
-        return self::find()->where( 'parentId=:pid AND parentType=:ptype', [ ':pid' => $parentId, ':ptype' => $parentType ] );
-    }
-
-	// yii\db\ActiveRecord ---------------
+	// yii\db\ActiveRecord ----
 
 	public static function tableName() {
 
 		return CartTables::TABLE_ORDER;
 	}
 
-	// Cart ------------------------------
+	// CMG parent classes --------------------
 
+	// Order ---------------------------------
+
+	// Read - Query -----------
+
+	public static function queryWithAll( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	// Read - Find ------------
+
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
 }
-
-?>

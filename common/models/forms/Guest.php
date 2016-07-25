@@ -5,30 +5,57 @@ namespace cmsgears\cart\common\models\forms;
 use \Yii;
 use yii\helpers\ArrayHelper;
 
+// CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+
 class Guest extends \yii\base\Model {
 
 	// Variables ---------------------------------------------------
 
-	// Public Variables --------------------
+	// Globals -------------------------------
 
-	public $firstname;
-    public $lastname;
+	// Constants --------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	public $firstName;
+    public $lastName;
     public $email;
 
-	// Instance Methods --------------------------------------------
+	// Protected --------------
 
-	// yii\base\Model
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// yii\base\Model ---------
 
 	public function rules() {
 
         $rules = [
-        	[ [ 'firstname', 'lastname', 'email' ], 'required' ],
+        	[ [ 'firstName', 'lastName', 'email' ], 'required' ],
         	[ 'email', 'email' ]
 		];
 
-		if( Yii::$app->cmgCore->trimFieldValue ) {
+		if( Yii::$app->core->trimFieldValue ) {
 
-			$trim[] = [ [ 'firstname', 'lastname', 'email' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'firstName', 'lastName', 'email' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -39,11 +66,17 @@ class Guest extends \yii\base\Model {
 	public function attributeLabels() {
 
 		return [
-			'firstname' => 'Firstname',
-			'lastname' => 'Lastname',
+			'firstName' => 'firstName',
+			'lastName' => 'lastName',
 			'email' => 'Email'
 		];
 	}
-}
 
-?>
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// Guest ---------------------------------
+}

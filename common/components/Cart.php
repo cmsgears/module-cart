@@ -45,66 +45,24 @@ class Cart extends \yii\base\Component {
 
 	public function registerComponents() {
 
-		// Init system services
-		$this->initSystemServices();
-
 		// Register services
-		$this->registerResourceServices();
-		$this->registerMapperServices();
 		$this->registerEntityServices();
 
 		// Init services
-		$this->initResourceServices();
-		$this->initMapperServices();
 		$this->initEntityServices();
-	}
-
-	public function initSystemServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		//$factory->set( '<name>', '<classpath>' );
-	}
-
-	public function registerResourceServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		//$factory->set( 'cmsgears\cms\common\services\interfaces\resources\ICategoryService', 'cmsgears\cms\common\services\resources\CategoryService' );
-	}
-
-	public function registerMapperServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		//$factory->set( 'cmsgears\cms\common\services\interfaces\mappers\IModelBlockService', 'cmsgears\cms\common\services\mappers\ModelBlockService' );
 	}
 
 	public function registerEntityServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'cmsgears\cms\common\services\interfaces\entities\IElementService', 'cmsgears\cms\common\services\entities\ElementService' );
-	}
-
-	public function initResourceServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		//$factory->set( 'categoryService', 'cmsgears\cms\common\services\resources\CategoryService' );
-	}
-
-	public function initMapperServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		//$factory->set( 'modelBlockService', 'cmsgears\cms\common\services\mappers\ModelBlockService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
 	}
 
 	public function initEntityServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		//$factory->set( 'elementService', 'cmsgears\cms\common\services\entities\ElementService' );
+		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
 	}
 }

@@ -56,6 +56,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
+			'type' => $this->string( CoreGlobal::TEXT_MEDIUM ),
 			'title' => $this->string( CoreGlobal::TEXT_XLARGE )->notNull(),
 			'token' => $this->string( CoreGlobal::TEXT_MEDIUM )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
@@ -82,6 +83,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
+			'type' => $this->string( CoreGlobal::TEXT_MEDIUM ),
 			'name' => $this->string( CoreGlobal::TEXT_XLARGE )->notNull(),
 			'sku' => $this->string( CoreGlobal::TEXT_XLARGE )->defaultValue( null ),
 			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
@@ -109,11 +111,12 @@ class m160622_034400_cart extends \yii\db\Migration {
 
         $this->createTable( $this->prefix . 'cart_order', [
 			'id' => $this->bigPrimaryKey( 20 ),
-			'parentOrderId' => $this->bigInteger( 20 ),
+			'baseId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
+			'type' => $this->string( CoreGlobal::TEXT_MEDIUM ),
 			'title' => $this->string( CoreGlobal::TEXT_XLARGE )->notNull(),
 			'description' => $this->string( CoreGlobal::TEXT_XLARGE )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
@@ -125,8 +128,10 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'grandTotal' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
-			'deliveryAt' => $this->dateTime(),
-			'eta' => $this->dateTime()
+			'eta' => $this->dateTime(),
+			'deliveredAt' => $this->dateTime(),
+			'content' => $this->text(),
+			'data' => $this->text()
         ], $this->options );
 
         // Index for columns creator and modifier
@@ -147,6 +152,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
+			'type' => $this->string( CoreGlobal::TEXT_MEDIUM ),
 			'name' => $this->string( CoreGlobal::TEXT_XLARGE )->notNull(),
 			'sku' => $this->string( CoreGlobal::TEXT_XLARGE )->defaultValue( null ),
 			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
@@ -179,9 +185,9 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
+			'type' => $this->string( CoreGlobal::TEXT_MEDIUM ),
 			'name' => $this->string( CoreGlobal::TEXT_LARGE )->notNull(),
 			'description' => $this->string( CoreGlobal::TEXT_XLARGE )->defaultValue( null ),
-			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'amount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'taxType' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'freeShipping' => $this->boolean()->notNull()->defaultValue( false ),
@@ -280,5 +286,3 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_modifier', $this->prefix . 'cart_voucher' );
 	}
 }
-
-?>

@@ -8,10 +8,16 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\base\CmgEntity;
+use cmsgears\core\common\models\base\CoreTables;
+use cmsgears\core\common\models\resources\Option;
+use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
+use cmsgears\core\common\models\traits\ResourceTrait;
+
+use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
  * OrderItem Entity - The primary class.
@@ -25,32 +31,52 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $modifiedBy
  * @property integer $parentId
  * @property integer $parentType
+ * @property string $type
  * @property integer $name
  * @property integer $sku
  * @property integer $price
- * @property integer $discount
  * @property integer $quantity
  * @property integer $weight
  * @property integer $length
  * @property integer $width
  * @property integer $height
- * @property datetime $createdAt
- * @property datetime $modifiedAt
+ * @property string $content
+ * @property string $data
  */
-class OrderItem extends CmgEntity {
+class OrderItem extends \cmsgears\core\common\models\base\Entity {
+
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
 
 	use CreateModifyTrait;
+	use ResourceTrait;
 
-	// Instance methods --------------------------------------------------
+	// Constructor and Initialisation ------------------------------
 
-	public function getTotalPrice() {
+	// Instance methods --------------------------------------------
 
-		$price	= $this->quantity * $this->price;
+	// Yii interfaces ------------------------
 
-		return round( $price, 2 );
-	}
+	// Yii parent classes --------------------
 
-	// yii\base\Component ----------------
+	// yii\base\Component -----
 
     /**
      * @inheritdoc
@@ -58,7 +84,9 @@ class OrderItem extends CmgEntity {
     public function behaviors() {
 
         return [
-
+            'authorBehavior' => [
+                'class' => AuthorBehavior::className()
+            ],
             'timestampBehavior' => [
                 'class' => TimestampBehavior::className(),
 				'createdAtAttribute' => 'createdAt',
@@ -68,7 +96,7 @@ class OrderItem extends CmgEntity {
         ];
     }
 
-	// yii\base\Model --------------------
+	// yii\base\Model ---------
 
     /**
      * @inheritdoc
@@ -77,9 +105,11 @@ class OrderItem extends CmgEntity {
 
         return [
         	[ [ 'orderId', 'price', 'quantity', 'name' ], 'required' ],
-			[ [ 'id', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'sku', 'discount', 'weight', 'length', 'width', 'height' ], 'safe' ],
-            [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
+            [ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+            [ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
             [ [ 'price', 'quantity', 'weight', 'length', 'width', 'height' ], 'number', 'min' => 0 ],
+			[ [ 'orderId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly', 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
@@ -90,40 +120,83 @@ class OrderItem extends CmgEntity {
 	public function attributeLabels() {
 
 		return [
-			'orderId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_ORDER ),
-			'parentId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
-			'parentType' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
-			'createdBy' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
-			'quantityUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
-			'weightUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
-			'metricUnitId' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
-			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME ),
-			'sku' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_SKU ),
-			'price' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_PRICE ),
-			'discount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
-			'quantity' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
-			'weight' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),
-			'length' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_LENGTH ),
-			'width' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_WIDTH ),
-			'height' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_HEIGHT )
+			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
+			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
+			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
+			'metricUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
+			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
+			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
+			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
+			'weight' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),
+			'length' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_LENGTH ),
+			'width' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WIDTH ),
+			'height' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_HEIGHT ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
+	}
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// OrderItem -----------------------------
+
+	public function getTotalPrice() {
+
+		$price	= $this->quantity * $this->price;
+
+		return round( $price, 2 );
 	}
 
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord ---------------
+	// Yii parent classes --------------------
+
+	// yii\db\ActiveRecord ----
 
 	public static function tableName() {
 
 		return CartTables::TABLE_ORDER_ITEM;
 	}
 
-	// CartItem -------------------------
+	// CMG parent classes --------------------
+
+	// OrderItem -----------------------------
+
+	// Read - Query -----------
+
+	public static function queryWithAll( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order', 'quantityUnit', 'weightUnit', 'metricUnit', 'creator' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryByOrderId( $orderId ) {
+
+		return self::find()->where( 'orderId=:cid', [ ':cid' => $orderId ] );
+	}
+
+	// Read - Find ------------
 
 	public static function findByOrderId( $oderId ) {
 
 		return self::find()->where( 'orderId=:id', [ ':id' => $oderId ] )->all();
 	}
-}
 
-?>
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
+}
