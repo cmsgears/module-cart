@@ -15,6 +15,10 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	// Read ---------------
 
+	public function getCountByParent( $parentId, $parentType );
+
+	public function getCountByUserId( $userId );
+
     // Read - Models ---
 
     // Read - Lists ----

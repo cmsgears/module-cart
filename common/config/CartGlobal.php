@@ -3,6 +3,10 @@ namespace cmsgears\cart\common\config;
 
 class CartGlobal {
 
+    // Config ----------------------------------------------------------
+
+    const CONFIG_CART	       			= 'cart';
+
 	// Transactions ----------------------------------------------------
 
 	const TXN_MODE_ORDER_PAYMENT		= 'Order Payment';
@@ -24,10 +28,18 @@ class CartGlobal {
 
 	// Template Views --------------------------------------------------
 
-    const TEMPLATE_VIEW_CHECKOUT_USER	= 'checkout/user';
-    const TEMPLATE_VIEW_CHECKOUT_GUEST	= 'checkout/guest';
-    const TEMPLATE_VIEW_ORDER_PAYMENT	= 'order/payment';
-    const TEMPLATE_VIEW_ORDER_CONFIRM	= 'order/confirm';
+	// Simple checkout
+	const TEMPLATE_VIEW_CHECKOUT		= 'checkout';
+
+	// User/Guest checkout
+    const TEMPLATE_VIEW_CHECKOUT_GUEST	= 'checkout-guest';
+	const TEMPLATE_VIEW_CHECKOUT_USER	= 'checkout-user';
+
+    const TEMPLATE_VIEW_ORDER_CONFIRM	= 'confirm';
+
+	const TEMPLATE_VIEW_PAYMENT			= 'payment';
+	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment-success';
+	const TEMPLATE_VIEW_PAYMENT_FAILURE	= 'payment-failure';
 
 	// Messages --------------------------------------------------------
 

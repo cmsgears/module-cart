@@ -4,9 +4,14 @@ namespace cmsgears\cart\admin;
 // Yii Imports
 use \Yii;
 
+// CMG Imports
+use cmsgears\cart\common\config\CartGlobal;
+
 class Module extends \cmsgears\core\common\base\Module {
 
     public $controllerNamespace = 'cmsgears\cart\admin\controllers';
+
+	public $config              = [ CartGlobal::CONFIG_CART ];
 
     public function init() {
 
@@ -22,5 +27,3 @@ class Module extends \cmsgears\core\common\base\Module {
 		return $path;
 	}
 }
-
-?>

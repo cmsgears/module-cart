@@ -88,11 +88,18 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Read ---------------
 
+	public function getCountByParent( $parentId, $parentType ) {
+
+		$modelClass	= self::$modelClass;
+
+		return $modelClass::queryByParent( $parentId, $parentType )->count();
+	}
+
 	public function getCountByUserId( $userId ) {
 
 		$modelClass	= self::$modelClass;
 
-		return $modelClass::queryByParent( $userId, CoreGlobal::TYPE_USER )->count();
+		return $modelClass::queryByCreatorId( $userId )->count();
 	}
 
     // Read - Models ---

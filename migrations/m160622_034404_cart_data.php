@@ -33,6 +33,12 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 		// Create RBAC and Site Members
 		$this->insertRolePermission();
+
+		// Create various config
+		$this->insertCartConfig();
+
+		// Init default config
+		$this->insertDefaultConfig();
     }
 
 	private function insertRolePermission() {
@@ -76,6 +82,44 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
+	}
+
+	private function insertCartConfig() {
+
+		$this->insert( $this->prefix . 'core_form', [
+            'siteId' => $this->site->id,
+            'createdBy' => $this->master->id, 'modifiedBy' => $this->master->id,
+            'name' => 'Config Cart', 'slug' => 'config-cart',
+            'type' => CoreGlobal::TYPE_SYSTEM,
+            'description' => 'Cart configuration form.',
+            'successMessage' => 'All configurations saved successfully.',
+            'captcha' => false,
+            'visibility' => Form::VISIBILITY_PROTECTED,
+            'active' => true, 'userMail' => false,'adminMail' => false,
+            'createdAt' => DateUtil::getDateTime(),
+            'modifiedAt' => DateUtil::getDateTime()
+        ]);
+
+		$config	= Form::findBySlug( 'config-cart', CoreGlobal::TYPE_SYSTEM );
+
+		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
+
+		$fields	= [
+			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{\"title\":\"Enable/disable cart.\"}' ]
+		];
+
+		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
+	}
+
+	private function insertDefaultConfig() {
+
+		$columns = [ 'modelId', 'name', 'label', 'type', 'valueType', 'value' ];
+
+		$metas	= [
+			[ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ]
+		];
+
+		$this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
 	}
 
     public function down() {
