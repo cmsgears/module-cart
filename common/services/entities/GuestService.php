@@ -11,15 +11,15 @@ use cmsgears\core\common\services\entities\UserService;
 
 class GuestService extends \cmsgears\core\common\services\base\Service {
 
-	// Static Methods ----------------------------------------------
+    // Static Methods ----------------------------------------------
 
-	// Read ----------------
+    // Read ----------------
 
-	// Data Provider ------
+    // Data Provider ------
 
-	// Create -----------
+    // Create -----------
 
-	public static function create( $form ) {
+    public static function create( $form ) {
 
         $user   = new User();
 
@@ -37,11 +37,11 @@ class GuestService extends \cmsgears\core\common\services\base\Service {
         }
 
         return false;
-	}
+    }
 
-	// Update -----------
+    // Update -----------
 
-	// Delete -----------
+    // Delete -----------
 
 }
 

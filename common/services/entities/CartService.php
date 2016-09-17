@@ -13,63 +13,63 @@ use cmsgears\cart\common\models\entities\Cart;
 
 class CartService extends \cmsgears\core\common\services\base\Service {
 
-	// Static Methods ----------------------------------------------
+    // Static Methods ----------------------------------------------
 
-	// Read ----------------
+    // Read ----------------
 
-	public static function findById( $id ) {
+    public static function findById( $id ) {
 
-		return Cart::findById( $id );
-	}
+        return Cart::findById( $id );
+    }
 
     public static function findByToken( $token ) {
 
         return Cart::findByToken( $token );
     }
 
-	/**
-	 * Find cart if exist for the given user
-	 */
-	public static function findByUserId( $userId ) {
+    /**
+     * Find cart if exist for the given user
+     */
+    public static function findByUserId( $userId ) {
 
-		return self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
-	}
+        return self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+    }
 
-	/**
-	 * Find cart if exist for the given user. If does not exist create, it.
-	 */
-	public static function findAndCreateByUserId( $userId ) {
+    /**
+     * Find cart if exist for the given user. If does not exist create, it.
+     */
+    public static function findAndCreateByUserId( $userId ) {
 
 
-		$cart = self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+        $cart = self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
 
-		if( !isset( $cart ) ) {
+        if( !isset( $cart ) ) {
 
-			$cart = self::createForUserId( $userId );
-		}
+            $cart = self::createForUserId( $userId );
+        }
 
-		return $cart;
-	}
+        return $cart;
+    }
 
     public static function findByParentIdParentType( $parentId, $parentType ) {
 
         return Cart::findByParentIdParentType( $parentId, $parentType );
     }
 
-	// Data Provider ------
+    // Data Provider ------
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $config = [] ) {
+    /**
+     * @param array $config to generate query
+     * @return ActiveDataProvider
+     */
+    public static function getPagination( $config = [] ) {
 
-		return self::getDataProvider( new Cart(), $config );
-	}
+        return self::getDataProvider( new Cart(), $config );
+    }
 
-	// Create -----------
+    // Create -----------
 
-	public static function create( $parentId, $parentType, $user = null, $name = null ) {
+    public static function create( $parentId, $parentType, $user = null, $name = null ) {
 
         $cart   = new Cart();
 
@@ -81,43 +81,43 @@ class CartService extends \cmsgears\core\common\services\base\Service {
         $cart->save();
 
         return $cart;
-	}
+    }
 
-	public static function createForUserId( $userId ) {
+    public static function createForUserId( $userId ) {
 
-		// Set Attributes
-		$user				= Yii::$app->cmgCore->getAppUser();
-		$cart				= new Cart();
+        // Set Attributes
+        $user				= Yii::$app->cmgCore->getAppUser();
+        $cart				= new Cart();
 
-		$cart->createdBy	= $user->id;
-		$cart->parentId		= $userId;
-		$cart->parentType	= CoreGlobal::TYPE_USER;
+        $cart->createdBy	= $user->id;
+        $cart->parentId		= $userId;
+        $cart->parentType	= CoreGlobal::TYPE_USER;
 
-		$cart->generateName();
+        $cart->generateName();
 
-		$cart->save();
+        $cart->save();
 
-		// Return Cart
-		return $cart;
-	}
+        // Return Cart
+        return $cart;
+    }
 
-	// Update -----------
+    // Update -----------
 
-	public static function update( $cart ) {
+    public static function update( $cart ) {
 
-		$user			= Yii::$app->cmgCore->getAppUser();
-		$cartToUpdate	= self::findById( $cart->id );
+        $user			= Yii::$app->cmgCore->getAppUser();
+        $cartToUpdate	= self::findById( $cart->id );
 
-		$cartToUpdate->modifiedBy	= $user->id;
+        $cartToUpdate->modifiedBy	= $user->id;
 
-		$cartToUpdate->copyForUpdateFrom( $order, [ 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ] );
+        $cartToUpdate->copyForUpdateFrom( $order, [ 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ] );
 
-		// Update Cart
-		$cartToUpdate->update();
+        // Update Cart
+        $cartToUpdate->update();
 
-		// Return Cart
-		return $cartToUpdate;
-	}
+        // Return Cart
+        return $cartToUpdate;
+    }
 
     public static function setAbandoned( $existingCart = null ) {
 
@@ -145,53 +145,53 @@ class CartService extends \cmsgears\core\common\services\base\Service {
         return $cart;
     }
 
-	// Delete -----------
+    // Delete -----------
 
-	public static function delete( $cart ) {
+    public static function delete( $cart ) {
 
-		$cartToDelete	= self::findById( $cart->id );
+        $cartToDelete	= self::findById( $cart->id );
 
         if( isset( $cartToDelete ) ) {
 
-		  $cartToDelete->delete();
+          $cartToDelete->delete();
 
-		  return true;
+          return true;
         }
-	}
+    }
 
-	// Item Management
+    // Item Management
 
-	public static function addItemToCart( $cart, $cartItem, $additionalParams = [] ) {
+    public static function addItemToCart( $cart, $cartItem, $additionalParams = [] ) {
 
-		$user				= Yii::$app->cmgCore->getAppUser();
-		$cartItem->cartId	= $cart->id;
+        $user				= Yii::$app->cmgCore->getAppUser();
+        $cartItem->cartId	= $cart->id;
 
-		// remove if exist
-		if( $cartItem->id > 0 && !$cartItem->addToCart ) {
+        // remove if exist
+        if( $cartItem->id > 0 && !$cartItem->addToCart ) {
 
-			CartItemService::delete( $cartItem );
-		}
+            CartItemService::delete( $cartItem );
+        }
 
-		if( $cartItem->addToCart ) {
+        if( $cartItem->addToCart ) {
 
-			// create
-			if( $cartItem->id <= 0 ) {
+            // create
+            if( $cartItem->id <= 0 ) {
 
-				$cartItem->setScenario( "create" );
+                $cartItem->setScenario( "create" );
 
-				return CartItemService::create( $cartItem );
-			}
-			// update
-			else {
+                return CartItemService::create( $cartItem );
+            }
+            // update
+            else {
 
-				$cartItem->setScenario( "update" );
+                $cartItem->setScenario( "update" );
 
-				return CartItemService::update( $cartItem, $additionalParams );
-			}
-		}
+                return CartItemService::update( $cartItem, $additionalParams );
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 }
 
 ?>

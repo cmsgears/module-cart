@@ -13,80 +13,80 @@ use cmsgears\core\common\utilities\DateUtil;
 
 class m160622_034404_cart_data extends \yii\db\Migration {
 
-	public $prefix;
+    public $prefix;
 
-	private $site;
+    private $site;
 
-	private $master;
+    private $master;
 
-	public function init() {
+    public function init() {
 
-		$this->prefix		= 'cmg_';
+        $this->prefix		= 'cmg_';
 
-		$this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
-		$this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
+        $this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
+        $this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
 
-		Yii::$app->core->setSite( $this->site );
-	}
+        Yii::$app->core->setSite( $this->site );
+    }
 
     public function up() {
 
-		// Create RBAC and Site Members
-		$this->insertRolePermission();
+        // Create RBAC and Site Members
+        $this->insertRolePermission();
 
-		// Create various config
-		$this->insertCartConfig();
+        // Create various config
+        $this->insertCartConfig();
 
-		// Init default config
-		$this->insertDefaultConfig();
+        // Init default config
+        $this->insertDefaultConfig();
     }
 
-	private function insertRolePermission() {
+    private function insertRolePermission() {
 
-		// Roles
+        // Roles
 
-		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
+        $columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
-		$roles = [
-			[ $this->master->id, $this->master->id, 'Order Manager', 'order-manager', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Order Manager is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
-		];
+        $roles = [
+            [ $this->master->id, $this->master->id, 'Order Manager', 'order-manager', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Order Manager is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+        ];
 
-		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
+        $this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
 
-		$superAdminRole		= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
-		$adminRole			= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
-		$orderManagerRole	= Role::findBySlugType( 'order-manager', CoreGlobal::TYPE_SYSTEM );
+        $superAdminRole		= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
+        $adminRole			= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
+        $orderManagerRole	= Role::findBySlugType( 'order-manager', CoreGlobal::TYPE_SYSTEM );
 
-		// Permissions
+        // Permissions
 
-		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
+        $columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
-		$permissions = [
-			[ $this->master->id, $this->master->id, 'Order', 'order', CoreGlobal::TYPE_SYSTEM, null, 'The permission Order is to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
-		];
+        $permissions = [
+            [ $this->master->id, $this->master->id, 'Order', 'order', CoreGlobal::TYPE_SYSTEM, null, 'The permission Order is to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+        ];
 
-		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
+        $this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
 
-		$adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
-		$userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
-		$orderPerm			= Permission::findBySlugType( 'order', CoreGlobal::TYPE_SYSTEM );
+        $adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
+        $userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
+        $orderPerm			= Permission::findBySlugType( 'order', CoreGlobal::TYPE_SYSTEM );
 
-		// RBAC Mapping
+        // RBAC Mapping
 
-		$columns = [ 'roleId', 'permissionId' ];
+        $columns = [ 'roleId', 'permissionId' ];
 
-		$mappings = [
-			[ $superAdminRole->id, $orderPerm->id ],
-			[ $adminRole->id, $orderPerm->id ],
-			[ $orderManagerRole->id, $adminPerm->id ], [ $orderManagerRole->id, $userPerm->id ], [ $orderManagerRole->id, $orderPerm->id ]
-		];
+        $mappings = [
+            [ $superAdminRole->id, $orderPerm->id ],
+            [ $adminRole->id, $orderPerm->id ],
+            [ $orderManagerRole->id, $adminPerm->id ], [ $orderManagerRole->id, $userPerm->id ], [ $orderManagerRole->id, $orderPerm->id ]
+        ];
 
-		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
-	}
+        $this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
+    }
 
-	private function insertCartConfig() {
+    private function insertCartConfig() {
 
-		$this->insert( $this->prefix . 'core_form', [
+        $this->insert( $this->prefix . 'core_form', [
             'siteId' => $this->site->id,
             'createdBy' => $this->master->id, 'modifiedBy' => $this->master->id,
             'name' => 'Config Cart', 'slug' => 'config-cart',
@@ -100,27 +100,27 @@ class m160622_034404_cart_data extends \yii\db\Migration {
             'modifiedAt' => DateUtil::getDateTime()
         ]);
 
-		$config	= Form::findBySlug( 'config-cart', CoreGlobal::TYPE_SYSTEM );
+        $config	= Form::findBySlug( 'config-cart', CoreGlobal::TYPE_SYSTEM );
 
-		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
+        $columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
 
-		$fields	= [
-			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{\"title\":\"Enable/disable cart.\"}' ]
-		];
+        $fields	= [
+            [ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{\"title\":\"Enable/disable cart.\"}' ]
+        ];
 
-		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
-	}
+        $this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
+    }
 
-	private function insertDefaultConfig() {
+    private function insertDefaultConfig() {
 
-		$columns = [ 'modelId', 'name', 'label', 'type', 'valueType', 'value' ];
+        $columns = [ 'modelId', 'name', 'label', 'type', 'valueType', 'value' ];
 
-		$metas	= [
-			[ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ]
-		];
+        $metas	= [
+            [ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ]
+        ];
 
-		$this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
-	}
+        $this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
+    }
 
     public function down() {
 

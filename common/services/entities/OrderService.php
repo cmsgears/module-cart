@@ -17,90 +17,90 @@ use cmsgears\cart\common\services\interfaces\entities\IOrderService;
 
 class OrderService extends \cmsgears\core\common\services\base\EntityService implements IOrderService {
 
-	// Variables ---------------------------------------------------
+    // Variables ---------------------------------------------------
 
-	// Globals -------------------------------
+    // Globals -------------------------------
 
-	// Constants --------------
+    // Constants --------------
 
-	// Public -----------------
+    // Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\Order';
+    public static $modelClass	= '\cmsgears\cart\common\models\entities\Order';
 
-	public static $modelTable	= CartTables::TABLE_ORDER;
+    public static $modelTable	= CartTables::TABLE_ORDER;
 
-	public static $parentType	= CartGlobal::TYPE_ORDER;
+    public static $parentType	= CartGlobal::TYPE_ORDER;
 
-	// Protected --------------
+    // Protected --------------
 
-	// Variables -----------------------------
+    // Variables -----------------------------
 
-	// Public -----------------
+    // Public -----------------
 
-	// Protected --------------
+    // Protected --------------
 
-	protected $modelAddressService;
+    protected $modelAddressService;
 
-	// Private ----------------
+    // Private ----------------
 
-	// Traits ------------------------------------------------------
+    // Traits ------------------------------------------------------
 
-	// Constructor and Initialisation ------------------------------
+    // Constructor and Initialisation ------------------------------
 
-	// Instance methods --------------------------------------------
+    // Instance methods --------------------------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// yii\base\Component -----
+    // yii\base\Component -----
 
-	// CMG interfaces ------------------------
+    // CMG interfaces ------------------------
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// OrderService --------------------------
+    // OrderService --------------------------
 
-	// Data Provider ------
+    // Data Provider ------
 
-	public function getPage( $config = [] ) {
+    public function getPage( $config = [] ) {
 
-	    $sort = new Sort([
-	        'attributes' => [
-	            'name' => [
-	                'asc' => [ 'name' => SORT_ASC ],
-	                'desc' => ['name' => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'name'
-	            ]
-	        ]
-	    ]);
+        $sort = new Sort([
+            'attributes' => [
+                'name' => [
+                    'asc' => [ 'name' => SORT_ASC ],
+                    'desc' => ['name' => SORT_DESC ],
+                    'default' => SORT_DESC,
+                    'label' => 'name'
+                ]
+            ]
+        ]);
 
-		$config[ 'sort' ] = $sort;
+        $config[ 'sort' ] = $sort;
 
-		return parent::findPage( $config );
-	}
+        return parent::findPage( $config );
+    }
 
-	public function getPageByParent( $parentId, $parentType ) {
+    public function getPageByParent( $parentId, $parentType ) {
 
-		$modelTable	= self::$modelTable;
+        $modelTable	= self::$modelTable;
 
-		return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
-	}
+        return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
+    }
 
-	// Read ---------------
+    // Read ---------------
 
-	public function getCountByParent( $parentId, $parentType ) {
+    public function getCountByParent( $parentId, $parentType ) {
 
-		$modelClass	= self::$modelClass;
+        $modelClass	= self::$modelClass;
 
-		return $modelClass::queryByParent( $parentId, $parentType )->count();
-	}
+        return $modelClass::queryByParent( $parentId, $parentType )->count();
+    }
 
-	public function getCountByUserId( $userId ) {
+    public function getCountByUserId( $userId ) {
 
-		$modelClass	= self::$modelClass;
+        $modelClass	= self::$modelClass;
 
-		return $modelClass::queryByCreatorId( $userId )->count();
-	}
+        return $modelClass::queryByCreatorId( $userId )->count();
+    }
 
     // Read - Models ---
 
@@ -108,96 +108,96 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
     // Read - Maps -----
 
-	// Read - Others ---
+    // Read - Others ---
 
-	// Create -------------
+    // Create -------------
 
-	public static function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
+    public static function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
-		// Set Attributes
-		$user				= Yii::$app->cmgCore->getAppUser();
+        // Set Attributes
+        $user				= Yii::$app->cmgCore->getAppUser();
 
-		$order->createdBy	= $user->id;
-		$order->status		= Order::STATUS_NEW;
-		$order->description	= $message;
+        $order->createdBy	= $user->id;
+        $order->status		= Order::STATUS_NEW;
+        $order->description	= $message;
 
-		// Generate uid
-		$order->generateName();
+        // Generate uid
+        $order->generateName();
 
-		// Set Order Totals
-		$cartTotal			= $cart->getCartTotal( $cartItems );
+        // Set Order Totals
+        $cartTotal			= $cart->getCartTotal( $cartItems );
 
-		$order->subTotal	= $cartTotal;
+        $order->subTotal	= $cartTotal;
         $order->parentId    = $cart->parentId;
         $order->parentType  = $cart->parentType;
-		$order->tax			= 0;
-		$order->shipping	= 0;
-		$order->total		= $cartTotal;
-		$order->discount	= 0;
-		$order->grandTotal	= $cartTotal;
+        $order->tax			= 0;
+        $order->shipping	= 0;
+        $order->total		= $cartTotal;
+        $order->discount	= 0;
+        $order->grandTotal	= $cartTotal;
 
-		$order->save();
+        $order->save();
 
-		// Save Shipping Address
-		ModelAddressService::copyToShipping( $shippingAddress, $order->id, CartGlobal::TYPE_ORDER );
+        // Save Shipping Address
+        ModelAddressService::copyToShipping( $shippingAddress, $order->id, CartGlobal::TYPE_ORDER );
 
-		// Create Order Items
-		foreach ( $cartItems as $cartItem ) {
+        // Create Order Items
+        foreach ( $cartItems as $cartItem ) {
 
-			OrderItemService::createFromCartItem( $order->id, $cartItem, $additionalParams );
-		}
+            OrderItemService::createFromCartItem( $order->id, $cartItem, $additionalParams );
+        }
 
-		// Delete Cart Items
-		CartItemService::deleteByCartId( $cart->id );
+        // Delete Cart Items
+        CartItemService::deleteByCartId( $cart->id );
 
-		// Delete Cart
-		CartService::delete( $cart );
+        // Delete Cart
+        CartService::delete( $cart );
 
-		// Return Order
-		return $order;
-	}
+        // Return Order
+        return $order;
+    }
 
-	// Update -------------
+    // Update -------------
 
-	public function updateStatus( $model, $status ) {
+    public function updateStatus( $model, $status ) {
 
-		$user				= Yii::$app->core->getAppUser();
-		$model				= self::findById( $order->id );
+        $user				= Yii::$app->core->getAppUser();
+        $model				= self::findById( $order->id );
 
-		$model->modifiedBy	= $user->id;
-		$model->status		= $status;
+        $model->modifiedBy	= $user->id;
+        $model->status		= $status;
 
-		return parent::update( $model, [
-			'attributes' => [ 'status' ]
-		]);
-	}
+        return parent::update( $model, [
+            'attributes' => [ 'status' ]
+        ]);
+    }
 
-	public function confirmOrder( $order ) {
+    public function confirmOrder( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_CONFIRMED );
-	}
+        self::updateStatus( $order, Order::STATUS_CONFIRMED );
+    }
 
-	public function placeOrder( $order ) {
+    public function placeOrder( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PLACED );
-	}
+        self::updateStatus( $order, Order::STATUS_PLACED );
+    }
 
-	public function updateStatusToPaid( $order ) {
+    public function updateStatusToPaid( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PAID );
-	}
+        self::updateStatus( $order, Order::STATUS_PAID );
+    }
 
-	// Delete -------------
+    // Delete -------------
 
-	// Static Methods ----------------------------------------------
+    // Static Methods ----------------------------------------------
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// OrderService --------------------------
+    // OrderService --------------------------
 
-	// Data Provider ------
+    // Data Provider ------
 
-	// Read ---------------
+    // Read ---------------
 
     // Read - Models ---
 
@@ -205,11 +205,11 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
     // Read - Maps -----
 
-	// Read - Others ---
+    // Read - Others ---
 
-	// Create -------------
+    // Create -------------
 
-	// Update -------------
+    // Update -------------
 
-	// Delete -------------
+    // Delete -------------
 }

@@ -45,40 +45,40 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  */
 class CartItem extends \cmsgears\core\common\models\base\Entity {
 
-	// Variables ---------------------------------------------------
+    // Variables ---------------------------------------------------
 
-	// Globals -------------------------------
+    // Globals -------------------------------
 
-	// Constants --------------
+    // Constants --------------
 
-	// Public -----------------
+    // Public -----------------
 
-	// Protected --------------
+    // Protected --------------
 
-	// Variables -----------------------------
+    // Variables -----------------------------
 
-	// Public -----------------
+    // Public -----------------
 
-	public $addToCart;
+    public $addToCart;
 
-	// Protected --------------
+    // Protected --------------
 
-	// Private ----------------
+    // Private ----------------
 
-	// Traits ------------------------------------------------------
+    // Traits ------------------------------------------------------
 
-	use CreateModifyTrait;
-	use ResourceTrait;
+    use CreateModifyTrait;
+    use ResourceTrait;
 
-	// Constructor and Initialisation ------------------------------
+    // Constructor and Initialisation ------------------------------
 
-	// Instance methods --------------------------------------------
+    // Instance methods --------------------------------------------
 
-	// Yii interfaces ------------------------
+    // Yii interfaces ------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// yii\base\Component -----
+    // yii\base\Component -----
 
     /**
      * @inheritdoc
@@ -91,98 +91,98 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
             ],
             'timestampBehavior' => [
                 'class' => TimestampBehavior::className(),
-				'createdAtAttribute' => 'createdAt',
- 				'updatedAtAttribute' => 'modifiedAt',
- 				'value' => new Expression('NOW()')
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'modifiedAt',
+                'value' => new Expression('NOW()')
             ]
         ];
     }
 
-	// yii\base\Model ---------
+    // yii\base\Model ---------
 
     /**
      * @inheritdoc
      */
-	public function rules() {
+    public function rules() {
 
         return [
-        	[ [ 'cartId', 'price', 'quantity', 'name' ], 'required' ],
-			[ [ 'id', 'content', 'data' ], 'safe' ],
+            [ [ 'cartId', 'price', 'quantity', 'name' ], 'required' ],
+            [ [ 'id', 'content', 'data' ], 'safe' ],
             [ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
             [ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
             [ [ 'price', 'quantity', 'weight', 'length', 'width', 'height' ], 'number', 'min' => 0 ],
             [ 'addToCart', 'boolean' ],
-			[ 'cartId', 'validateCartCreate', 'on' => 'create' ],
-			[ 'cartId', 'validateCartUpdate', 'on' => 'update' ],
-			[ [ 'cartId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly', 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+            [ 'cartId', 'validateCartCreate', 'on' => 'create' ],
+            [ 'cartId', 'validateCartUpdate', 'on' => 'update' ],
+            [ [ 'cartId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly', 'min' => 1 ],
+            [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }
 
     /**
      * @inheritdoc
      */
-	public function attributeLabels() {
+    public function attributeLabels() {
 
-		return [
-			'cartId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CART ),
-			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
-			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
-			'metricUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
-			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
-			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
-			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
-			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
-			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
-			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
-			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
-			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
-			'weight' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),
-			'length' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_LENGTH ),
-			'width' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WIDTH ),
-			'height' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_HEIGHT ),
-			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
-		];
-	}
+        return [
+            'cartId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CART ),
+            'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
+            'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
+            'metricUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
+            'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+            'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
+            'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
+            'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
+            'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+            'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
+            'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
+            'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
+            'weight' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),
+            'length' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_LENGTH ),
+            'width' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WIDTH ),
+            'height' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_HEIGHT ),
+            'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+            'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+        ];
+    }
 
-	// CMG interfaces ------------------------
+    // CMG interfaces ------------------------
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// Validators ----------------------------
+    // Validators ----------------------------
 
-	/**
-	 * Validates to ensure that only one item exist for a cart for given parent id and type.
-	 */
+    /**
+     * Validates to ensure that only one item exist for a cart for given parent id and type.
+     */
     public function validateCartCreate( $attribute, $params ) {
 
         if( !$this->hasErrors() ) {
 
             if( self::isExistByParentCartId( $this->parentId, $this->parentType, $this->cartId ) ) {
 
-				$this->addError( $attribute, Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
+                $this->addError( $attribute, Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
             }
         }
     }
 
-	/**
-	 * Validates to ensure that only one item exist for a cart for given parent id and type.
-	 */
+    /**
+     * Validates to ensure that only one item exist for a cart for given parent id and type.
+     */
     public function validateCartUpdate( $attribute, $params ) {
 
         if( !$this->hasErrors() ) {
 
-			$existingItem = self::findByParentCartId( $this->parentId, $this->parentType, $this->cartId );
+            $existingItem = self::findByParentCartId( $this->parentId, $this->parentType, $this->cartId );
 
-			if( isset( $existingItem ) && $existingItem->id != $this->id ) {
+            if( isset( $existingItem ) && $existingItem->id != $this->id ) {
 
-				$this->addError( $attribute, Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
-			}
+                $this->addError( $attribute, Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) );
+            }
         }
     }
 
-	// CartItem ------------------------------
+    // CartItem ------------------------------
 
     public function getCart() {
 
@@ -204,71 +204,71 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
         return $this->hasOne( Option::className(), [ 'id' => 'metricUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as mUnit' );
     }
 
-	public function getTotalPrice() {
+    public function getTotalPrice() {
 
-		$price	= $this->quantity * $this->price;
+        $price	= $this->quantity * $this->price;
 
-		return round( $price, 2 );
-	}
+        return round( $price, 2 );
+    }
 
-	// Static Methods ----------------------------------------------
+    // Static Methods ----------------------------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// yii\db\ActiveRecord ----
+    // yii\db\ActiveRecord ----
 
-	public static function tableName() {
+    public static function tableName() {
 
-		return CartTables::TABLE_CART_ITEM;
-	}
+        return CartTables::TABLE_CART_ITEM;
+    }
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// CartItem ------------------------------
+    // CartItem ------------------------------
 
-	// Read - Query -----------
+    // Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+    public static function queryWithAll( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'quantityUnit', 'weightUnit', 'metricUnit', 'creator' ];
-		$config[ 'relations' ]	= $relations;
+        $relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'quantityUnit', 'weightUnit', 'metricUnit', 'creator' ];
+        $config[ 'relations' ]	= $relations;
 
-		return parent::queryWithAll( $config );
-	}
+        return parent::queryWithAll( $config );
+    }
 
-	public static function queryByCartId( $cartId ) {
+    public static function queryByCartId( $cartId ) {
 
-		return self::find()->where( 'cartId=:cid', [ ':cid' => $cartId ] );
-	}
+        return self::find()->where( 'cartId=:cid', [ ':cid' => $cartId ] );
+    }
 
-	// Read - Find ------------
+    // Read - Find ------------
 
-	public static function findByCartId( $cartId ) {
+    public static function findByCartId( $cartId ) {
 
-		return self::queryByCartId( $cartId )->all();
-	}
+        return self::queryByCartId( $cartId )->all();
+    }
 
-	public static function findByParentCartId( $parentId, $parentType, $cartId ) {
+    public static function findByParentCartId( $parentId, $parentType, $cartId ) {
 
-		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid',
-				[ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] )->one();
-	}
+        return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid',
+                [ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] )->one();
+    }
 
-	public static function isExistByParentCartId( $parentId, $parentType, $cartId ) {
+    public static function isExistByParentCartId( $parentId, $parentType, $cartId ) {
 
-		$cartItem = self::findByParentCartId( $parentId, $parentType, $cartId );
+        $cartItem = self::findByParentCartId( $parentId, $parentType, $cartId );
 
-		return isset( $cartItem );
-	}
+        return isset( $cartItem );
+    }
 
-	// Create -----------------
+    // Create -----------------
 
-	// Update -----------------
+    // Update -----------------
 
-	// Delete -----------------
+    // Delete -----------------
 
-	public static function deleteByCartId( $cartId ) {
+    public static function deleteByCartId( $cartId ) {
 
-		self::deleteAll( 'cartId=:id', [ ':id' => $cartId ] );
-	}
+        self::deleteAll( 'cartId=:id', [ ':id' => $cartId ] );
+    }
 }

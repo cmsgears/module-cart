@@ -13,21 +13,21 @@ use cmsgears\cart\common\models\entities\CartItem;
 
 class CartItemService extends \cmsgears\core\common\services\base\Service {
 
-	// Static Methods ----------------------------------------------
+    // Static Methods ----------------------------------------------
 
-	// Read ----------------
+    // Read ----------------
 
-	public static function findById( $id ) {
+    public static function findById( $id ) {
 
-		return CartItem::findById( $id );
-	}
+        return CartItem::findById( $id );
+    }
 
-	public static function findByUserId( $userId ) {
+    public static function findByUserId( $userId ) {
 
-		$cart			= CartService::findAndCreateByUserId( $userId );
+        $cart			= CartService::findAndCreateByUserId( $userId );
 
-		return self::findByCartId( $cart->id );
-	}
+        return self::findByCartId( $cart->id );
+    }
 
     public static function findByCartId( $id ) {
 
@@ -39,29 +39,29 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
         return CartItem::findByParentAndCartId( $parentId, $parentType, $cartId );
     }
 
-	public static function getObjectMapByUserId( $userId ) {
+    public static function getObjectMapByUserId( $userId ) {
 
-		$cart			= CartService::findAndCreateByUserId( $userId );
+        $cart			= CartService::findAndCreateByUserId( $userId );
 
-		return self::findObjectMap( 'parentId', new CartItem(), [ 'conditions' => [ 'cartId' => $cart->id ] ] );
-	}
+        return self::findObjectMap( 'parentId', new CartItem(), [ 'conditions' => [ 'cartId' => $cart->id ] ] );
+    }
 
-	// Data Provider ------
+    // Data Provider ------
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $config = [] ) {
+    /**
+     * @param array $config to generate query
+     * @return ActiveDataProvider
+     */
+    public static function getPagination( $config = [] ) {
 
-		return self::getDataProvider( new CartItem(), $config );
-	}
+        return self::getDataProvider( new CartItem(), $config );
+    }
 
-	// Create -----------
+    // Create -----------
 
-	public static function create( $cart, $model = [ ] ) {
+    public static function create( $cart, $model = [ ] ) {
 
-		$cartItem = new CartItem();
+        $cartItem = new CartItem();
 
         $cartItem->cartId       = $cart->id;
         $cartItem->quantity     = $model[ 'quantity' ];
@@ -73,50 +73,50 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
         $cartItem->save();
 
         return $cartItem;
-	}
+    }
 
-	// Update -----------
+    // Update -----------
 
-	public static function update( $cartItem, $additionalParams = [] ) {
+    public static function update( $cartItem, $additionalParams = [] ) {
 
-		$user				= Yii::$app->cmgCore->getAppUser();
-		$cartItemToUpdate	= self::findById( $cartItem->id );
+        $user				= Yii::$app->cmgCore->getAppUser();
+        $cartItemToUpdate	= self::findById( $cartItem->id );
 
         if( $user != null ) {
 
-		  $cartItemToUpdate->modifiedBy	= $user->id;
+          $cartItemToUpdate->modifiedBy	= $user->id;
         }
 
-		// Copy required params
-		$cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+        // Copy required params
+        $cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
-		// Copy Additional Params
-		$cartItemToUpdate->copyForUpdateFrom( $cartItem, $additionalParams );
+        // Copy Additional Params
+        $cartItemToUpdate->copyForUpdateFrom( $cartItem, $additionalParams );
 
-		// Update CartItem
-		$cartItemToUpdate->update();
+        // Update CartItem
+        $cartItemToUpdate->update();
 
-		// Return CartItem
-		return $cartItemToUpdate;
-	}
+        // Return CartItem
+        return $cartItemToUpdate;
+    }
 
-	// Delete -----------
+    // Delete -----------
 
-	public static function delete( $cartItem ) {
+    public static function delete( $cartItem ) {
 
-		$cartItemToDelete	= self::findById( $cartItem->id );
+        $cartItemToDelete	= self::findById( $cartItem->id );
 
-		// Delete CartItem
-		$cartItemToDelete->delete();
+        // Delete CartItem
+        $cartItemToDelete->delete();
 
-		// Return true
-		return true;
-	}
+        // Return true
+        return true;
+    }
 
-	public static function deleteByCartId( $cartId ) {
+    public static function deleteByCartId( $cartId ) {
 
-		CartItem::deleteByCartId( $cartId );
-	}
+        CartItem::deleteByCartId( $cartId );
+    }
 }
 
 ?>

@@ -9,15 +9,15 @@ use cmsgears\core\common\config\CoreGlobal;
 
 interface IOrderService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
 
-	// Data Provider ------
+    // Data Provider ------
 
-	public function getPageByParent( $parentId, $parentType );
+    public function getPageByParent( $parentId, $parentType );
 
-	// Read ---------------
+    // Read ---------------
 
-	public function getCountByParent( $parentId, $parentType );
+    public function getCountByParent( $parentId, $parentType );
 
-	public function getCountByUserId( $userId );
+    public function getCountByUserId( $userId );
 
     // Read - Models ---
 
@@ -25,18 +25,18 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
     // Read - Maps -----
 
-	// Create -------------
+    // Create -------------
 
-	// Update -------------
+    // Update -------------
 
-	public function updateStatus( $model, $status );
+    public function updateStatus( $model, $status );
 
-	public function confirmOrder( $order );
+    public function confirmOrder( $order );
 
-	public function placeOrder( $order );
+    public function placeOrder( $order );
 
-	public function updateStatusToPaid( $order );
+    public function updateStatusToPaid( $order );
 
-	// Delete -------------
+    // Delete -------------
 
 }
