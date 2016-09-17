@@ -10,15 +10,15 @@ use cmsgears\core\common\config\CoreGlobal;
 
 class Cart extends \yii\base\Component {
 
-	// Global -----------------
+    // Global -----------------
 
-	// Public -----------------
+    // Public -----------------
 
-	// Protected --------------
+    // Protected --------------
 
-	// Private ----------------
+    // Private ----------------
 
-	// Constructor and Initialisation ------------------------------
+    // Constructor and Initialisation ------------------------------
 
     /**
      * Initialise the CMG Core Component.
@@ -27,42 +27,42 @@ class Cart extends \yii\base\Component {
 
         parent::init();
 
-		// Register application components and objects i.e. CMG and Project
-		$this->registerComponents();
+        // Register application components and objects i.e. CMG and Project
+        $this->registerComponents();
     }
 
-	// Instance methods --------------------------------------------
+    // Instance methods --------------------------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// Cart ----------------------------------
+    // Cart ----------------------------------
 
-	// Properties
+    // Properties
 
-	// Components and Objects
+    // Components and Objects
 
-	public function registerComponents() {
+    public function registerComponents() {
 
-		// Register services
-		$this->registerEntityServices();
+        // Register services
+        $this->registerEntityServices();
 
-		// Init services
-		$this->initEntityServices();
-	}
+        // Init services
+        $this->initEntityServices();
+    }
 
-	public function registerEntityServices() {
+    public function registerEntityServices() {
 
-		$factory = Yii::$app->factory->getContainer();
+        $factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
-	}
+        $factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
+    }
 
-	public function initEntityServices() {
+    public function initEntityServices() {
 
-		$factory = Yii::$app->factory->getContainer();
+        $factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
-	}
+        $factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
+    }
 }

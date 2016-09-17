@@ -36,11 +36,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  */
 class Cart extends \cmsgears\core\common\models\base\Entity {
 
-	// Variables ---------------------------------------------------
+    // Variables ---------------------------------------------------
 
-	// Globals -------------------------------
+    // Globals -------------------------------
 
-	// Constants --------------
+    // Constants --------------
 
     const STATUS_ACTIVE         = 1000;
     const STATUS_USER_CHECKOUT  = 2000;
@@ -49,7 +49,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
     const STATUS_FAILED         = 5000;
     const STATUS_ABANDONED      = 6000;
 
-	// Public -----------------
+    // Public -----------------
 
     public static $statusMap = [
         self::STATUS_ACTIVE => 'Active',
@@ -60,30 +60,30 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
         self::STATUS_ABANDONED => 'Abandoned'
     ];
 
-	// Protected --------------
+    // Protected --------------
 
-	// Variables -----------------------------
+    // Variables -----------------------------
 
-	// Public -----------------
+    // Public -----------------
 
-	// Protected --------------
+    // Protected --------------
 
-	// Private ----------------
+    // Private ----------------
 
-	// Traits ------------------------------------------------------
+    // Traits ------------------------------------------------------
 
-	use CreateModifyTrait;
-	use ResourceTrait;
+    use CreateModifyTrait;
+    use ResourceTrait;
 
-	// Constructor and Initialisation ------------------------------
+    // Constructor and Initialisation ------------------------------
 
-	// Instance methods --------------------------------------------
+    // Instance methods --------------------------------------------
 
-	// Yii interfaces ------------------------
+    // Yii interfaces ------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// yii\base\Component -----
+    // yii\base\Component -----
 
     /**
      * @inheritdoc
@@ -103,7 +103,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
         ];
     }
 
-	// yii\base\Model ---------
+    // yii\base\Model ---------
 
     /**
      * @inheritdoc
@@ -111,7 +111,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
     public function rules() {
 
         return [
-        	[ [ 'parentId', 'parentType' ], 'required' ],
+            [ [ 'parentId', 'parentType' ], 'required' ],
             [ [ 'id', 'content', 'data' ], 'safe' ],
             [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
             [ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
@@ -127,59 +127,59 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
     public function attributeLabels() {
 
         return [
-        	'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+            'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
             'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
             'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
             'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
             'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
-			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+            'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+            'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
         ];
     }
 
-	// CMG interfaces ------------------------
+    // CMG interfaces ------------------------
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// Validators ----------------------------
+    // Validators ----------------------------
 
-	// Cart ----------------------------------
+    // Cart ----------------------------------
 
-	// Static Methods ----------------------------------------------
+    // Static Methods ----------------------------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// yii\db\ActiveRecord ----
+    // yii\db\ActiveRecord ----
 
     public static function tableName() {
 
         return CartTables::TABLE_CART;
     }
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// Cart ----------------------------------
+    // Cart ----------------------------------
 
-	// Read - Query -----------
+    // Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+    public static function queryWithAll( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
-		$config[ 'relations' ]	= $relations;
+        $relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+        $config[ 'relations' ]	= $relations;
 
-		return parent::queryWithAll( $config );
-	}
+        return parent::queryWithAll( $config );
+    }
 
-	// Read - Find ------------
+    // Read - Find ------------
 
     public static function findByToken( $token ) {
 
         return self::find()->where( 'token=:token', [ 'token' => $token ] )->one();
     }
 
-	// Create -----------------
+    // Create -----------------
 
-	// Update -----------------
+    // Update -----------------
 
-	// Delete -----------------
+    // Delete -----------------
 }

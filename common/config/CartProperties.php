@@ -9,54 +9,54 @@ use cmsgears\cart\common\config\CartGlobal;
 
 class CartProperties extends \cmsgears\core\common\config\CmgProperties {
 
-	// Variables ---------------------------------------------------
+    // Variables ---------------------------------------------------
 
-	// Global -----------------
+    // Global -----------------
 
-	/**
-	 * The property to find whether cart is active for site.
-	 */
-	const PROP_ACTIVE		= 'active';
+    /**
+     * The property to find whether cart is active for site.
+     */
+    const PROP_ACTIVE		= 'active';
 
-	// Public -----------------
+    // Public -----------------
 
-	// Protected --------------
+    // Protected --------------
 
-	// Private ----------------
+    // Private ----------------
 
-	private static $instance;
+    private static $instance;
 
-	// Constructor and Initialisation ------------------------------
+    // Constructor and Initialisation ------------------------------
 
-	// Instance methods --------------------------------------------
+    // Instance methods --------------------------------------------
 
-	// Yii parent classes --------------------
+    // Yii parent classes --------------------
 
-	// CMG parent classes --------------------
+    // CMG parent classes --------------------
 
-	// CartProperties ------------------------
+    // CartProperties ------------------------
 
-	// Singleton
+    // Singleton
 
-	public static function getInstance() {
+    public static function getInstance() {
 
-		if( !isset( self::$instance ) ) {
+        if( !isset( self::$instance ) ) {
 
-			self::$instance	= new CartProperties();
+            self::$instance	= new CartProperties();
 
-			self::$instance->init( CartGlobal::CONFIG_CART );
-		}
+            self::$instance->init( CartGlobal::CONFIG_CART );
+        }
 
-		return self::$instance;
-	}
+        return self::$instance;
+    }
 
-	// Properties
+    // Properties
 
-	/**
-	 * Returns whether cart is active for site.
-	 */
-	public function isActive() {
+    /**
+     * Returns whether cart is active for site.
+     */
+    public function isActive() {
 
-		return $this->properties[ self::PROP_ACTIVE ];
-	}
+        return $this->properties[ self::PROP_ACTIVE ];
+    }
 }
