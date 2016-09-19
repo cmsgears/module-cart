@@ -114,7 +114,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
             [ 'addToCart', 'boolean' ],
             [ 'cartId', 'validateCartCreate', 'on' => 'create' ],
             [ 'cartId', 'validateCartUpdate', 'on' => 'update' ],
-            [ [ 'cartId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly', 'min' => 1 ],
+            [ [ 'cartId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
             [ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
         ];
     }

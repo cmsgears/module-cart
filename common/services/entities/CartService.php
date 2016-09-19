@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services;
+namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use \Yii;
@@ -11,7 +11,9 @@ use cmsgears\cart\common\config\CartGlobal;
 use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\Cart;
 
-class CartService extends \cmsgears\core\common\services\base\Service {
+use cmsgears\cart\common\services\interfaces\entities\ICartService;
+
+class CartService extends \cmsgears\core\common\services\base\EntityService implements ICartService {
 
     // Static Methods ----------------------------------------------
 
@@ -51,7 +53,7 @@ class CartService extends \cmsgears\core\common\services\base\Service {
         return $cart;
     }
 
-    public static function findByParentIdParentType( $parentId, $parentType ) {
+    public function getByParentIdParentType( $parentId, $parentType ) {
 
         return Cart::findByParentIdParentType( $parentId, $parentType );
     }
@@ -69,13 +71,14 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
     // Create -----------
 
-    public static function create( $parentId, $parentType, $user = null, $name = null ) {
+    public function create( $parentId, $config	= [] ) {
 
         $cart   = new Cart();
 
         $cart->parentId     = $parentId;
-        $cart->parentType   = $parentType;
-        $cart->name         = $name;
+        $cart->parentType   = $config[ 'parentType' ];
+		$cart->createdBy	= isset( $config[ 'userId' ] ) ? $config[ 'userId' ] : null;
+        $cart->title        = isset( $config[ 'title' ] ) ? $config[ 'title' ] : null ;
         $cart->status       = Cart::STATUS_ACTIVE;
         $cart->token        = Yii::$app->security->generateRandomString();
         $cart->save();
@@ -103,7 +106,7 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
     // Update -----------
 
-    public static function update( $cart ) {
+    public function update( $cart, $config = [] ) {
 
         $user			= Yii::$app->cmgCore->getAppUser();
         $cartToUpdate	= self::findById( $cart->id );
@@ -147,7 +150,7 @@ class CartService extends \cmsgears\core\common\services\base\Service {
 
     // Delete -----------
 
-    public static function delete( $cart ) {
+    public function delete( $cart, $config = [] ) {
 
         $cartToDelete	= self::findById( $cart->id );
 

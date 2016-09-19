@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services;
+namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use \Yii;
@@ -11,7 +11,9 @@ use cmsgears\cart\common\config\CartGlobal;
 use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\CartItem;
 
-class CartItemService extends \cmsgears\core\common\services\base\Service {
+use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
+
+class CartItemService extends \cmsgears\core\common\services\base\EntityService implements ICartItemService {
 
     // Static Methods ----------------------------------------------
 
@@ -34,9 +36,9 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
         return CartItem::findByCartId( $id );
     }
 
-    public static function findByParentAndCartId( $parentId, $parentType, $cartId ) {
+    public static function getByParentCartId( $parentId, $parentType, $cartId ) {
 
-        return CartItem::findByParentAndCartId( $parentId, $parentType, $cartId );
+        return CartItem::findByParentCartId( $parentId, $parentType, $cartId );
     }
 
     public static function getObjectMapByUserId( $userId ) {
@@ -59,9 +61,10 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
 
     // Create -----------
 
-    public static function create( $cart, $model = [ ] ) {
+    public function create( $cart, $config = [ ] ) {
 
-        $cartItem = new CartItem();
+        $cartItem 	= new CartItem();
+		$model		= $config[ 'model' ];
 
         $cartItem->cartId       = $cart->id;
         $cartItem->quantity     = $model[ 'quantity' ];
@@ -77,7 +80,7 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
 
     // Update -----------
 
-    public static function update( $cartItem, $additionalParams = [] ) {
+    public function update( $cartItem, $config = [] ) {
 
         $user				= Yii::$app->cmgCore->getAppUser();
         $cartItemToUpdate	= self::findById( $cartItem->id );
@@ -91,7 +94,7 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
         $cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
         // Copy Additional Params
-        $cartItemToUpdate->copyForUpdateFrom( $cartItem, $additionalParams );
+        $cartItemToUpdate->copyForUpdateFrom( $cartItem, $config );
 
         // Update CartItem
         $cartItemToUpdate->update();
@@ -102,7 +105,7 @@ class CartItemService extends \cmsgears\core\common\services\base\Service {
 
     // Delete -----------
 
-    public static function delete( $cartItem ) {
+    public function delete( $cartItem, $config = [] ) {
 
         $cartItemToDelete	= self::findById( $cartItem->id );
 

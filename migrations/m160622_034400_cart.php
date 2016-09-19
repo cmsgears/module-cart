@@ -81,7 +81,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 
         $this->createTable( $this->prefix . 'cart', [
             'id' => $this->bigPrimaryKey( 20 ),
-            'createdBy' => $this->bigInteger( 20 )->notNull(),
+            'createdBy' => $this->bigInteger( 20 )->defaultValue( null ),
             'modifiedBy' => $this->bigInteger( 20 ),
             'parentId' => $this->bigInteger( 20 )->notNull(),
             'parentType' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
