@@ -10,73 +10,73 @@ use cmsgears\core\common\config\CoreGlobal;
 
 class Guest extends \yii\base\Model {
 
-    // Variables ---------------------------------------------------
+	// Variables ---------------------------------------------------
 
-    // Globals -------------------------------
+	// Globals -------------------------------
 
-    // Constants --------------
+	// Constants --------------
 
-    // Public -----------------
+	// Public -----------------
 
-    // Protected --------------
+	// Protected --------------
 
-    // Variables -----------------------------
+	// Variables -----------------------------
 
-    // Public -----------------
+	// Public -----------------
 
-    public $firstName;
-    public $lastName;
-    public $email;
+	public $firstName;
+	public $lastName;
+	public $email;
 
-    // Protected --------------
+	// Protected --------------
 
-    // Private ----------------
+	// Private ----------------
 
-    // Traits ------------------------------------------------------
+	// Traits ------------------------------------------------------
 
-    // Constructor and Initialisation ------------------------------
+	// Constructor and Initialisation ------------------------------
 
-    // Instance methods --------------------------------------------
+	// Instance methods --------------------------------------------
 
-    // Yii interfaces ------------------------
+	// Yii interfaces ------------------------
 
-    // Yii parent classes --------------------
+	// Yii parent classes --------------------
 
-    // yii\base\Component -----
+	// yii\base\Component -----
 
-    // yii\base\Model ---------
+	// yii\base\Model ---------
 
-    public function rules() {
+	public function rules() {
 
-        $rules = [
-            [ [ 'firstName', 'lastName', 'email' ], 'required' ],
-            [ 'email', 'email' ]
-        ];
+		$rules = [
+			[ [ 'firstName', 'lastName', 'email' ], 'required' ],
+			[ 'email', 'email' ]
+		];
 
-        if( Yii::$app->core->trimFieldValue ) {
+		if( Yii::$app->core->trimFieldValue ) {
 
-            $trim[] = [ [ 'firstName', 'lastName', 'email' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'firstName', 'lastName', 'email' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
-            return ArrayHelper::merge( $trim, $rules );
-        }
+			return ArrayHelper::merge( $trim, $rules );
+		}
 
-        return $rules;
-    }
+		return $rules;
+	}
 
-    public function attributeLabels() {
+	public function attributeLabels() {
 
-        return [
-            'firstName' => 'firstName',
-            'lastName' => 'lastName',
-            'email' => 'Email'
-        ];
-    }
+		return [
+			'firstName' => 'firstName',
+			'lastName' => 'lastName',
+			'email' => 'Email'
+		];
+	}
 
-    // CMG interfaces ------------------------
+	// CMG interfaces ------------------------
 
-    // CMG parent classes --------------------
+	// CMG parent classes --------------------
 
-    // Validators ----------------------------
+	// Validators ----------------------------
 
-    // Guest ---------------------------------
+	// Guest ---------------------------------
 }

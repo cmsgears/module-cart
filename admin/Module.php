@@ -9,21 +9,21 @@ use cmsgears\cart\common\config\CartGlobal;
 
 class Module extends \cmsgears\core\common\base\Module {
 
-    public $controllerNamespace = 'cmsgears\cart\admin\controllers';
+	public $controllerNamespace = 'cmsgears\cart\admin\controllers';
 
-    public $config              = [ CartGlobal::CONFIG_CART ];
+	public $config				= [ CartGlobal::CONFIG_CART ];
 
-    public function init() {
+	public function init() {
 
-        parent::init();
+		parent::init();
 
-        $this->setViewPath( '@cmsgears/cart/admin/views' );
-    }
+		$this->setViewPath( '@cmsgears/cart/admin/views' );
+	}
 
-    public function getSidebarHtml() {
+	public function getSidebarHtml() {
 
-        $path	= Yii::getAlias( '@cmsgears' ) . "/cart/admin/views/sidebar.php";
+		$path	= Yii::getAlias( '@cmsgears' ) . "/cart/admin/views/sidebar.php";
 
-        return $path;
-    }
+		return $path;
+	}
 }

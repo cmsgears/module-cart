@@ -4,24 +4,39 @@ namespace cmsgears\cart\common\services\interfaces\entities;
 // Yii Imports
 use \Yii;
 
+// CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+
 interface ICartService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
 
-    // Data Provider ------
+	// Data Provider ------
 
-    // Read ---------------
+	// Read ---------------
 
-    // Read - Models ---
+	// Read - Models ---
 
-    public function getByParentIdParentType( $parentId, $parentType );
+	public function getByToken( $token );
 
-    // Read - Lists ----
+	public function getByUserId( $userId );
 
-    // Read - Maps -----
+	public function createByUserId( $userId );
 
-    // Create -------------
+	// Read - Lists ----
 
-    // Update -------------
+	// Read - Maps -----
 
-    // Delete -------------
+	// Create -------------
+
+	public function createByUserId( $userId );
+
+	// Update -------------
+
+	public function setAbandoned( $existingCart = null );
+
+	public function updateStatus( $cart, $status );
+
+	public function addItemToCart( $cart, $cartItem, $additionalParams = [] );
+
+	// Delete -------------
 
 }

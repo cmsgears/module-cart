@@ -11,37 +11,37 @@ use cmsgears\core\common\services\entities\UserService;
 
 class GuestService extends \cmsgears\core\common\services\base\Service {
 
-    // Static Methods ----------------------------------------------
+	// Static Methods ----------------------------------------------
 
-    // Read ----------------
+	// Read ----------------
 
-    // Data Provider ------
+	// Data Provider ------
 
-    // Create -----------
+	// Create -----------
 
-    public static function create( $form ) {
+	public static function create( $form ) {
 
-        $user   = new User();
+		$user	= new User();
 
-        $user->firstName    = $form->firstname;
-        $user->lastName     = $form->lastname;
-        $user->email        = $form->email;
+		$user->firstName	= $form->firstname;
+		$user->lastName		= $form->lastname;
+		$user->email		= $form->email;
 
-        $user   = UserService::create( $user );
+		$user	= UserService::create( $user );
 
-        if( isset( $user ) ) {
+		if( isset( $user ) ) {
 
-            Yii::$app->cmgCore->setAppUser( $user );
+			Yii::$app->cmgCore->setAppUser( $user );
 
-            return $user;
-        }
+			return $user;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    // Update -----------
+	// Update -----------
 
-    // Delete -----------
+	// Delete -----------
 
 }
 

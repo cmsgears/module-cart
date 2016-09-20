@@ -13,89 +13,89 @@ use cmsgears\cart\common\models\entities\OrderItem;
 
 class OrderItemService extends \cmsgears\core\common\services\base\Service {
 
-    // Static Methods ----------------------------------------------
+	// Static Methods ----------------------------------------------
 
-    // Read ----------------
+	// Read ----------------
 
-    public static function findById( $id ) {
+	public static function findById( $id ) {
 
-        return OrderItem::findById( $id );
-    }
+		return OrderItem::findById( $id );
+	}
 
-    public static function findByOrderId( $oderId ) {
+	public static function findByOrderId( $oderId ) {
 
-        return OrderItem::findByOrderId( $oderId );
-    }
+		return OrderItem::findByOrderId( $oderId );
+	}
 
-    // Data Provider ------
+	// Data Provider ------
 
-    /**
-     * @param array $config to generate query
-     * @return ActiveDataProvider
-     */
-    public static function getPagination( $config = [] ) {
+	/**
+	 * @param array $config to generate query
+	 * @return ActiveDataProvider
+	 */
+	public static function getPagination( $config = [] ) {
 
-        return self::getDataProvider( new OrderItem(), $config );
-    }
+		return self::getDataProvider( new OrderItem(), $config );
+	}
 
-    // Create -----------
+	// Create -----------
 
-    // Clone Order Item from cart item
-    public static function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
+	// Clone Order Item from cart item
+	public static function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
 
-        // Set Attributes
-        $user					= Yii::$app->cmgCore->getAppUser();
+		// Set Attributes
+		$user					= Yii::$app->cmgCore->getAppUser();
 
-        $orderItem				= new OrderItem();
-        $orderItem->orderId		= $orderId;
-        $orderItem->createdBy	= $user->id;
+		$orderItem				= new OrderItem();
+		$orderItem->orderId		= $orderId;
+		$orderItem->createdBy	= $user->id;
 
-        // Regular Params
-        $orderItem->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+		// Regular Params
+		$orderItem->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
-        // Additional Params
-        if( count( $additionalParams ) > 0 ) {
+		// Additional Params
+		if( count( $additionalParams ) > 0 ) {
 
-            $orderItem->copyForUpdateFrom( $cartItem, $additionalParams );
-        }
+			$orderItem->copyForUpdateFrom( $cartItem, $additionalParams );
+		}
 
-        $orderItem->save();
+		$orderItem->save();
 
-        // Return OrderItem
-        return $orderItem;
-    }
+		// Return OrderItem
+		return $orderItem;
+	}
 
-    // Clone Order Item from other order's item
-    public static function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] ) {
+	// Clone Order Item from other order's item
+	public static function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] ) {
 
-        // Set Attributes
-        $user					= Yii::$app->cmgCore->getAppUser();
+		// Set Attributes
+		$user					= Yii::$app->cmgCore->getAppUser();
 
-        unset( $orderItem->id );
+		unset( $orderItem->id );
 
-        $orderItemToSave				= new OrderItem();
+		$orderItemToSave				= new OrderItem();
 
-        $orderItemToSave->orderId		= $orderId;
-        $orderItemToSave->createdBy		= $user->id;
+		$orderItemToSave->orderId		= $orderId;
+		$orderItemToSave->createdBy		= $user->id;
 
-        // Regular Params
-        $orderItemToSave->copyForUpdateFrom( $orderItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+		// Regular Params
+		$orderItemToSave->copyForUpdateFrom( $orderItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
-        // Additional Params
-        if( count( $additionalParams ) > 0 ) {
+		// Additional Params
+		if( count( $additionalParams ) > 0 ) {
 
-            $orderItemToSave->copyForUpdateFrom( $orderItem, $additionalParams );
-        }
+			$orderItemToSave->copyForUpdateFrom( $orderItem, $additionalParams );
+		}
 
-        $orderItemToSave->save();
+		$orderItemToSave->save();
 
-        // Return OrderItem
-        return $orderItemToSave;
-    }
+		// Return OrderItem
+		return $orderItemToSave;
+	}
 
-    // Update -----------
+	// Update -----------
 
-    // Delete -----------
+	// Delete -----------
 
 }
 

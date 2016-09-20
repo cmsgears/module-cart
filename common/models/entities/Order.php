@@ -45,230 +45,230 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  */
 class Order extends \cmsgears\core\common\models\base\Entity {
 
-    // Variables ---------------------------------------------------
-
-    // Globals -------------------------------
-
-    // Constants --------------
-
-    const STATUS_NEW				=    0;
-    const STATUS_CONFIRMED			= 1000;
-    const STATUS_CANCELLED			= 2000;
-    const STATUS_PLACED				= 3000;
-    const STATUS_PAID				= 4000;
-    const STATUS_DELIVERED			= 5000;
-    const STATUS_RETURNED			= 6000;
-
-    // Public -----------------
-
-    public static $statusMap = array(
-        self::STATUS_NEW  => 'New',
-        self::STATUS_CONFIRMED => 'Confirmed',
-        self::STATUS_CANCELLED => 'Cancelled',
-        self::STATUS_PLACED => 'Placed',
-        self::STATUS_PAID => 'Paid',
-        self::STATUS_DELIVERED => 'Delivered',
-        self::STATUS_RETURNED => 'Returned'
-        );
-
-    // Protected --------------
-
-    // Variables -----------------------------
-
-    // Public -----------------
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	const STATUS_NEW				=	 0;
+	const STATUS_CONFIRMED			= 1000;
+	const STATUS_CANCELLED			= 2000;
+	const STATUS_PLACED				= 3000;
+	const STATUS_PAID				= 4000;
+	const STATUS_DELIVERED			= 5000;
+	const STATUS_RETURNED			= 6000;
+
+	// Public -----------------
+
+	public static $statusMap = array(
+		self::STATUS_NEW  => 'New',
+		self::STATUS_CONFIRMED => 'Confirmed',
+		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_PLACED => 'Placed',
+		self::STATUS_PAID => 'Paid',
+		self::STATUS_DELIVERED => 'Delivered',
+		self::STATUS_RETURNED => 'Returned'
+		);
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
 
-    public $addressType	= CartGlobal::TYPE_ORDER;
-
-    // Protected --------------
+	public $addressType	= CartGlobal::TYPE_ORDER;
+
+	// Protected --------------
 
-    // Private ----------------
+	// Private ----------------
 
-    // Traits ------------------------------------------------------
+	// Traits ------------------------------------------------------
 
-    use AddressTrait;
-    use CreateModifyTrait;
-    use ResourceTrait;
+	use AddressTrait;
+	use CreateModifyTrait;
+	use ResourceTrait;
 
-    // Constructor and Initialisation ------------------------------
+	// Constructor and Initialisation ------------------------------
 
-    // Instance methods --------------------------------------------
+	// Instance methods --------------------------------------------
 
-    // Yii interfaces ------------------------
+	// Yii interfaces ------------------------
 
-    // Yii parent classes --------------------
+	// Yii parent classes --------------------
 
-    // yii\base\Component -----
+	// yii\base\Component -----
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors() {
+	/**
+	 * @inheritdoc
+	 */
+	public function behaviors() {
 
-        return [
-            'authorBehavior' => [
-                'class' => AuthorBehavior::className()
-            ],
-            'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
-                'createdAtAttribute' => 'createdAt',
-                'updatedAtAttribute' => 'modifiedAt',
-                'value' => new Expression('NOW()')
-            ]
-        ];
-    }
+		return [
+			'authorBehavior' => [
+				'class' => AuthorBehavior::className()
+			],
+			'timestampBehavior' => [
+				'class' => TimestampBehavior::className(),
+				'createdAtAttribute' => 'createdAt',
+				'updatedAtAttribute' => 'modifiedAt',
+				'value' => new Expression('NOW()')
+			]
+		];
+	}
 
-    // yii\base\Model ---------
+	// yii\base\Model ---------
 
-    /**
-     * @inheritdoc
-     */
-    public function rules() {
+	/**
+	 * @inheritdoc
+	 */
+	public function rules() {
 
-        return [
-            [ 'title', 'required' ],
-            [ [ 'id', 'content', 'data' ], 'safe' ],
-            [ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-            [ [ 'title', 'description'], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-            [ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-            [ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
-            [ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-            [ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
-        ];
-    }
+		return [
+			[ 'title', 'required' ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
+			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'title', 'description'], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+			[ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+		];
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels() {
+	/**
+	 * @inheritdoc
+	 */
+	public function attributeLabels() {
 
-        return [
-            'baseId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
-            'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
-            'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
-            'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
-            'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
-            'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
-            'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
-            'subTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
-            'tax' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
-            'shipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
-            'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
-            'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
-            'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
-            'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
-            'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
-            'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
-        ];
-    }
+		return [
+			'baseId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
+			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
+			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'subTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
+			'tax' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'shipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
+			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
+			'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
+		];
+	}
 
-    // CMG interfaces ------------------------
+	// CMG interfaces ------------------------
 
-    // CMG parent classes --------------------
+	// CMG parent classes --------------------
 
-    // Validators ----------------------------
+	// Validators ----------------------------
 
-    // Order ---------------------------------
+	// Order ---------------------------------
 
-    public function getParentOrder() {
+	public function getParentOrder() {
 
-        return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] );
-    }
+		return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] );
+	}
 
-    public function getPayment() {
+	public function getPayment() {
 
-        return $this->hasOne( Payment::className(), [ 'parentId' => 'id' ] )->where( 'parentType=' . CartGlobal::TYPE_ORDER );
-    }
+		return $this->hasOne( Payment::className(), [ 'parentId' => 'id' ] )->where( 'parentType=' . CartGlobal::TYPE_ORDER );
+	}
 
-    public function getChildOrders() {
+	public function getChildOrders() {
 
-        return $this->hasMany( Order::className(), [ 'baseId' => 'id' ] );
-    }
+		return $this->hasMany( Order::className(), [ 'baseId' => 'id' ] );
+	}
 
-    public function getItems() {
+	public function getItems() {
 
-        return $this->hasMany( OrderItem::className(), [ 'orderId' => 'id' ] );
-    }
+		return $this->hasMany( OrderItem::className(), [ 'orderId' => 'id' ] );
+	}
 
-    public function generateName() {
+	public function generateName() {
 
-        $this->title = Yii::$app->security->generateRandomString( 16 );
-    }
+		$this->title = Yii::$app->security->generateRandomString( 16 );
+	}
 
-    public function getStatusStr() {
+	public function getStatusStr() {
 
-        return self::$statusMap[ $this->status ];
-    }
+		return self::$statusMap[ $this->status ];
+	}
 
-    public function isNew() {
+	public function isNew() {
 
-        return $this->status == self::STATUS_NEW;
-    }
+		return $this->status == self::STATUS_NEW;
+	}
 
-    public function isConfirmed() {
+	public function isConfirmed() {
 
-        return $this->status == self::STATUS_CONFIRMED;
-    }
+		return $this->status == self::STATUS_CONFIRMED;
+	}
 
-    public function isCancelled() {
+	public function isCancelled() {
 
-        return $this->status == self::STATUS_CANCELLED;
-    }
+		return $this->status == self::STATUS_CANCELLED;
+	}
 
-    public function isPlaced() {
+	public function isPlaced() {
 
-        return $this->status == self::STATUS_PLACED;
-    }
+		return $this->status == self::STATUS_PLACED;
+	}
 
-    public function isPaid() {
+	public function isPaid() {
 
-        return $this->status == self::STATUS_PAID;
-    }
+		return $this->status == self::STATUS_PAID;
+	}
 
-    public function isDelivered() {
+	public function isDelivered() {
 
-        return $this->status == self::STATUS_DELIVERED;
-    }
+		return $this->status == self::STATUS_DELIVERED;
+	}
 
-    public function isReturned() {
+	public function isReturned() {
 
-        return $this->status == self::STATUS_RETURNED;
-    }
+		return $this->status == self::STATUS_RETURNED;
+	}
 
-    public function isPrintable() {
+	public function isPrintable() {
 
-        return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED ] );
-    }
+		return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED ] );
+	}
 
-    // Static Methods ----------------------------------------------
+	// Static Methods ----------------------------------------------
 
-    // Yii parent classes --------------------
+	// Yii parent classes --------------------
 
-    // yii\db\ActiveRecord ----
+	// yii\db\ActiveRecord ----
 
-    public static function tableName() {
+	public static function tableName() {
 
-        return CartTables::TABLE_ORDER;
-    }
+		return CartTables::TABLE_ORDER;
+	}
 
-    // CMG parent classes --------------------
+	// CMG parent classes --------------------
 
-    // Order ---------------------------------
+	// Order ---------------------------------
 
-    // Read - Query -----------
+	// Read - Query -----------
 
-    public static function queryWithAll( $config = [] ) {
+	public static function queryWithAll( $config = [] ) {
 
-        $relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
-        $config[ 'relations' ]	= $relations;
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$config[ 'relations' ]	= $relations;
 
-        return parent::queryWithAll( $config );
-    }
+		return parent::queryWithAll( $config );
+	}
 
-    // Read - Find ------------
+	// Read - Find ------------
 
-    // Create -----------------
+	// Create -----------------
 
-    // Update -----------------
+	// Update -----------------
 
-    // Delete -----------------
+	// Delete -----------------
 }
