@@ -145,6 +145,26 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 	// Cart ----------------------------------
 
+	public function getItems() {
+
+		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] );
+	}
+
+	public function getCartTotal() {
+
+		$items	= $this->items;
+
+		$total	= 0;
+
+		foreach( $items as $item ) {
+
+			$total	+= $item->quantity * $item->price;
+		}
+
+		return $total;
+
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------

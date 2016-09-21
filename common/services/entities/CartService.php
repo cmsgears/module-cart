@@ -16,6 +16,11 @@ use cmsgears\cart\common\services\interfaces\entities\ICartService;
 
 class CartService extends \cmsgears\core\common\services\base\EntityService implements ICartService {
 
+	public function init() {
+
+		self::$modelClass	= '\cmsgears\cart\common\models\entities\Cart';
+	}
+
 	// Static Methods ----------------------------------------------
 
 	use ResourceTrait;
@@ -61,6 +66,13 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		return self::getDataProvider( new Cart(), $config );
 	}
 
+	public function getActiveByParent( $parentId, $parentType ) {
+
+		$modelClass	= self::$modelClass;
+
+		return $modelClass::find()->where( 'parentId=:pId AND parentType=:pType AND status='.Cart::STATUS_ACTIVE, [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
+	}
+
 	// Create -----------
 
 	public function create( $parentId, $config	= [] ) {
@@ -76,24 +88,6 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 		$cart->save();
 
-		return $cart;
-	}
-
-	public function createByUserId( $userId ) {
-
-		// Set Attributes
-		$user				= Yii::$app->cmgCore->getAppUser();
-		$cart				= new Cart();
-
-		$cart->createdBy	= $user->id;
-		$cart->parentId		= $userId;
-		$cart->parentType	= CoreGlobal::TYPE_USER;
-
-		$cart->generateName();
-
-		$cart->save();
-
-		// Return Cart
 		return $cart;
 	}
 

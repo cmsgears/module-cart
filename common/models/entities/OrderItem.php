@@ -26,7 +26,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $orderId
  * @property integer $quantityUnitId
  * @property integer $weightUnitId
- * @property integer $metricUnitId
+ * @property integer $lengthUnitId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -109,7 +109,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			[ [ 'price', 'quantity', 'weight', 'length', 'width', 'height' ], 'number', 'min' => 0 ],
-			[ [ 'orderId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly', 'min' => 1 ],
+			[ [ 'orderId', 'quantityUnitId', 'weightUnitId', 'lengthUnitId', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
@@ -123,7 +123,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
-			'metricUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
+			'lengthUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),

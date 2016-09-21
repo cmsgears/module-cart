@@ -27,8 +27,6 @@ interface ICartService extends \cmsgears\core\common\services\interfaces\base\IE
 
 	// Create -------------
 
-	public function createByUserId( $userId );
-
 	// Update -------------
 
 	public function setAbandoned( $existingCart = null );

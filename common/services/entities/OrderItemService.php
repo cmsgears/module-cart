@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services;
+namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use \Yii;
@@ -10,8 +10,9 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\entities\CartTables;
 use cmsgears\cart\common\models\entities\OrderItem;
+use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
-class OrderItemService extends \cmsgears\core\common\services\base\Service {
+class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
 
 	// Static Methods ----------------------------------------------
 
@@ -41,17 +42,17 @@ class OrderItemService extends \cmsgears\core\common\services\base\Service {
 	// Create -----------
 
 	// Clone Order Item from cart item
-	public static function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
+	public function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user					= Yii::$app->cmgCore->getAppUser();
+		$user					= Yii::$app->core->getAppUser();
 
 		$orderItem				= new OrderItem();
 		$orderItem->orderId		= $orderId;
 		$orderItem->createdBy	= $user->id;
 
 		// Regular Params
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+		$orderItem->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
 		// Additional Params
 		if( count( $additionalParams ) > 0 ) {

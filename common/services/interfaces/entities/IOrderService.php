@@ -27,6 +27,8 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	// Create -------------
 
+	public function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] );
+
 	// Update -------------
 
 	public function updateStatus( $model, $status );

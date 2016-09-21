@@ -11,6 +11,7 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\Order;
+use cmsgears\core\common\models\resources\Address;
 
 use cmsgears\core\common\services\interfaces\mappers\IModelAddressService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderService;
@@ -112,10 +113,10 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Create -------------
 
-	public static function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
+	public function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user				= Yii::$app->cmgCore->getAppUser();
+		$user				= Yii::$app->core->getAppUser();
 
 		$order->createdBy	= $user->id;
 		$order->status		= Order::STATUS_NEW;
@@ -139,19 +140,19 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		$order->save();
 
 		// Save Shipping Address
-		ModelAddressService::copyToShipping( $shippingAddress, $order->id, CartGlobal::TYPE_ORDER );
+		Yii::$app->factory->get( 'modelAddressService' )->createOrUpdateByType( $shippingAddress, [ 'parentId' => $order->id, 'parentType' => CartGlobal::TYPE_ORDER, 'type' => Address::TYPE_SHIPPING ]);
 
 		// Create Order Items
 		foreach ( $cartItems as $cartItem ) {
 
-			OrderItemService::createFromCartItem( $order->id, $cartItem, $additionalParams );
+			Yii::$app->factory->get( 'orderItemService' )->createFromCartItem( $order->id, $cartItem, $additionalParams );
 		}
 
 		// Delete Cart Items
-		CartItemService::deleteByCartId( $cart->id );
+		Yii::$app->factory->get( 'cartItemService' )->deleteByCartId( $cart->id );
 
 		// Delete Cart
-		CartService::delete( $cart );
+		Yii::$app->factory->get( 'cartService' )->delete( $cart );
 
 		// Return Order
 		return $order;
@@ -162,7 +163,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	public function updateStatus( $model, $status ) {
 
 		$user				= Yii::$app->core->getAppUser();
-		$model				= self::findById( $order->id );
+		$model				= self::findById( $model->id );
 
 		$model->modifiedBy	= $user->id;
 		$model->status		= $status;

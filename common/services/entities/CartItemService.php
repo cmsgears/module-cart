@@ -31,12 +31,12 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return self::findByCartId( $cart->id );
 	}
 
-	public static function findByCartId( $id ) {
+	public function getByCartId( $id ) {
 
 		return CartItem::findByCartId( $id );
 	}
 
-	public static function getByParentCartId( $parentId, $parentType, $cartId ) {
+	public function getByParentCartId( $parentId, $parentType, $cartId ) {
 
 		return CartItem::findByParentCartId( $parentId, $parentType, $cartId );
 	}
@@ -116,7 +116,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return true;
 	}
 
-	public static function deleteByCartId( $cartId ) {
+	public function deleteByCartId( $cartId ) {
 
 		CartItem::deleteByCartId( $cartId );
 	}

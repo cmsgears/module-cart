@@ -47,9 +47,11 @@ class Cart extends \yii\base\Component {
 
 		// Register services
 		$this->registerEntityServices();
+		$this->registerResourceServices();
 
 		// Init services
 		$this->initEntityServices();
+		$this->initResourceServices();
 	}
 
 	public function registerEntityServices() {
@@ -57,8 +59,16 @@ class Cart extends \yii\base\Component {
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartService', 'cmsgears\cart\common\services\entities\CartService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
+	}
+
+	public function registerResourceServices() {
+
+		$factory = Yii::$app->factory->getContainer();
+
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
 	}
 
 	public function initEntityServices() {
@@ -66,7 +76,15 @@ class Cart extends \yii\base\Component {
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
+		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
 		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
 		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
+	}
+
+	public function initResourceServices() {
+
+		$factory = Yii::$app->factory->getContainer();
+
+		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
 	}
 }
