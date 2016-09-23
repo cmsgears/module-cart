@@ -10,7 +10,7 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\payment\common\models\entities\Payment;
+use cmsgears\payment\common\models\entities\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
@@ -176,7 +176,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	public function getPayment() {
 
-		return $this->hasOne( Payment::className(), [ 'parentId' => 'id' ] )->where( 'parentType=' . CartGlobal::TYPE_ORDER );
+		return $this->hasOne( Transaction::className(), [ 'parentId' => 'id' ] );
 	}
 
 	public function getChildOrders() {
@@ -265,6 +265,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	}
 
 	// Read - Find ------------
+
+	public static function findByTitle( $title ) {
+
+		return self::find()->where( 'title=:title', [ ':title' => $title ] )->one();
+	}
 
 	// Create -----------------
 

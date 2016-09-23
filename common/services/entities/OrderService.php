@@ -105,6 +105,13 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Read - Models ---
 
+	public function getByTitle( $title ) {
+
+		$modelClass	= self::$modelClass;
+
+		return $modelClass::findByTitle( $title );
+	}
+
 	// Read - Lists ----
 
 	// Read - Maps -----

@@ -21,6 +21,8 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	// Read - Models ---
 
+	public function getByTitle( $title );
+
 	// Read - Lists ----
 
 	// Read - Maps -----
