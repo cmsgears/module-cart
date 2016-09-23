@@ -8,7 +8,7 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\entities\CartTables;
+use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\Cart;
 
 use cmsgears\core\common\services\traits\ResourceTrait;
@@ -16,16 +16,53 @@ use cmsgears\cart\common\services\interfaces\entities\ICartService;
 
 class CartService extends \cmsgears\core\common\services\base\EntityService implements ICartService {
 
-	public function init() {
+	// Variables ---------------------------------------------------
 
-		self::$modelClass	= '\cmsgears\cart\common\models\entities\Cart';
-	}
+	// Globals -------------------------------
 
-	// Static Methods ----------------------------------------------
+	// Constants --------------
+
+	// Public -----------------
+
+	public static $modelClass	= '\cmsgears\cart\common\models\entities\Cart';
+
+	public static $modelTable	= CartTables::TABLE_CART;
+
+	public static $parentType	= CartGlobal::TYPE_CART;
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
 
 	use ResourceTrait;
 
-	// Read ----------------
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// CartService ---------------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
 
 	public function getByToken( $token ) {
 
@@ -33,37 +70,18 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 	}
 
 	/**
-	 * Find cart if exist for the given user
-	 */
-	public function getByUserId( $userId ) {
-
-		return self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
-	}
-
-	/**
 	 * Find cart if exist for the given user. If does not exist create, it.
 	 */
-	public function createByUserId( $userId ) {
+	public function getByUserId( $userId ) {
 
 		$cart = self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
 
 		if( !isset( $cart ) ) {
 
-			$cart = self::createForUserId( $userId );
+			$cart = $this->createForUserId( $userId );
 		}
 
 		return $cart;
-	}
-
-	// Data Provider ------
-
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public function getPagination( $config = [] ) {
-
-		return self::getDataProvider( new Cart(), $config );
 	}
 
 	public function getActiveByParent( $parentId, $parentType ) {
@@ -73,7 +91,13 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		return $modelClass::find()->where( 'parentId=:pId AND parentType=:pType AND status='.Cart::STATUS_ACTIVE, [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
 	}
 
-	// Create -----------
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
 
 	public function create( $parentId, $config	= [] ) {
 
@@ -91,7 +115,25 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		return $cart;
 	}
 
-	// Update -----------
+	public function createByUserId( $userId ) {
+
+		// Set Attributes
+		$user				= Yii::$app->cmgCore->getAppUser();
+		$cart				= new Cart();
+
+		$cart->createdBy	= $user->id;
+		$cart->parentId		= $userId;
+		$cart->parentType	= CoreGlobal::TYPE_USER;
+
+		$cart->generateName();
+
+		$cart->save();
+
+		// Return Cart
+		return $cart;
+	}
+
+	// Update -------------
 
 	public function update( $cart, $config = [] ) {
 
@@ -136,7 +178,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		return $cart;
 	}
 
-	// Delete -----------
+	// Delete -------------
 
 	public function delete( $cart, $config = [] ) {
 
@@ -183,4 +225,28 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 		return null;
 	}
+
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// CartService ---------------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
 }

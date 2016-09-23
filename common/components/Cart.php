@@ -46,12 +46,20 @@ class Cart extends \yii\base\Component {
 	public function registerComponents() {
 
 		// Register services
-		$this->registerEntityServices();
 		$this->registerResourceServices();
+		$this->registerEntityServices();
 
 		// Init services
-		$this->initEntityServices();
 		$this->initResourceServices();
+		$this->initEntityServices();
+	}
+
+	public function registerResourceServices() {
+
+		$factory = Yii::$app->factory->getContainer();
+
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomService', 'cmsgears\cart\common\services\resources\UomService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
 	}
 
 	public function registerEntityServices() {
@@ -64,11 +72,12 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
 	}
 
-	public function registerResourceServices() {
+	public function initResourceServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
+		$factory->set( 'uomService', 'cmsgears\cart\common\services\resources\UomService' );
+		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
 	}
 
 	public function initEntityServices() {
@@ -79,12 +88,8 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
 		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
 		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
-	}
 
-	public function initResourceServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
+		// Resolve additional dependencies
+		$factory->get( 'orderService' )->set( $factory->get( 'orderItemService' ) );
 	}
 }

@@ -11,10 +11,11 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\Order;
-use cmsgears\core\common\models\resources\Address;
 
 use cmsgears\core\common\services\interfaces\mappers\IModelAddressService;
+use cmsgears\cart\common\services\interfaces\entities\ICartService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderService;
+use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
 class OrderService extends \cmsgears\core\common\services\base\EntityService implements IOrderService {
 
@@ -40,6 +41,10 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Protected --------------
 
+	protected $cartService;
+
+	protected $orderItemService;
+
 	protected $modelAddressService;
 
 	// Private ----------------
@@ -47,6 +52,20 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
+
+	public function __construct( ICartService $cartService, IModelAddressService $modelAddressService, $config = [] ) {
+
+		$this->cartService			= $cartService;
+
+		$this->modelAddressService	= $modelAddressService;
+
+		parent::__construct( $config );
+	}
+
+	public function setOrderItemService( IOrderItemService $orderItemService ) {
+
+		$this->orderItemService	= $orderItemService;
+	}
 
 	// Instance methods --------------------------------------------
 
@@ -89,6 +108,13 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Read ---------------
 
+	public function getByTitle( $title ) {
+
+		$modelClass	= self::$modelClass;
+
+		return $modelClass::findByTitle( $title );
+	}
+
 	public function getCountByParent( $parentId, $parentType ) {
 
 		$modelClass	= self::$modelClass;
@@ -105,13 +131,6 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Read - Models ---
 
-	public function getByTitle( $title ) {
-
-		$modelClass	= self::$modelClass;
-
-		return $modelClass::findByTitle( $title );
-	}
-
 	// Read - Lists ----
 
 	// Read - Maps -----
@@ -123,7 +142,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	public function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user				= Yii::$app->core->getAppUser();
+		$user				= Yii::$app->cmgCore->getAppUser();
 
 		$order->createdBy	= $user->id;
 		$order->status		= Order::STATUS_NEW;
@@ -147,19 +166,19 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		$order->save();
 
 		// Save Shipping Address
-		Yii::$app->factory->get( 'modelAddressService' )->createOrUpdateByType( $shippingAddress, [ 'parentId' => $order->id, 'parentType' => CartGlobal::TYPE_ORDER, 'type' => Address::TYPE_SHIPPING ]);
+		$this->modelAddressService->createOrUpdateByType( $shippingAddress, [ 'parentId' => $order->id, 'parentType' => CartGlobal::TYPE_ORDER, 'type' => Address::TYPE_SHIPPING ]);
 
 		// Create Order Items
 		foreach ( $cartItems as $cartItem ) {
 
-			Yii::$app->factory->get( 'orderItemService' )->createFromCartItem( $order->id, $cartItem, $additionalParams );
+			$this->orderItemService->createFromCartItem( $order->id, $cartItem, $additionalParams );
 		}
 
 		// Delete Cart Items
-		Yii::$app->factory->get( 'cartItemService' )->deleteByCartId( $cart->id );
+		$this->cartItemService->deleteByCartId( $cart->id );
 
 		// Delete Cart
-		Yii::$app->factory->get( 'cartService' )->delete( $cart );
+		$this->cartService->delete( $cart );
 
 		// Return Order
 		return $order;

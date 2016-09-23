@@ -8,25 +8,72 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\entities\CartTables;
+use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\CartItem;
 
+use cmsgears\cart\common\services\interfaces\entities\ICartService;
 use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
 
 class CartItemService extends \cmsgears\core\common\services\base\EntityService implements ICartItemService {
 
-	// Static Methods ----------------------------------------------
+	// Variables ---------------------------------------------------
 
-	// Read ----------------
+	// Globals -------------------------------
 
-	public static function findById( $id ) {
+	// Constants --------------
 
-		return CartItem::findById( $id );
+	// Public -----------------
+
+	public static $modelClass	= '\cmsgears\cart\common\models\entities\CartItem';
+
+	public static $modelTable	= CartTables::TABLE_CART_ITEM;
+
+	public static $parentType	= null;
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	protected $cartService;
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	public function __construct( ICartService $cartService, $config = [] ) {
+
+		$this->cartService	= $cartService;
+
+		parent::__construct( $config );
 	}
 
-	public static function findByUserId( $userId ) {
+	// Instance methods --------------------------------------------
 
-		$cart			= CartService::findAndCreateByUserId( $userId );
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// CartItemService -----------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	public function getByUserId( $userId ) {
+
+		$cart	= $this->cartService->createByUserId( $userId );
 
 		return self::findByCartId( $cart->id );
 	}
@@ -41,27 +88,22 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return CartItem::findByParentCartId( $parentId, $parentType, $cartId );
 	}
 
-	public static function getObjectMapByUserId( $userId ) {
+	public function getObjectMapByUserId( $userId ) {
 
-		$cart			= CartService::findAndCreateByUserId( $userId );
+		$cart	= $this->cartService->createByUserId( $userId );
 
-		return self::findObjectMap( 'parentId', new CartItem(), [ 'conditions' => [ 'cartId' => $cart->id ] ] );
+		return $this->getObjectMap( [ 'key' => 'parentId', 'conditions' => [ 'cartId' => $cart->id ] ] );
 	}
 
-	// Data Provider ------
+	// Read - Lists ----
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $config = [] ) {
+	// Read - Maps -----
 
-		return self::getDataProvider( new CartItem(), $config );
-	}
+	// Read - Others ---
 
-	// Create -----------
+	// Create -------------
 
-	public function create( $cart, $config = [ ] ) {
+	public function create( $cart, $config = [] ) {
 
 		$cartItem	= new CartItem();
 		$model		= $config[ 'model' ];
@@ -78,7 +120,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return $cartItem;
 	}
 
-	// Update -----------
+	// Update -------------
 
 	public function update( $cartItem, $config = [] ) {
 
@@ -103,7 +145,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return $cartItemToUpdate;
 	}
 
-	// Delete -----------
+	// Delete -------------
 
 	public function delete( $cartItem, $config = [] ) {
 
@@ -116,10 +158,32 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return true;
 	}
 
-	public function deleteByCartId( $cartId ) {
+	public static function deleteByCartId( $cartId ) {
 
 		CartItem::deleteByCartId( $cartId );
 	}
-}
 
-?>
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// CartItemService -----------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
+}

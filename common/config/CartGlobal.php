@@ -13,6 +13,8 @@ class CartGlobal {
 
 	// Model Traits - Metas, Attachments, Addresses --------------------
 
+	const TYPE_CART						= 'cart';
+
 	const TYPE_ORDER					= 'order';
 
 	// Config ----------------------------------------------------------

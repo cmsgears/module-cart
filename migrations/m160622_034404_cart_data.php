@@ -32,7 +32,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 	}
 
 	public function up() {
-/*
+
 		// Create RBAC and Site Members
 		$this->insertRolePermission();
 
@@ -41,7 +41,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 		// Init default config
 		$this->insertDefaultConfig();
-*/
+
 		// UOMs
 		$this->insertUom();
 	}
@@ -149,14 +149,23 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'dem', 'Decameter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'km', 'Kilometer', Uom::GROUP_LENGTH_METRIC, false, true ],
 
-			[ 'in', 'Inch', Uom::GROUP_LENGTH_A_N_B, false, true ],
-			[ 'ft', 'Foot', Uom::GROUP_LENGTH_A_N_B, false, true ],
-			[ 'yd', 'Yard', Uom::GROUP_LENGTH_A_N_B, true, true ],
-			[ 'rod', 'Rod', Uom::GROUP_LENGTH_A_N_B, false, true ],
-			[ 'fu', 'Furlong', Uom::GROUP_LENGTH_A_N_B, false, true ],
-			[ 'm', 'Mile', Uom::GROUP_LENGTH_A_N_B, false, true ],
-			[ 'f', 'Fathom', Uom::GROUP_LENGTH_A_N_B, false, true ],
-			[ 'nm', 'Nautical Mile', Uom::GROUP_LENGTH_A_N_B, false, true ],
+			[ 'in', 'Inch', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+			[ 'ft', 'Foot', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+			[ 'yd', 'Yard', Uom::GROUP_LENGTH_IMPERIAL, true, true ],
+			[ 'rod', 'Rod', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+			[ 'fu', 'Furlong', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+			[ 'm', 'Mile', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+			[ 'f', 'Fathom', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+			[ 'nm', 'Nautical Mile', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
+
+			[ 'in', 'Inch', Uom::GROUP_LENGTH_US, false, true ],
+			[ 'ft', 'Foot', Uom::GROUP_LENGTH_US, false, true ],
+			[ 'yd', 'Yard', Uom::GROUP_LENGTH_US, true, true ],
+			[ 'rod', 'Rod', Uom::GROUP_LENGTH_US, false, true ],
+			[ 'fu', 'Furlong', Uom::GROUP_LENGTH_US, false, true ],
+			[ 'm', 'Mile', Uom::GROUP_LENGTH_US, false, true ],
+			[ 'f', 'Fathom', Uom::GROUP_LENGTH_US, false, true ],
+			[ 'nm', 'Nautical Mile', Uom::GROUP_LENGTH_US, false, true ],
 
 			[ 'mg', 'Milligram', Uom::GROUP_WEIGHT_METRIC, false, true ],
 			[ 'cg', 'Centigram', Uom::GROUP_WEIGHT_METRIC, false, true ],
@@ -167,14 +176,23 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'kg', 'Kilogram', Uom::GROUP_WEIGHT_METRIC, true, true ],
 			[ 'ton', 'Metric Ton', Uom::GROUP_WEIGHT_METRIC, false, true ],
 
-			[ 'g', 'Grain', Uom::GROUP_WEIGHT_A_N_B, false, true ],
-			[ 'd', 'Dram', Uom::GROUP_WEIGHT_A_N_B, false, true ],
-			[ 'o', 'Ounce', Uom::GROUP_WEIGHT_A_N_B, false, true ],
-			[ 'p', 'Pound', Uom::GROUP_WEIGHT_A_N_B, true, true ],
-			[ 'sh', 'Short Hundredweight', Uom::GROUP_WEIGHT_A_N_B, false, true ],
-			[ 'lh', 'Long Hundredweight', Uom::GROUP_WEIGHT_A_N_B, false, true ],
-			[ 'st', 'Short Ton', Uom::GROUP_WEIGHT_A_N_B, false, true ],
-			[ 'lt', 'Long Ton', Uom::GROUP_WEIGHT_A_N_B, false, true ],
+			[ 'g', 'Grain', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'd', 'Dram', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'o', 'Ounce', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'p', 'Pound', Uom::GROUP_WEIGHT_IMPERIAL, true, true ],
+			[ 'sh', 'Short Hundredweight', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'lh', 'Long Hundredweight', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'st', 'Short Ton', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'lt', 'Long Ton', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+
+			[ 'g', 'Grain', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'd', 'Dram', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'o', 'Ounce', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'p', 'Pound', Uom::GROUP_WEIGHT_US, true, true ],
+			[ 'sh', 'Short Hundredweight', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'lh', 'Long Hundredweight', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'st', 'Short Ton', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'lt', 'Long Ton', Uom::GROUP_WEIGHT_US, false, true ],
 
 			[ 'cc', 'Cubic Centimeter', Uom::GROUP_VOLUME_METRIC, false, true ],
 			[ 'cd', 'Cubic Decimeter', Uom::GROUP_VOLUME_METRIC, false, true ],
@@ -186,20 +204,29 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'dl', 'Dekaliter', Uom::GROUP_VOLUME_METRIC, false, true ],
 			[ 'hl', 'Hectoliter', Uom::GROUP_VOLUME_METRIC, false, true ],
 
-			[ 'ci', 'Cubic Inch', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'cf', 'Cubic Foot', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'cy', 'Cubic Yard', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'ufo', 'U.S. fluid ounce', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'bfo', 'British Imperial Fluid Ounce', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'p', 'Pint', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'q', 'Quart', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'ug', 'U.S. Gallon', Uom::GROUP_VOLUME_A_N_B, true, true ],
-			[ 'ig', 'Imperial Gallon', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'dp', 'Dry Pint', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'dq', 'Dry Quart', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'p', 'Peck', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'ub', 'U.S. Bushel', Uom::GROUP_VOLUME_A_N_B, false, true ],
-			[ 'ib', 'Imperial Bushel', Uom::GROUP_VOLUME_A_N_B, false, true ]
+			[ 'ci', 'Cubic Inch', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'cf', 'Cubic Foot', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'cy', 'Cubic Yard', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'bfo', 'Fluid Ounce', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'p', 'Pint', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'q', 'Quart', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'ig', 'Gallon', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'dp', 'Dry Pint', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'dq', 'Dry Quart', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'p', 'Peck', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+			[ 'ib', 'Bushel', Uom::GROUP_VOLUME_IMPERIAL, false, true ],
+
+			[ 'ci', 'Cubic Inch', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'cf', 'Cubic Foot', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'cy', 'Cubic Yard', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'ufo', 'Fluid Ounce', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'p', 'Pint', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'q', 'Quart', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'ug', 'Gallon', Uom::GROUP_VOLUME_US, true, true ],
+			[ 'dp', 'Dry Pint', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'dq', 'Dry Quart', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'p', 'Peck', Uom::GROUP_VOLUME_US, false, true ],
+			[ 'ub', 'Bushel', Uom::GROUP_VOLUME_US, false, true ]
 		];
 
 		$this->batchInsert( $this->prefix . 'cart_uom', $columns, $uoms );

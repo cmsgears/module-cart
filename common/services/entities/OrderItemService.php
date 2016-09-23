@@ -8,38 +8,81 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\entities\CartTables;
+use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\OrderItem;
+
+use cmsgears\cart\common\services\interfaces\entities\IOrderService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
-class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
+class OrderService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
 
-	// Static Methods ----------------------------------------------
+	// Variables ---------------------------------------------------
 
-	// Read ----------------
+	// Globals -------------------------------
 
-	public static function findById( $id ) {
+	// Constants --------------
 
-		return OrderItem::findById( $id );
+	// Public -----------------
+
+	public static $modelClass	= '\cmsgears\cart\common\models\entities\OrderItem';
+
+	public static $modelTable	= CartTables::TABLE_ORDER_ITEM;
+
+	public static $parentType	= null;
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	protected $orderService;
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	public function __construct( IOrderService $orderService, $config = [] ) {
+
+		$this->orderService	= $orderService;
+
+		parent::__construct( $config );
 	}
 
-	public static function findByOrderId( $oderId ) {
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// OrderItemService ----------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	public function getByOrderId( $oderId ) {
 
 		return OrderItem::findByOrderId( $oderId );
 	}
 
-	// Data Provider ------
+	// Read - Lists ----
 
-	/**
-	 * @param array $config to generate query
-	 * @return ActiveDataProvider
-	 */
-	public static function getPagination( $config = [] ) {
+	// Read - Maps -----
 
-		return self::getDataProvider( new OrderItem(), $config );
-	}
+	// Read - Others ---
 
-	// Create -----------
+	// Create -------------
 
 	// Clone Order Item from cart item
 	public function createFromCartItem( $orderId, $cartItem, $additionalParams = [] ) {
@@ -67,10 +110,10 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 	}
 
 	// Clone Order Item from other order's item
-	public static function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] ) {
+	public function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user					= Yii::$app->cmgCore->getAppUser();
+		$user					= Yii::$app->core->getAppUser();
 
 		unset( $orderItem->id );
 
@@ -80,7 +123,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 		$orderItemToSave->createdBy		= $user->id;
 
 		// Regular Params
-		$orderItemToSave->copyForUpdateFrom( $orderItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+		$orderItemToSave->copyForUpdateFrom( $orderItem, [ 'quantityUnitId', 'weightUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
 		// Additional Params
 		if( count( $additionalParams ) > 0 ) {
@@ -94,10 +137,31 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 		return $orderItemToSave;
 	}
 
-	// Update -----------
+	// Update -------------
 
-	// Delete -----------
+	// Delete -------------
 
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// OrderItemService ----------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
 }
-
-?>

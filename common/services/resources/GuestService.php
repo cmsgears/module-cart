@@ -1,32 +1,83 @@
 <?php
-namespace cmsgears\cart\common\services\resources;
+namespace cmsgears\cart\common\services;
 
 // Yii Imports
 use \Yii;
 
 // CMG Imports
 use cmsgears\core\common\models\entities\User;
+
+use cmsgears\core\common\services\interfaces\entities\IUserService;
 use cmsgears\cart\common\services\interfaces\resources\IGuestService;
 
-class GuestService extends \cmsgears\core\common\services\base\EntityService implements IGuestService {
+class GuestService extends \yii\base\Component implements IGuestService {
 
-	// Static Methods ----------------------------------------------
+	// Variables ---------------------------------------------------
 
-	// Read ----------------
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	protected $userService;
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	public function __construct( IUserService $userService, $config = [] ) {
+
+		$this->userService	= $userService;
+
+		parent::__construct( $config );
+	}
+
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// GuestService --------------------------
 
 	// Data Provider ------
 
-	// Create -----------
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
 
 	public function create( $form, $config = [] ) {
 
 		$user	= new User();
 
-		$user->firstName	= $form->firstName;
-		$user->lastName		= $form->lastName;
+		$user->firstName	= $form->firstname;
+		$user->lastName		= $form->lastname;
 		$user->email		= $form->email;
 
-		$user	= Yii::$app->factory->get( 'userService' )->create( $user );
+		$user	= $this->userService->create( $user );
 
 		if( isset( $user ) ) {
 
@@ -38,10 +89,31 @@ class GuestService extends \cmsgears\core\common\services\base\EntityService imp
 		return false;
 	}
 
-	// Update -----------
+	// Update -------------
 
-	// Delete -----------
+	// Delete -------------
 
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// GuestService --------------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
 }
-
-?>

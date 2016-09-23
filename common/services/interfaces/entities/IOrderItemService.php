@@ -15,6 +15,8 @@ interface IOrderItemService extends \cmsgears\core\common\services\interfaces\ba
 
 	// Read - Models ---
 
+	public function getByOrderId( $oderId );
+
 	// Read - Lists ----
 
 	// Read - Maps -----
@@ -22,6 +24,8 @@ interface IOrderItemService extends \cmsgears\core\common\services\interfaces\ba
 	// Create -------------
 
 	public function createFromCartItem( $orderId, $cartItem, $additionalParams = [] );
+
+	public function createFromOrderItem( $orderId, $orderItem, $additionalParams = [] );
 
 	// Update -------------
 

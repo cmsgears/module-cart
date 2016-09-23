@@ -162,7 +162,6 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		}
 
 		return $total;
-
 	}
 
 	// Static Methods ----------------------------------------------

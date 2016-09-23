@@ -19,13 +19,15 @@ interface ICartService extends \cmsgears\core\common\services\interfaces\base\IE
 
 	public function getByUserId( $userId );
 
-	public function createByUserId( $userId );
+	public function getActiveByParent( $parentId, $parentType );
 
 	// Read - Lists ----
 
 	// Read - Maps -----
 
 	// Create -------------
+
+	public function createByUserId( $userId );
 
 	// Update -------------
 

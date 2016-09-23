@@ -58,7 +58,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'id' => $this->bigPrimaryKey( 20 ),
 			'code' => $this->string( CoreGlobal::TEXT_SMALL )->notNull(),
 			'name' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
-			'group' => $this->string( CoreGlobal::TEXT_MEDIUM )->notNull(),
+			'group' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'base' => $this->boolean()->notNull()->defaultValue( false ),
 			'active' => $this->boolean()->notNull()->defaultValue( false )
 		], $this->options );
@@ -140,6 +140,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_wt', $this->prefix . 'cart_item', 'weightUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item', 'lengthUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_volume', $this->prefix . 'cart_item', 'volumeUnitId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_creator', $this->prefix . 'cart_item', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_modifier', $this->prefix . 'cart_item', 'modifiedBy' );
 	}
 
