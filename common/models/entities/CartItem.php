@@ -26,7 +26,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $cartId
  * @property integer $quantityUnitId
  * @property integer $weightUnitId
- * @property integer $metricUnitId
+ * @property integer $lengthUnitId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -114,7 +114,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 			[ 'addToCart', 'boolean' ],
 			[ 'cartId', 'validateCartCreate', 'on' => 'create' ],
 			[ 'cartId', 'validateCartUpdate', 'on' => 'update' ],
-			[ [ 'cartId', 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'cartId', 'quantityUnitId', 'weightUnitId', 'lengthUnitId', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
@@ -128,7 +128,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 			'cartId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CART ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
-			'metricUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
+			'lengthUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_METRIC ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
@@ -201,7 +201,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 
 	public function getMetricUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'metricUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as mUnit' );
+		return $this->hasOne( Option::className(), [ 'id' => 'lengthUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as mUnit' );
 	}
 
 	public function getTotalPrice() {

@@ -11,9 +11,11 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\Order;
+use cmsgears\core\common\models\resources\Address;
 
 use cmsgears\core\common\services\interfaces\mappers\IModelAddressService;
 use cmsgears\cart\common\services\interfaces\entities\ICartService;
+use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
@@ -43,21 +45,24 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	protected $cartService;
 
+	protected $cartItemService;
+
 	protected $orderItemService;
 
 	protected $modelAddressService;
 
+	protected $orderService;
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
 
-	public function __construct( ICartService $cartService, IModelAddressService $modelAddressService, $config = [] ) {
-
-		$this->cartService			= $cartService;
+	public function __construct( ICartService $cartService, IModelAddressService $modelAddressService, ICartItemService $cartItemService, $config = [] ) {
 
 		$this->modelAddressService	= $modelAddressService;
+		$this->cartService			= $cartService;
+		$this->cartItemService		= $cartItemService;
 
 		parent::__construct( $config );
 	}
@@ -142,7 +147,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	public function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] ) {
 
 		// Set Attributes
-		$user				= Yii::$app->cmgCore->getAppUser();
+		$user				= Yii::$app->core->getAppUser();
 
 		$order->createdBy	= $user->id;
 		$order->status		= Order::STATUS_NEW;
@@ -171,7 +176,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		// Create Order Items
 		foreach ( $cartItems as $cartItem ) {
 
-			$this->orderItemService->createFromCartItem( $order->id, $cartItem, $additionalParams );
+			Yii::$app->factory->get( 'orderItemService' )->createFromCartItem( $order->id, $cartItem, $additionalParams );
 		}
 
 		// Delete Cart Items

@@ -77,7 +77,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Public -----------------
 
-	public $addressType	= CartGlobal::TYPE_ORDER;
+	public $mParentType	= CartGlobal::TYPE_ORDER;
 
 	// Protected --------------
 

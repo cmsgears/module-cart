@@ -133,7 +133,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		}
 
 		// Copy required params
-		$cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'metricUnitId', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
+		$cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'quantityUnitId', 'weightUnitId', 'lengthUnitId', 'price', 'quantity', 'weight', 'length', 'width', 'height' ] );
 
 		// Copy Additional Params
 		$cartItemToUpdate->copyForUpdateFrom( $cartItem, $config );
@@ -158,7 +158,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return true;
 	}
 
-	public static function deleteByCartId( $cartId ) {
+	public function deleteByCartId( $cartId ) {
 
 		CartItem::deleteByCartId( $cartId );
 	}

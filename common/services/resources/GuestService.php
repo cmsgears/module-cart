@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services;
+namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use \Yii;
@@ -73,8 +73,8 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 		$user	= new User();
 
-		$user->firstName	= $form->firstname;
-		$user->lastName		= $form->lastname;
+		$user->firstName	= $form->firstName;
+		$user->lastName		= $form->lastName;
 		$user->email		= $form->email;
 
 		$user	= $this->userService->create( $user );
