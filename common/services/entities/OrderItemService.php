@@ -14,7 +14,7 @@ use cmsgears\cart\common\models\entities\OrderItem;
 use cmsgears\cart\common\services\interfaces\entities\IOrderService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
-class OrderService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
+class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
 
 	// Variables ---------------------------------------------------
 

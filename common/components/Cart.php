@@ -90,6 +90,7 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
 
 		// Resolve additional dependencies
-		$factory->get( 'orderService' )->set( $factory->get( 'orderItemService' ) );
+		$orderItemService	= $factory->get( 'orderItemService' );
+		$factory->get( 'orderService' )->setOrderItemService( $orderItemService );
 	}
 }
