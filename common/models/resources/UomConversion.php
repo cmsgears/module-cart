@@ -65,7 +65,7 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 	public function attributeLabels() {
 
 		return [
-			'uomId' => 'UOM',
+			'uomId' => 'Source UOM',
 			'targetId' => 'Target UOM',
 			'quantity' => 'Quantity'
 		];
@@ -79,14 +79,18 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// UomConversion -------------------------
 
-	public function getUom() {
+	public function getSource() {
 
-		return $this->hasMany( Uom::className(), [ 'id' => 'uomId' ] );
+		$uomTable = CartTables::TABLE_UOM;
+
+		return $this->hasOne( Uom::className(), [ 'id' => 'uomId' ] )->from( "$uomTable as source" );
 	}
 
 	public function getTarget() {
 
-		return $this->hasMany( Uom::className(), [ 'id' => 'targetId' ] );
+		$uomTable = CartTables::TABLE_UOM;
+
+		return $this->hasOne( Uom::className(), [ 'id' => 'targetId' ] )->from( "$uomTable as target" );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -108,7 +112,7 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	public static function queryWithAll( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'uom', 'taget' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'source', 'target' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );

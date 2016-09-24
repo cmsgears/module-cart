@@ -51,18 +51,18 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	protected $modelAddressService;
 
-	protected $orderService;
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
 
-	public function __construct( ICartService $cartService, IModelAddressService $modelAddressService, ICartItemService $cartItemService, $config = [] ) {
+	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IModelAddressService $modelAddressService, $config = [] ) {
 
-		$this->modelAddressService	= $modelAddressService;
 		$this->cartService			= $cartService;
 		$this->cartItemService		= $cartItemService;
+
+		$this->modelAddressService	= $modelAddressService;
 
 		parent::__construct( $config );
 	}

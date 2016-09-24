@@ -30,14 +30,19 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_USAGE_COUNT => 'Usage Count',
 
 		// Units
+		CartGlobal::FIELD_UNIT_PRIMARY => 'Primary Unit',
 		CartGlobal::FIELD_UNIT_QUANTITY => 'Quantity Unit',
 		CartGlobal::FIELD_UNIT_WEIGHT => 'Weight Unit',
-		CartGlobal::FIELD_UNIT_METRIC => 'Metrict Unit',
+		CartGlobal::FIELD_UNIT_LENGTH => 'Length Unit',
+		CartGlobal::FIELD_UNIT_VOLUME => 'Volume Unit',
+		CartGlobal::FIELD_PRIMARY => 'Primary',
 		CartGlobal::FIELD_QUANTITY => 'Quantity',
 		CartGlobal::FIELD_WEIGHT => 'Weight',
 		CartGlobal::FIELD_LENGTH => 'Length',
 		CartGlobal::FIELD_WIDTH => 'Width',
 		CartGlobal::FIELD_HEIGHT => 'Height',
+		CartGlobal::FIELD_RADIUS => 'Radius',
+		CartGlobal::FIELD_VOLUME => 'Volume',
 
 		// Totals
 		CartGlobal::FIELD_AMOUNT => 'Amount',

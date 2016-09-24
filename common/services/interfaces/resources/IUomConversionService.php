@@ -7,7 +7,7 @@ use \Yii;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-interface IUomService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
+interface IUomConversionService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
 
 	// Data Provider ------
 
@@ -19,15 +19,9 @@ interface IUomService extends \cmsgears\core\common\services\interfaces\base\IEn
 
 	// Read - Maps -----
 
-	public function getIdNameMapByGroup( $group, $default = true );
-
-	public function getMapForConversion();
-
 	// Create -------------
 
 	// Update -------------
-
-	public function updateBase( $model );
 
 	// Delete -------------
 

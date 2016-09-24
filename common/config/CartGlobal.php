@@ -62,14 +62,19 @@ class CartGlobal {
 	const FIELD_USAGE_COUNT				= 'usageCountField';
 
 	// Units
+	const FIELD_UNIT_PRIMARY			= 'primaryUnitField';
 	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
-	const FIELD_UNIT_METRIC				= 'metricUnitField';
+	const FIELD_UNIT_LENGTH				= 'lengthUnitField';
+	const FIELD_UNIT_VOLUME				= 'volumeUnitField';
+	const FIELD_PRIMARY					= 'primaryField';
 	const FIELD_QUANTITY				= 'quantityField';
 	const FIELD_WEIGHT					= 'weightField';
 	const FIELD_LENGTH					= 'lengthField';
 	const FIELD_WIDTH					= 'widthField';
 	const FIELD_HEIGHT					= 'heightField';
+	const FIELD_RADIUS					= 'radiusField';
+	const FIELD_VOLUME					= 'volumeField';
 
 	// Totals
 	const FIELD_AMOUNT					= 'amountField';

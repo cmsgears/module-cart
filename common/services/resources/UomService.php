@@ -3,6 +3,7 @@ namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use \Yii;
+use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -112,9 +113,31 @@ class UomService extends \cmsgears\core\common\services\base\EntityService imple
 		return parent::getIdNameMap( [ 'conditions' => [ 'group' => $group ] ] );
 	}
 
+	public function getMapForConversion() {
+
+		$objects		= parent::getObjectMap();
+		$conversionMap	= [];
+
+		foreach ( $objects as $key => $value ) {
+
+			$group					= $value->getGroupStr();
+
+			$conversionMap[ $key ]	= "$value->name, $group";
+		}
+
+		return $conversionMap;
+	}
+
 	// Read - Others ---
 
 	// Create -------------
+
+	public function create( $model, $config = [] ) {
+
+		$this->updateBase( $model );
+
+		return parent::create( $model, $config );
+	}
 
 	// Update -------------
 
@@ -122,9 +145,19 @@ class UomService extends \cmsgears\core\common\services\base\EntityService imple
 
 		$attributes = isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'name', 'code', 'group', 'base' ];
 
+		$this->updateBase( $model );
+
 		return parent::update( $model, [
 			'attributes' => $attributes
 		]);
+	}
+
+	public function updateBase( $model ) {
+
+		if( $model->base ) {
+
+			Uom::updateAll( [ 'base' => false ], "`base` = 1 AND `group` = $model->group" );
+		}
 	}
 
 	// Delete -------------

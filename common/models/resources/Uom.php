@@ -3,6 +3,7 @@ namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
 use \Yii;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -103,10 +104,10 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		$rules = [
 			[ [ 'code', 'name', 'group' ], 'required' ],
 			[ [ 'id' ], 'safe' ],
-			[ [ 'name', 'group' ], 'unique' ],
+			[ [ 'name', 'group' ], 'unique', 'targetAttribute' => [ 'name', 'group' ] ],
 			[ 'code', 'string', 'min' => 1, 'max' => Yii::$app->core->smallText ],
 			[ [ 'name' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'group' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'group' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'base', 'active' ], 'boolean' ]
 		];
 
@@ -142,6 +143,16 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 	public function getConversions() {
 
 		return $this->hasMany( UomConversion::className(), [ 'uomId' => 'id' ] );
+	}
+
+	public function getGroupStr() {
+
+		return self::$groupMap[ $this->group ];
+	}
+
+	public function getBaseStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->base );
 	}
 
 	// Static Methods ----------------------------------------------

@@ -59,6 +59,7 @@ class Cart extends \yii\base\Component {
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomService', 'cmsgears\cart\common\services\resources\UomService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
 	}
 
@@ -77,6 +78,7 @@ class Cart extends \yii\base\Component {
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'uomService', 'cmsgears\cart\common\services\resources\UomService' );
+		$factory->set( 'uomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
 		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
 	}
 
@@ -88,9 +90,5 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
 		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
 		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
-
-		// Resolve additional dependencies
-		/*$orderItemService	= $factory->get( 'orderItemService' );
-		$factory->get( 'orderService' )->setOrderItemService( $orderItemService );*/
 	}
 }
