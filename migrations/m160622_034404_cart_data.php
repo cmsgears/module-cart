@@ -178,8 +178,8 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 			[ 'g', 'Grain', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
 			[ 'd', 'Dram', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
-			[ 'o', 'Ounce', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
-			[ 'p', 'Pound', Uom::GROUP_WEIGHT_IMPERIAL, true, true ],
+			[ 'oz', 'Ounce', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
+			[ 'lbs', 'Pound', Uom::GROUP_WEIGHT_IMPERIAL, true, true ],
 			[ 'sh', 'Short Hundredweight', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
 			[ 'lh', 'Long Hundredweight', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
 			[ 'st', 'Short Ton', Uom::GROUP_WEIGHT_IMPERIAL, false, true ],
@@ -187,8 +187,8 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 			[ 'g', 'Grain', Uom::GROUP_WEIGHT_US, false, true ],
 			[ 'd', 'Dram', Uom::GROUP_WEIGHT_US, false, true ],
-			[ 'o', 'Ounce', Uom::GROUP_WEIGHT_US, false, true ],
-			[ 'p', 'Pound', Uom::GROUP_WEIGHT_US, true, true ],
+			[ 'oz', 'Ounce', Uom::GROUP_WEIGHT_US, false, true ],
+			[ 'lbs', 'Pound', Uom::GROUP_WEIGHT_US, true, true ],
 			[ 'sh', 'Short Hundredweight', Uom::GROUP_WEIGHT_US, false, true ],
 			[ 'lh', 'Long Hundredweight', Uom::GROUP_WEIGHT_US, false, true ],
 			[ 'st', 'Short Ton', Uom::GROUP_WEIGHT_US, false, true ],
