@@ -113,6 +113,16 @@ class UomService extends \cmsgears\core\common\services\base\EntityService imple
 		return parent::getIdNameMap( [ 'conditions' => [ 'group' => $group ] ] );
 	}
 
+	public function getIdNameMapByGroups( $groups, $default = true ) {
+
+		if( $default ) {
+
+			return parent::getIdNameMap( [ 'filters' => [ [ 'in', 'group', $groups ] ], 'prepend' => [ [ 'id' => 0, 'name' => 'Choose Unit' ] ] ] );
+		}
+
+		return parent::getIdNameMap( [ 'filters' => [ [ 'in', 'group', $groups ] ] ] );
+	}
+
 	public function getMapForConversion() {
 
 		$objects		= parent::getObjectMap();

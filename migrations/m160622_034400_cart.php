@@ -109,8 +109,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'primaryUnitId' => $this->bigInteger( 20 ),
 			'quantityUnitId' => $this->bigInteger( 20 ),
 			'weightUnitId' => $this->bigInteger( 20 ),
-			'lengthUnitId' => $this->bigInteger( 20 ),
 			'volumeUnitId' => $this->bigInteger( 20 ),
+			'lengthUnitId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 ),
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
@@ -122,11 +122,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'width' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'height' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'radius' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'content' => $this->text(),
@@ -138,8 +138,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_prim', $this->prefix . 'cart_item', 'primaryUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_qty', $this->prefix . 'cart_item', 'quantityUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_wt', $this->prefix . 'cart_item', 'weightUnitId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item', 'lengthUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_volume', $this->prefix . 'cart_item', 'volumeUnitId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item', 'lengthUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_creator', $this->prefix . 'cart_item', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'cart_item_modifier', $this->prefix . 'cart_item', 'modifiedBy' );
 	}
@@ -185,8 +185,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'primaryUnitId' => $this->bigInteger( 20 ),
 			'quantityUnitId' => $this->bigInteger( 20 ),
 			'weightUnitId' => $this->bigInteger( 20 ),
-			'lengthUnitId' => $this->bigInteger( 20 ),
 			'volumeUnitId' => $this->bigInteger( 20 ),
+			'lengthUnitId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
@@ -199,11 +199,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'width' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'height' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'radius' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'content' => $this->text(),
@@ -215,8 +215,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_prim', $this->prefix . 'cart_order_item', 'primaryUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_qty', $this->prefix . 'cart_order_item', 'quantityUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_wt', $this->prefix . 'cart_order_item', 'weightUnitId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item', 'lengthUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_volume', $this->prefix . 'cart_order_item', 'volumeUnitId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item', 'lengthUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_creator', $this->prefix . 'cart_order_item', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_modifier', $this->prefix . 'cart_order_item', 'modifiedBy' );
 	}
@@ -265,8 +265,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_prim', $this->prefix . 'cart_item', 'primaryUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_qty', $this->prefix . 'cart_item', 'quantityUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_wt', $this->prefix . 'cart_item', 'weightUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item', 'lengthUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_volume', $this->prefix . 'cart_item', 'volumeUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item', 'lengthUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_creator', $this->prefix . 'cart_item', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'cart_item_modifier', $this->prefix . 'cart_item', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
@@ -280,8 +280,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_prim', $this->prefix . 'cart_order_item', 'primaryUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_qty', $this->prefix . 'cart_order_item', 'quantityUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_wt', $this->prefix . 'cart_order_item', 'weightUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item', 'lengthUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_volume', $this->prefix . 'cart_order_item', 'volumeUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item', 'lengthUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_creator', $this->prefix . 'cart_order_item', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_modifier', $this->prefix . 'cart_order_item', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
@@ -324,8 +324,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_prim', $this->prefix . 'cart_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_qty', $this->prefix . 'cart_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_wt', $this->prefix . 'cart_item' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_volume', $this->prefix . 'cart_item' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_length', $this->prefix . 'cart_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_creator', $this->prefix . 'cart_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'cart_item_modifier', $this->prefix . 'cart_item' );
 
@@ -339,8 +339,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_prim', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_qty', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_wt', $this->prefix . 'cart_order_item' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_volume', $this->prefix . 'cart_order_item' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_creator', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_modifier', $this->prefix . 'cart_order_item' );
 

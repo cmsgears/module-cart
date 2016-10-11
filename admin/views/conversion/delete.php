@@ -4,13 +4,13 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Html;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title	= 'Update UOM Conversion | ' . $coreProperties->getSiteTitle();
+$this->title	= 'Delete UOM Conversion | ' . $coreProperties->getSiteTitle();
 
 $conMap			= Yii::$app->factory->get( 'uomService' )->getMapForConversion();
 ?>
 <div class="box box-cud">
 	<div class="box-wrap-header">
-		<div class="header">Update UOM Conversion</div>
+		<div class="header">Delete UOM Conversion</div>
 	</div>
 	<div class="box-wrap-content frm-split-40-60">
 		<?php $form = ActiveForm::begin( [ 'id' => 'frm-page' ] );?>
@@ -23,7 +23,7 @@ $conMap			= Yii::$app->factory->get( 'uomService' )->getMapForConversion();
 
 		<div class="align align-center">
 			<?=Html::a( 'Cancel',  [ 'all' ], [ 'class' => 'btn btn-medium' ] );?>
-			<input class="element-medium" type="submit" value="Update" />
+			<input class="element-medium" type="submit" value="Delete" />
 		</div>
 
 		<?php ActiveForm::end(); ?>

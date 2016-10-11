@@ -21,6 +21,8 @@ interface IUomService extends \cmsgears\core\common\services\interfaces\base\IEn
 
 	public function getIdNameMapByGroup( $group, $default = true );
 
+	public function getIdNameMapByGroups( $groups, $default = true );
+
 	public function getMapForConversion();
 
 	// Create -------------

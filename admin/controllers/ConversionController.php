@@ -61,7 +61,7 @@ class ConversionController extends \cmsgears\core\admin\controllers\base\CrudCon
 
 	public function actionAll() {
 
-		Url::remember( [ 'conversion/all' ], 'uoms' );
+		Url::remember( [ 'conversion/all' ], 'uomcons' );
 
 		$dataProvider = $this->modelService->getPage();
 
