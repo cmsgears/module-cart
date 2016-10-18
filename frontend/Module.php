@@ -16,7 +16,5 @@ class Module extends \cmsgears\core\common\base\Module {
 
 		$this->setViewPath( '@cmsgears/cart/frontend/views' );
 
-	}  
+	}
 }
-
-?>

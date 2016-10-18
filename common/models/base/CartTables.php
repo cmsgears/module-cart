@@ -5,10 +5,6 @@ class CartTables {
 
 	// Entities -------------
 
-	// UOM
-	const TABLE_UOM					= 'cmg_cart_uom';
-	const TABLE_UOM_CONVERSION		= 'cmg_cart_uom_conversion';
-
 	// Cart
 	const TABLE_CART				= 'cmg_cart';
 	const TABLE_CART_ITEM			= 'cmg_cart_item';
@@ -20,5 +16,12 @@ class CartTables {
 
 	// Resources ------------
 
-	// Mappers & Traits -----
+	// UOM
+	const TABLE_UOM					= 'cmg_cart_uom';
+	const TABLE_UOM_CONVERSION		= 'cmg_cart_uom_conversion';
+
+	// Order
+	const TABLE_ORDER_HISTORY		= 'cmg_cart_order_history';
+
+	// Mappers --------------
 }

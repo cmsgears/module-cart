@@ -38,10 +38,13 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $total
  * @property integer $discount
  * @property integer $grandTotal
+ * @property boolean $sameAddress
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $eta
  * @property datetime $deliveredAt
+ * @property string $content
+ * @property string $data
  */
 class Order extends \cmsgears\core\common\models\base\Entity {
 
@@ -51,25 +54,63 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Constants --------------
 
-	const STATUS_NEW				=	 0;
-	const STATUS_CONFIRMED			= 1000;
-	const STATUS_CANCELLED			= 2000;
-	const STATUS_PLACED				= 3000;
-	const STATUS_PAID				= 4000;
-	const STATUS_DELIVERED			= 5000;
-	const STATUS_RETURNED			= 6000;
+	const STATUS_NEW				=	  0; // Order is created
+	const STATUS_APPROVED			=  1000; // Order need approval
+	const STATUS_PLACED				=  2000; // Order is placed
+	const STATUS_PAID				=  3000; // Payment is done
+	const STATUS_CANCELLED			=  4000; // Order cancelled - no money return
+	const STATUS_REFUNDED			=  5000; // Order refunded - money returned
+	const STATUS_CONFIRMED			=  6000; // Confirmed by vendor
+	const STATUS_PROCESSED			=  7000; // Processed by vendor
+	const STATUS_DELIVERED			=  8000; // Delivered by vendor
+	const STATUS_COMPLETED			=  9000; // Order completed
+	const STATUS_RETURNED			= 10000; // Returned to vendor - no receiver
 
 	// Public -----------------
 
 	public static $statusMap = array(
 		self::STATUS_NEW  => 'New',
-		self::STATUS_CONFIRMED => 'Confirmed',
-		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_APPROVED => 'Approved',
 		self::STATUS_PLACED => 'Placed',
 		self::STATUS_PAID => 'Paid',
+		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_REFUNDED => 'Refunded',
+		self::STATUS_CONFIRMED => 'Confirmed',
+		self::STATUS_PROCESSED => 'Processed',
 		self::STATUS_DELIVERED => 'Delivered',
+		self::STATUS_COMPLETED => 'Completed',
 		self::STATUS_RETURNED => 'Returned'
 		);
+
+	// Used for external docs
+	public static $revStatusMap = [
+		'New' => self::STATUS_NEW,
+		'Approved' => self::STATUS_APPROVED,
+		'Placed' => self::STATUS_PLACED,
+		'Paid' => self::STATUS_PAID,
+		'Cancelled' => self::STATUS_CANCELLED,
+		'Refunded' => self::STATUS_REFUNDED,
+		'Confirmed' => self::STATUS_CONFIRMED,
+		'Processed' => self::STATUS_PROCESSED,
+		'Delivered' => self::STATUS_DELIVERED,
+		'Completed'  => self::STATUS_COMPLETED,
+		'Returned' => self::STATUS_RETURNED
+	];
+
+	// Used for url params
+	public static $urlRevStatusMap = [
+		'new' => self::STATUS_NEW,
+		'approved' => self::STATUS_APPROVED,
+		'placed' => self::STATUS_PLACED,
+		'paid' => self::STATUS_PAID,
+		'cancelled' => self::STATUS_CANCELLED,
+		'refunded' => self::STATUS_REFUNDED,
+		'confirmed' => self::STATUS_CONFIRMED,
+		'processed' => self::STATUS_PROCESSED,
+		'delivered' => self::STATUS_DELIVERED,
+		'completed' => self::STATUS_COMPLETED,
+		'returned' => self::STATUS_RETURNED
+	];
 
 	// Protected --------------
 
@@ -128,9 +169,10 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			[ 'title', 'required' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'title', 'description'], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'title', 'description' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+			[ 'sameAddress', 'boolean' ],
 			[ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
@@ -146,7 +188,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
-			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ADDRESS_TYPE ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'subTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
@@ -155,6 +197,8 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
 			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
+			'sameAddress' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ADDRESS_SAME ),
+			'eta' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ESTIMATED_DELIVERY ),
 			'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
@@ -171,7 +215,9 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	public function getParentOrder() {
 
-		return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] );
+		$orderTable = CartTables::TABLE_ORDER;
+
+		return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] )->from( "$orderTable as parent" );
 	}
 
 	public function getPayment() {
@@ -204,14 +250,9 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return $this->status == self::STATUS_NEW;
 	}
 
-	public function isConfirmed() {
+	public function isApproved() {
 
-		return $this->status == self::STATUS_CONFIRMED;
-	}
-
-	public function isCancelled() {
-
-		return $this->status == self::STATUS_CANCELLED;
+		return $this->status == self::STATUS_APPROVED;
 	}
 
 	public function isPlaced() {
@@ -222,6 +263,26 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	public function isPaid() {
 
 		return $this->status == self::STATUS_PAID;
+	}
+
+	public function isCancelled() {
+
+		return $this->status == self::STATUS_CANCELLED;
+	}
+
+	public function isRefunded() {
+
+		return $this->status == self::STATUS_REFUNDED;
+	}
+
+	public function isConfirmed() {
+
+		return $this->status == self::STATUS_CONFIRMED;
+	}
+
+	public function isProcessed() {
+
+		return $this->status == self::STATUS_PROCESSED;
 	}
 
 	public function isDelivered() {
@@ -256,7 +317,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
 		$config[ 'relations' ]	= $relations;

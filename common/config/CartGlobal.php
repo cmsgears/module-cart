@@ -11,7 +11,7 @@ class CartGlobal {
 
 	const TXN_MODE_ORDER_PAYMENT		= 'Order Payment';
 
-	// Model Traits - Metas, Attachments, Addresses --------------------
+	// Grouping by type ------------------------------------------------
 
 	const TYPE_CART						= 'cart';
 
@@ -55,26 +55,26 @@ class CartGlobal {
 
 	// Vouchers
 	const FIELD_TAX_TYPE				= 'taxTypeField';
-	const FIELD_SHIPPING_TYPE			= 'shippingTypeField';
+	const FIELD_SHIPPING_FREE			= 'freeShippingField';
 	const FIELD_MIN_PURCHASE			= 'minPurchaseField';
 	const FIELD_MAX_DISCOUNT			= 'maxDiscountField';
 	const FIELD_USAGE_LIMIT				= 'usageLimitField';
 	const FIELD_USAGE_COUNT				= 'usageCountField';
 
 	// Units
-	const FIELD_UNIT_PRIMARY			= 'primaryUnitField';
+	const FIELD_UNIT_PURCHASING			= 'purchasingUnitField';
 	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
-	const FIELD_UNIT_LENGTH				= 'lengthUnitField';
 	const FIELD_UNIT_VOLUME				= 'volumeUnitField';
-	const FIELD_PRIMARY					= 'primaryField';
+	const FIELD_UNIT_LENGTH				= 'lengthUnitField';
+	const FIELD_PURCHASE				= 'purchaseField';
 	const FIELD_QUANTITY				= 'quantityField';
 	const FIELD_WEIGHT					= 'weightField';
+	const FIELD_VOLUME					= 'volumeField';
 	const FIELD_LENGTH					= 'lengthField';
 	const FIELD_WIDTH					= 'widthField';
 	const FIELD_HEIGHT					= 'heightField';
 	const FIELD_RADIUS					= 'radiusField';
-	const FIELD_VOLUME					= 'volumeField';
 
 	// Totals
 	const FIELD_AMOUNT					= 'amountField';
@@ -89,10 +89,7 @@ class CartGlobal {
 	// Orders
 	const FIELD_ORDER					= 'orderField';
 	const FIELD_PARENT_ORDER			= 'parentOrderField';
+	const FIELD_ADDRESS_SAME			= 'sameAddressField';
+	const FIELD_ESTIMATED_DELIVERY		= 'estimatedDeliveryField';
 	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
-
-	// Transactions
-	const FIELD_TXN_CODE				= 'txnCodeField';
-	const FIELD_TXN_TYPE				= 'txnTypeField';
-	const FIELD_TXN_MODE				= 'txnModeField';
 }

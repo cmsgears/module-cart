@@ -3,6 +3,7 @@ namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use \Yii;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -71,16 +72,16 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	// Read - Models ---
 
-	public function getByUserId( $userId ) {
-
-		$cart	= $this->cartService->createByUserId( $userId );
-
-		return self::findByCartId( $cart->id );
-	}
-
 	public function getByCartId( $id ) {
 
 		return CartItem::findByCartId( $id );
+	}
+
+	public function getByUserId( $userId ) {
+
+		$cart	= $this->cartService->getByUserId( $userId );
+
+		return CartItem::findByCartId( $cart->id );
 	}
 
 	public function getByParentCartId( $parentId, $parentType, $cartId ) {
@@ -88,9 +89,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		return CartItem::findByParentCartId( $parentId, $parentType, $cartId );
 	}
 
-	public function getObjectMapByUserId( $userId ) {
-
-		$cart	= $this->cartService->createByUserId( $userId );
+	public function getParentIdObjectMap( $cart ) {
 
 		return $this->getObjectMap( [ 'key' => 'parentId', 'conditions' => [ 'cartId' => $cart->id ] ] );
 	}
@@ -103,60 +102,37 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	// Create -------------
 
-	public function create( $cart, $config = [] ) {
+	public function create( $model, $config = [] ) {
 
-		$cartItem	= new CartItem();
-		$model		= $config[ 'model' ];
+		$user	= Yii::$app->core->getAppUser();
+		$cart	= $config[ 'cart' ];
 
-		$cartItem->cartId		= $cart->id;
-		$cartItem->quantity		= $model[ 'quantity' ];
-		$cartItem->createdBy	= $cart->createdBy;
-		$cartItem->name			= $model[ 'name' ];
-		$cartItem->price		= $model[ 'price' ];
-		$cartItem->parentId		= $model[ 'parentId' ];
-		$cartItem->parentType	= $model[ 'parentType' ];
-		$cartItem->save();
+		$model->cartId		= $cart->id;
+		$model->createdBy	= isset( $user ) ? $user->id : null;
 
-		return $cartItem;
+		$model->save();
+		// Create Cart Item
+		return parent::create( $model, $config );
 	}
 
 	// Update -------------
 
-	public function update( $cartItem, $config = [] ) {
+	public function update( $model, $config = [] ) {
 
-		$user				= Yii::$app->cmgCore->getAppUser();
-		$cartItemToUpdate	= self::findById( $cartItem->id );
+		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'purchasingUnitId', 'primaryUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ];
+		$addAttributes	= isset( $config[ 'addAttributes' ] ) ? $config[ 'addAttributes' ] : [ ];
+		$attributes		= ArrayHelper::merge( $attributes, $addAttributes );
 
-		if( $user != null ) {
+		$user				= Yii::$app->core->getAppUser();
+		$model->updatedBy	= isset( $user ) ? $user->id : null;
 
-		  $cartItemToUpdate->modifiedBy	= $user->id;
-		}
-
-		// Copy required params
-		$cartItemToUpdate->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'quantityUnitId', 'weightUnitId', 'lengthUnitId', 'volumeUnitId', 'price', 'primary', 'quantity', 'weight', 'length', 'width', 'height', 'radius', 'volume' ] );
-
-		// Copy Additional Params
-		$cartItemToUpdate->copyForUpdateFrom( $cartItem, $config );
-
-		// Update CartItem
-		$cartItemToUpdate->update();
-
-		// Return CartItem
-		return $cartItemToUpdate;
+		// Update Cart Item
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
 	}
 
 	// Delete -------------
-
-	public function delete( $cartItem, $config = [] ) {
-
-		$cartItemToDelete	= self::findById( $cartItem->id );
-
-		// Delete CartItem
-		$cartItemToDelete->delete();
-
-		// Return true
-		return true;
-	}
 
 	public function deleteByCartId( $cartId ) {
 

@@ -3,18 +3,18 @@ namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use \Yii;
+use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\entities\OrderItem;
+use cmsgears\cart\common\models\entities\Voucher;
 
-use cmsgears\cart\common\services\interfaces\entities\IOrderService;
-use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
+use cmsgears\cart\common\services\interfaces\entities\IVoucherServiceService;
 
-class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
+class VoucherService extends \cmsgears\core\common\services\base\EntityService implements IVoucherServiceService {
 
 	// Variables ---------------------------------------------------
 
@@ -24,9 +24,9 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\OrderItem';
+	public static $modelClass	= '\cmsgears\cart\common\models\entities\Voucher';
 
-	public static $modelTable	= CartTables::TABLE_ORDER_ITEM;
+	public static $modelTable	= CartTables::TABLE_VOUCHER;
 
 	public static $parentType	= null;
 
@@ -38,17 +38,13 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Protected --------------
 
-	protected $orderService;
-
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
 
-	public function __construct( IOrderService $orderService, $config = [] ) {
-
-		$this->orderService	= $orderService;
+	public function __construct( $config = [] ) {
 
 		parent::__construct( $config );
 	}
@@ -63,18 +59,43 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// CMG parent classes --------------------
 
-	// OrderItemService ----------------------
+	// VoucherService ------------------------
 
 	// Data Provider ------
+
+	public function getPage( $config = [] ) {
+
+		$sort = new Sort([
+			'attributes' => [
+				'name' => [
+					'asc' => [ 'name' => SORT_ASC ],
+					'desc' => [ 'name' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Name'
+				],
+				'type' => [
+					'asc' => [ 'type' => SORT_ASC ],
+					'desc' => [ 'type' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Type'
+				],
+				'amount' => [
+					'asc' => [ 'amount' => SORT_ASC ],
+					'desc' => [ 'amount' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Amount'
+				]
+			]
+		]);
+
+		$config[ 'sort' ] = $sort;
+
+		return parent::findPage( $config );
+	}
 
 	// Read ---------------
 
 	// Read - Models ---
-
-	public function getByOrderId( $oderId ) {
-
-		return OrderItem::findByOrderId( $oderId );
-	}
 
 	// Read - Lists ----
 
@@ -84,25 +105,6 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Create -------------
 
-	// Create Order Item from cart item
-	public function createFromCartItem( $order, $cartItem, $config = [] ) {
-
-		// Set Attributes
-		$user					= Yii::$app->core->getAppUser();
-
-		$orderItem				= new OrderItem();
-		$orderItem->orderId		= $order->id;
-		$orderItem->createdBy	= $user->id;
-
-		// Copy from Cart Item
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'name', 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
-
-		$orderItem->save();
-
-		// Return OrderItem
-		return $orderItem;
-	}
-
 	// Update -------------
 
 	// Delete -------------
@@ -111,7 +113,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// CMG parent classes --------------------
 
-	// OrderItemService ----------------------
+	// VoucherService ------------------------
 
 	// Data Provider ------
 

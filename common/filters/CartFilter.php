@@ -15,13 +15,13 @@ class CartFilter {
 
 		$this->cartProperties = CartProperties::getInstance();
 
-		// Use service provided exclusively for the filter
+		// Check whether cart is still active and available
 		if( $this->cartProperties->isActive() ) {
 
 			return true;
 		}
 
-		// Halt action execution in case user is not a merchant
+		// Stop action in case cart is inactive
 		throw new ForbiddenHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_ALLOWED ) );
 	}
 }

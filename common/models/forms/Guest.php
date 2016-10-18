@@ -66,9 +66,9 @@ class Guest extends \yii\base\Model {
 	public function attributeLabels() {
 
 		return [
-			'firstName' => 'firstName',
-			'lastName' => 'lastName',
-			'email' => 'Email'
+			'firstName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FIRSTNAME ),
+			'lastName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_LASTNAME ),
+			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL )
 		];
 	}
 

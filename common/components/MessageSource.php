@@ -23,26 +23,26 @@ class MessageSource extends \yii\base\Component {
 
 		// Vouchers
 		CartGlobal::FIELD_TAX_TYPE => 'Tax Type',
-		CartGlobal::FIELD_SHIPPING_TYPE => 'Shipping Type',
+		CartGlobal::FIELD_SHIPPING_FREE => 'Free Shipping',
 		CartGlobal::FIELD_MIN_PURCHASE => 'Minimum Purchase',
 		CartGlobal::FIELD_MAX_DISCOUNT => 'Maximum Discount',
 		CartGlobal::FIELD_USAGE_LIMIT => 'Usage Limit',
 		CartGlobal::FIELD_USAGE_COUNT => 'Usage Count',
 
 		// Units
-		CartGlobal::FIELD_UNIT_PRIMARY => 'Primary Unit',
+		CartGlobal::FIELD_UNIT_PURCHASING => 'Purchasing Unit',
 		CartGlobal::FIELD_UNIT_QUANTITY => 'Quantity Unit',
 		CartGlobal::FIELD_UNIT_WEIGHT => 'Weight Unit',
-		CartGlobal::FIELD_UNIT_LENGTH => 'Length Unit',
 		CartGlobal::FIELD_UNIT_VOLUME => 'Volume Unit',
-		CartGlobal::FIELD_PRIMARY => 'Primary',
+		CartGlobal::FIELD_UNIT_LENGTH => 'Length Unit',
+		CartGlobal::FIELD_PURCHASE => 'Purchase',
 		CartGlobal::FIELD_QUANTITY => 'Quantity',
 		CartGlobal::FIELD_WEIGHT => 'Weight',
+		CartGlobal::FIELD_VOLUME => 'Volume',
 		CartGlobal::FIELD_LENGTH => 'Length',
 		CartGlobal::FIELD_WIDTH => 'Width',
 		CartGlobal::FIELD_HEIGHT => 'Height',
 		CartGlobal::FIELD_RADIUS => 'Radius',
-		CartGlobal::FIELD_VOLUME => 'Volume',
 
 		// Totals
 		CartGlobal::FIELD_AMOUNT => 'Amount',
@@ -55,14 +55,11 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_TOTAL_GRAND => 'Grand Total',
 
 		// Orders
-		CartGlobal::FIELD_PARENT_ORDER => 'Parent Order',
 		CartGlobal::FIELD_ORDER => 'Order',
-		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date',
-
-		// Transactions
-		CartGlobal::FIELD_TXN_CODE => 'Code',
-		CartGlobal::FIELD_TXN_TYPE => 'Type',
-		CartGlobal::FIELD_TXN_MODE => 'Mode'
+		CartGlobal::FIELD_PARENT_ORDER => 'Parent Order',
+		CartGlobal::FIELD_ADDRESS_SAME => 'Same as Billing Address',
+		CartGlobal::FIELD_ESTIMATED_DELIVERY => 'Estimated Delivery Date',
+		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date'
 	];
 
 	// Private ----------------

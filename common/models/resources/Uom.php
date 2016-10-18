@@ -172,7 +172,7 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithConversions( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'conversions' ];
 		$config[ 'relations' ]	= $relations;

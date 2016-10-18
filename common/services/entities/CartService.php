@@ -3,6 +3,7 @@ namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use \Yii;
+use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -13,6 +14,7 @@ use cmsgears\cart\common\models\entities\Cart;
 
 use cmsgears\core\common\services\traits\ResourceTrait;
 use cmsgears\cart\common\services\interfaces\entities\ICartService;
+use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
 
 class CartService extends \cmsgears\core\common\services\base\EntityService implements ICartService {
 
@@ -38,6 +40,8 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	// Protected --------------
 
+	protected $cartItemService;
+
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
@@ -45,6 +49,16 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 	use ResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
+
+	public function __construct( $config = [] ) {
+
+		parent::__construct( $config );
+	}
+
+	public function setCartItemService( ICartItemService $cartItemService ) {
+
+		$this->cartItemService	= $cartItemService;
+	}
 
 	// Instance methods --------------------------------------------
 
@@ -78,17 +92,30 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 		if( !isset( $cart ) ) {
 
-			$cart = $this->createForUserId( $userId );
+			$cart = $this->createByUserId( $userId );
 		}
 
 		return $cart;
 	}
 
-	public function getActiveByParent( $parentId, $parentType ) {
+	public function getByParent( $parentId, $parentType, $first = true ) {
 
 		$modelClass	= self::$modelClass;
 
-		return $modelClass::find()->where( 'parentId=:pId AND parentType=:pType AND status='.Cart::STATUS_ACTIVE, [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
+		if( $first ) {
+
+			return $modelClass::find()->where( "parentId=:pId AND parentType=:pType", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
+		}
+
+		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType", [ ':pId' => $parentId, ':pType' => $parentType ] )->all();
+	}
+
+	public function getActiveByParent( $parentId, $parentType ) {
+
+		$modelClass	= self::$modelClass;
+		$active		= Cart::STATUS_ACTIVE;
+
+		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND status=$active", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
 	}
 
 	// Read - Lists ----
@@ -99,14 +126,24 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	// Create -------------
 
-	public function create( $parentId, $config	= [] ) {
+	public function createByParams( $params = [], $config = [] ) {
 
-		$cart	= new Cart();
+		$parentId			= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
+		$parentType			= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
+		$title				= isset( $config[ 'title' ] ) ? $config[ 'title' ] : null;
+		$user				= Yii::$app->user->getIdentity();
 
+		$cart				= new Cart();
+		$cart->title		= $title;
+
+		if( empty( $cart->title ) ) {
+
+			$cart->generateName();
+		}
+
+		$cart->createdBy	= isset( $user ) ? $user->id : null;
 		$cart->parentId		= $parentId;
-		$cart->parentType	= $config[ 'parentType' ];
-		$cart->createdBy	= isset( $config[ 'userId' ] ) ? $config[ 'userId' ] : null;
-		$cart->title		= isset( $config[ 'title' ] ) ? $config[ 'title' ] : null ;
+		$cart->parentType	= $parentType;
 		$cart->status		= Cart::STATUS_ACTIVE;
 		$cart->token		= Yii::$app->security->generateRandomString();
 
@@ -118,14 +155,12 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 	public function createByUserId( $userId ) {
 
 		// Set Attributes
-		$user				= Yii::$app->cmgCore->getAppUser();
+		$user				= Yii::$app->core->getAppUser();
 		$cart				= new Cart();
 
 		$cart->createdBy	= $user->id;
 		$cart->parentId		= $userId;
 		$cart->parentType	= CoreGlobal::TYPE_USER;
-
-		$cart->generateName();
 
 		$cart->save();
 
@@ -135,95 +170,75 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	// Update -------------
 
-	public function update( $cart, $config = [] ) {
+	public function update( $model, $config = [] ) {
 
-		$user			= Yii::$app->cmgCore->getAppUser();
-		$cartToUpdate	= self::findById( $cart->id );
+		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'type', 'title', 'token', 'status' ];
+		$user			= Yii::$app->core->getAppUser();
 
-		$cartToUpdate->modifiedBy	= $user->id;
-
-		$cartToUpdate->copyForUpdateFrom( $order, [ 'status', 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ] );
+		$model->modifiedBy	= $user->id;
 
 		// Update Cart
-		$cartToUpdate->update();
-
-		// Return Cart
-		return $cartToUpdate;
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
 	}
 
-	public function setAbandoned( $existingCart = null ) {
+	public function updateStatus( $model, $status, $config = [] ) {
 
-		Cart::updateAll( [ 'status' => Cart::STATUS_ABANDONED ] );
+		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'status' ];
 
-		if( $existingCart != null ) {
+		$model->status	= $status;
 
-			$cart	= self::findById( $existingCart->id );
-
-			if( isset( $cart ) ) {
-
-				$cart->status	= Cart::STATUS_ACTIVE;
-				$cart->update();
-			}
-		}
-
-		return true;
+		// Update Cart
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
 	}
 
-	public function updateStatus( $cart, $status ) {
+	public function setAbandoned( $model, $config = [] ) {
 
-		$cart->status	= $status;
-
-		$cart->update();
-
-		return $cart;
+		return $this->updateStatus( $model, Cart::STATUS_ABANDONED );
 	}
 
 	// Delete -------------
 
-	public function delete( $cart, $config = [] ) {
+	public function delete( $model, $config = [] ) {
 
-		$cartToDelete	= self::findById( $cart->id );
+		// Delete items
+		Yii::$app->factory->get( 'cartItemService' )->deleteByCartId( $model->id );
 
-		if( isset( $cartToDelete ) ) {
-
-		  $cartToDelete->delete();
-
-		  return true;
-		}
+		// Delete model
+		return parent::delete( $model, $config );
 	}
 
-	// Item Management
+	// Items --------------
 
-	public function addItemToCart( $cart, $cartItem, $additionalParams = [] ) {
+	public function addItem( $model, $item, $config = [] ) {
 
-		$user				= Yii::$app->cmgCore->getAppUser();
-		$cartItem->cartId	= $cart->id;
+		$user				= Yii::$app->core->getAppUser();
+		$cartItem->cartId	= $model->id;
+		$cartItemService	= Yii::$app->factory->get( 'cartItemService' );
 
-		// remove if exist
-		if( $cartItem->id > 0 && !$cartItem->addToCart ) {
+		// Remove in case it's not required
+		if( isset( $item->id ) && $item->id > 0 && !$item->keep ) {
 
-			CartItemService::delete( $cartItem );
+			$cartItemService->delete( $item );
 		}
+		else if( $item->keep ) {
 
-		if( $cartItem->addToCart ) {
+			// Create
+			if( !isset( $item->id ) || $item->id <= 0 ) {
 
-			// create
-			if( $cartItem->id <= 0 ) {
-
-				$cartItem->setScenario( "create" );
-
-				return CartItemService::create( $cartItem );
+				return $cartItemService->create( $item );
 			}
 			// update
 			else {
 
-				$cartItem->setScenario( "update" );
-
-				return CartItemService::update( $cartItem, $additionalParams );
+				return $cartItemService->update( $item, $config );
 			}
 		}
 
-		return null;
+		return false;
 	}
 
 	// Static Methods ----------------------------------------------

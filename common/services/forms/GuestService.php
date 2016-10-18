@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services\resources;
+namespace cmsgears\cart\common\services\forms;
 
 // Yii Imports
 use \Yii;
@@ -8,7 +8,7 @@ use \Yii;
 use cmsgears\core\common\models\entities\User;
 
 use cmsgears\core\common\services\interfaces\entities\IUserService;
-use cmsgears\cart\common\services\interfaces\resources\IGuestService;
+use cmsgears\cart\common\services\interfaces\forms\IGuestService;
 
 class GuestService extends \yii\base\Component implements IGuestService {
 
@@ -69,15 +69,20 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 	// Create -------------
 
-	public function create( $form, $config = [] ) {
+	public function create( $model, $config = [] ) {
 
-		$user	= new User();
+		$user	= $this->userService->findByEmail( $model->email );
 
-		$user->firstName	= $form->firstName;
-		$user->lastName		= $form->lastName;
-		$user->email		= $form->email;
+		if( !isset( $user ) ) {
 
-		$user	= $this->userService->create( $user );
+			$user	= new User();
+
+			$user->firstName	= $model->firstName;
+			$user->lastName		= $model->lastName;
+			$user->email		= $model->email;
+
+			$user->save();
+		}
 
 		if( isset( $user ) ) {
 

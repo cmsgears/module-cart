@@ -1,20 +1,20 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use \Yii;
+use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\entities\OrderItem;
+use cmsgears\cart\common\models\resources\OrderHistory;
 
-use cmsgears\cart\common\services\interfaces\entities\IOrderService;
-use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
+use cmsgears\cart\common\services\interfaces\resources\IOrderHistoryService;
 
-class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
+class OrderHistoryService extends \cmsgears\core\common\services\base\EntityService implements IOrderHistoryService {
 
 	// Variables ---------------------------------------------------
 
@@ -24,9 +24,9 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\OrderItem';
+	public static $modelClass	= '\cmsgears\cart\common\models\resources\OrderHistory';
 
-	public static $modelTable	= CartTables::TABLE_ORDER_ITEM;
+	public static $modelTable	= CartTables::TABLE_ORDER_HISTORY;
 
 	public static $parentType	= null;
 
@@ -38,20 +38,11 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Protected --------------
 
-	protected $orderService;
-
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-
-	public function __construct( IOrderService $orderService, $config = [] ) {
-
-		$this->orderService	= $orderService;
-
-		parent::__construct( $config );
-	}
 
 	// Instance methods --------------------------------------------
 
@@ -63,18 +54,44 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// CMG parent classes --------------------
 
-	// OrderItemService ----------------------
+	// OrderHistoryService -------------------
 
 	// Data Provider ------
+
+	public function getPage( $config = [] ) {
+
+		$sort = new Sort([
+			'attributes' => [
+				'order' => [
+					'asc' => [ 'orderId' => SORT_ASC ],
+					'desc' => ['orderId' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Order'
+				],
+				'type' => [
+					'asc' => [ 'type' => SORT_ASC ],
+					'desc' => [ 'type' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Type'
+				],
+				'creator' => [
+					'asc' => [ 'createdBy' => SORT_ASC ],
+					'desc' => [ 'createdBy' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Creator'
+				]
+			],
+			//'defaultOrder' => [ 'source' => SORT_ASC ]
+		]);
+
+		$config[ 'sort' ] = $sort;
+
+		return parent::findPage( $config );
+	}
 
 	// Read ---------------
 
 	// Read - Models ---
-
-	public function getByOrderId( $oderId ) {
-
-		return OrderItem::findByOrderId( $oderId );
-	}
 
 	// Read - Lists ----
 
@@ -84,25 +101,6 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Create -------------
 
-	// Create Order Item from cart item
-	public function createFromCartItem( $order, $cartItem, $config = [] ) {
-
-		// Set Attributes
-		$user					= Yii::$app->core->getAppUser();
-
-		$orderItem				= new OrderItem();
-		$orderItem->orderId		= $order->id;
-		$orderItem->createdBy	= $user->id;
-
-		// Copy from Cart Item
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'name', 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
-
-		$orderItem->save();
-
-		// Return OrderItem
-		return $orderItem;
-	}
-
 	// Update -------------
 
 	// Delete -------------
@@ -111,7 +109,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// CMG parent classes --------------------
 
-	// OrderItemService ----------------------
+	// OrderHistoryService -------------------
 
 	// Data Provider ------
 

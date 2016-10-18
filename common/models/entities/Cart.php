@@ -43,7 +43,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 	// Constants --------------
 
 	const STATUS_ACTIVE			= 1000;
-	const STATUS_USER_CHECKOUT	= 2000;
+	const STATUS_CHECKOUT		= 2000;
 	const STATUS_PAYMENT		= 3000;
 	const STATUS_SUCCESS		= 4000;
 	const STATUS_FAILED			= 5000;
@@ -53,7 +53,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 	public static $statusMap = [
 		self::STATUS_ACTIVE => 'Active',
-		self::STATUS_USER_CHECKOUT => 'User Checkout',
+		self::STATUS_CHECKOUT => 'Checkout',
 		self::STATUS_PAYMENT => 'Payment',
 		self::STATUS_SUCCESS => 'Success',
 		self::STATUS_FAILED => 'Failed',
@@ -111,11 +111,12 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
-			[ [ 'parentId', 'parentType' ], 'required' ],
+			[ [ 'token' ], 'required', 'on' => 'guest' ],
+			[ [ 'createdBy' ], 'required', 'on' => 'user' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
-			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
@@ -132,6 +133,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
+			'token' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TOKEN ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
@@ -150,6 +152,11 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] );
 	}
 
+	public function generateName() {
+
+		$this->title = Yii::$app->security->generateRandomString( 16 );
+	}
+
 	public function getCartTotal() {
 
 		$items	= $this->items;
@@ -158,7 +165,10 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 		foreach( $items as $item ) {
 
-			$total	+= $item->quantity * $item->price;
+			if( $item->keep ) {
+
+				$total	+= $item->getTotalPrice();
+			}
 		}
 
 		return $total;
@@ -181,7 +191,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
 		$config[ 'relations' ]	= $relations;

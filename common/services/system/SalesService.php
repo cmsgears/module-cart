@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\admin\services;
+namespace cmsgears\cart\common\services\system;
 
 // Yii Imports
 use \Yii;
@@ -7,19 +7,59 @@ use yii\data\Sort;
 use yii\db\Query;
 
 // CMG Imports
-use cmsgears\cart\common\models\entities\CartTables;
-use cmsgears\cart\common\models\entities\Order;
-use cmsgears\cart\common\models\entities\OrderTransaction;
+use cmsgears\cart\common\services\interfaces\system\ISalesService;
 
 use cmsgears\core\common\utilities\DateUtil;
 
-class OrderTransactionService extends \cmsgears\cart\common\services\OrderTransactionService {
+class SalesService extends \yii\base\Component implements ISalesService {
 
-	// Static Methods ----------------------------------------------
+	// Variables ---------------------------------------------------
 
-	// Read -------------
+	// Globals -------------------------------
 
-	public static function getSalesData( $duration ) {
+	// Constants --------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// SalesService --------------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	public function getSalesData( $duration ) {
 
 		$dates			= [];
 		$transactions	= [];
@@ -40,7 +80,7 @@ class OrderTransactionService extends \cmsgears\cart\common\services\OrderTransa
 		$query->where( " $orderTable.status in ( $statusPaid )" );
 
 		switch( $duration ) {
-			
+
 			case 0:
 			{
 				// Current Week - Starting with Sun
@@ -84,24 +124,52 @@ class OrderTransactionService extends \cmsgears\cart\common\services\OrderTransa
 		}
 
 		foreach ( $transactions as $transaction ) {
-			
-			$transactionskv[ $transaction[ 'date' ] ] = $transaction[ 'amount' ]; 
+
+			$transactionskv[ $transaction[ 'date' ] ] = $transaction[ 'amount' ];
 		}
 
 		foreach ( $dates as $date ) {
-			
+
 			if( isset( $transactionskv[ $date ] ) ) {
 
 				$amount[]	= $transactionskv[ $date ];
 			}
 			else {
-				
+
 				$amount[]	= 0;
 			}
 		}
 
 		return $amount;
 	}
-}
 
-?>
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
+
+	// Static Methods ----------------------------------------------
+
+	// CMG parent classes --------------------
+
+	// SalesService --------------------------
+
+	// Data Provider ------
+
+	// Read ---------------
+
+	// Read - Models ---
+
+	// Read - Lists ----
+
+	// Read - Maps -----
+
+	// Read - Others ---
+
+	// Create -------------
+
+	// Update -------------
+
+	// Delete -------------
+}

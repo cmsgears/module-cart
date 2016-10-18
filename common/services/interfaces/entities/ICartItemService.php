@@ -15,13 +15,13 @@ interface ICartItemService extends \cmsgears\core\common\services\interfaces\bas
 
 	// Read - Models ---
 
-	public function getByUserId( $userId );
-
 	public function getByCartId( $id );
+
+	public function getByUserId( $userId );
 
 	public function getByParentCartId( $parentId, $parentType, $cartId );
 
-	public function getObjectMapByUserId( $userId );
+	public function getParentIdObjectMap( $cart );
 
 	// Read - Lists ----
 

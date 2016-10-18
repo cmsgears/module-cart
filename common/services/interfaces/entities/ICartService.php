@@ -9,6 +9,8 @@ use cmsgears\core\common\config\CoreGlobal;
 
 interface ICartService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
 
+	public function setCartItemService( ICartItemService $cartItemService );
+
 	// Data Provider ------
 
 	// Read ---------------
@@ -18,6 +20,8 @@ interface ICartService extends \cmsgears\core\common\services\interfaces\base\IE
 	public function getByToken( $token );
 
 	public function getByUserId( $userId );
+
+	public function getByParent( $parentId, $parentType, $first = true );
 
 	public function getActiveByParent( $parentId, $parentType );
 
@@ -31,12 +35,13 @@ interface ICartService extends \cmsgears\core\common\services\interfaces\base\IE
 
 	// Update -------------
 
-	public function setAbandoned( $existingCart = null );
+	public function updateStatus( $model, $status, $config = [] );
 
-	public function updateStatus( $cart, $status );
-
-	public function addItemToCart( $cart, $cartItem, $additionalParams = [] );
+	public function setAbandoned( $model, $config = [] );
 
 	// Delete -------------
 
+	// Items --------------
+
+	public function addItem( $model, $item, $config = [] );
 }

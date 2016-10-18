@@ -9,6 +9,8 @@ use cmsgears\core\common\config\CoreGlobal;
 
 interface IOrderService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
 
+	public function setOrderItemService( IOrderItemService $orderItemService );
+
 	// Data Provider ------
 
 	public function getPageByParent( $parentId, $parentType );
@@ -29,17 +31,25 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	// Create -------------
 
-	public function createFromCart( $order, $shippingAddress, $cart, $cartItems, $message, $additionalParams = [] );
+	public function createFromCart( $order, $message, $cart, $config = [] );
 
 	// Update -------------
 
 	public function updateStatus( $model, $status );
 
-	public function confirmOrder( $order );
+	public function approve( $order );
 
-	public function placeOrder( $order );
+	public function place( $order );
 
-	public function updateStatusToPaid( $order );
+	public function paid( $order );
+
+	public function confirm( $order );
+
+	public function process( $order );
+
+	public function deliver( $order );
+
+	public function complete( $order );
 
 	// Delete -------------
 

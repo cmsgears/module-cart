@@ -8,17 +8,23 @@ use \Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
+use cmsgears\core\common\models\traits\resources\DataTrait;
+
 use cmsgears\cart\common\models\base\CartTables;
+use cmsgears\cart\common\models\entities\Order;
 
 /**
- * UomConversion Entity - The primary class.
+ * OrderHistory Entity - The primary class.
  *
  * @property integer $id
- * @property integer $uomId
- * @property integer $targetId
- * @property float $quantity
+ * @property integer $orderId
+ * @property integer $createdBy
+ * @property string $type
+ * @property datetime $createdAt
+ * @property string $content
+ * @property string $data
  */
-class UomConversion extends \cmsgears\core\common\models\base\Entity {
+class OrderHistory extends \cmsgears\core\common\models\base\Entity {
 
 	// Variables ---------------------------------------------------
 
@@ -40,6 +46,8 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// Traits ------------------------------------------------------
 
+	use DataTrait;
+
 	// Constructor and Initialisation ------------------------------
 
 	// Instance methods --------------------------------------------
@@ -55,19 +63,22 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
-			[ [ 'uomId', 'targetId' ], 'required' ],
-			[ [ 'id' ], 'safe' ],
-			[ [ 'uomId', 'targetId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ 'quantity', 'number' ]
+			[ [ 'orderId' ], 'required' ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
+			[ [ 'orderId', 'createdBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'createdAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
 
 	public function attributeLabels() {
 
 		return [
-			'uomId' => 'Source UOM',
-			'targetId' => 'Target UOM',
-			'quantity' => 'Quantity'
+			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
 	}
 
@@ -77,20 +88,11 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// Validators ----------------------------
 
-	// UomConversion -------------------------
+	// OrderHistory --------------------------
 
-	public function getSource() {
+	public function getOrder() {
 
-		$uomTable = CartTables::TABLE_UOM;
-
-		return $this->hasOne( Uom::className(), [ 'id' => 'uomId' ] )->from( "$uomTable as source" );
-	}
-
-	public function getTarget() {
-
-		$uomTable = CartTables::TABLE_UOM;
-
-		return $this->hasOne( Uom::className(), [ 'id' => 'targetId' ] )->from( "$uomTable as target" );
+		return $this->hasOne( Order::className(), [ 'id' => 'orderId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -101,18 +103,18 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	public static function tableName() {
 
-		return CartTables::TABLE_UOM_CONVERSION;
+		return CartTables::TABLE_ORDER_HISTORY;
 	}
 
 	// CMG parent classes --------------------
 
-	// UomConversion -------------------------
+	// OrderHistory --------------------------
 
 	// Read - Query -----------
 
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'source', 'target' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );

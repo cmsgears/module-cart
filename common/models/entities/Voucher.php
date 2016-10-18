@@ -123,25 +123,22 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 
 	public function rules() {
 
-		$trim	= [];
-
-		if( Yii::$app->core->trimFieldValue ) {
-
-			$trim[] = [ [ 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
-		}
-
 		$rules = [
-			[ [ 'name', 'type', 'amount', 'taxType', 'freeShipping', 'minPurchase', 'maxDiscount' ], 'required' ],
-			[ [ 'id', 'description', 'usageLimit', 'usageCount' ], 'safe' ],
+			[ [ 'type', 'name', 'amount' ], 'required' ],
+			[ [ 'id', 'description' ], 'safe' ],
 			[ 'name', 'unique' ],
-			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'taxType', 'freeShipping', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
+			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'taxType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'freeShipping', 'boolean' ],
 			[ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],
 			[ [ 'startTime', 'endTime', 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
 		if( Yii::$app->core->trimFieldValue ) {
+
+			$trim[] = [ [ 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -157,7 +154,7 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 			'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
 			'amount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_AMOUNT ),
 			'taxType' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX_TYPE ),
-			'shippingType' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING_TYPE ),
+			'freeShipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING_FREE ),
 			'minPurchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_MIN_PURCHASE ),
 			'maxDiscount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_MAX_DISCOUNT ),
 			'usageLimit' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_USAGE_LIMIT ),
@@ -190,7 +187,7 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
-	public static function queryWithAll( $config = [] ) {
+	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
 		$config[ 'relations' ]	= $relations;

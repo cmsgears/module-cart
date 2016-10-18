@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services\interfaces\entities;
+namespace cmsgears\cart\common\services\interfaces\forms;
 
 // Yii Imports
 use \Yii;
@@ -7,7 +7,7 @@ use \Yii;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-interface IOrderItemService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
+interface IGuestService {
 
 	// Data Provider ------
 
@@ -15,18 +15,15 @@ interface IOrderItemService extends \cmsgears\core\common\services\interfaces\ba
 
 	// Read - Models ---
 
-	public function getByOrderId( $oderId );
-
 	// Read - Lists ----
 
 	// Read - Maps -----
 
 	// Create -------------
 
-	public function createFromCartItem( $order, $cartItem, $config = [] );
+	public function create( $model, $config = [] );
 
 	// Update -------------
 
 	// Delete -------------
-
 }

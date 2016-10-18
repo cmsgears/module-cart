@@ -1,5 +1,5 @@
 <?php
-namespace cmsgears\cart\common\services\interfaces\resources;
+namespace cmsgears\cart\common\services\interfaces\entities;
 
 // Yii Imports
 use \Yii;
@@ -7,7 +7,7 @@ use \Yii;
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-interface IGuestService {
+interface IVoucherService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
 
 	// Data Provider ------
 
@@ -20,8 +20,6 @@ interface IGuestService {
 	// Read - Maps -----
 
 	// Create -------------
-
-	public function create( $form, $config = [] );
 
 	// Update -------------
 
