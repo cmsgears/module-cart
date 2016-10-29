@@ -24,6 +24,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property integer $id
  * @property integer $orderId
+ * @property integer $primaryUnitId
  * @property integer $purchasingUnitId
  * @property integer $quantityUnitId
  * @property integer $weightUnitId
@@ -38,6 +39,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $sku
  * @property integer $price
  * @property integer $discount
+ * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
  * @property integer $weight

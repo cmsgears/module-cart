@@ -19,6 +19,8 @@ use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
+use cmsgears\core\common\utilities\DateUtil;
+
 class OrderService extends \cmsgears\core\common\services\base\EntityService implements IOrderService {
 
 	// Variables ---------------------------------------------------
@@ -269,7 +271,16 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		self::updateStatus( $order, Order::STATUS_PROCESSED );
 	}
 
+	public function ship( $order ) {
+
+		self::updateStatus( $order, Order::STATUS_SHIPPED );
+	}
+
 	public function deliver( $order ) {
+
+		$order->deliveredAt = DateUtil::getDateTime();
+
+		$order->update();
 
 		self::updateStatus( $order, Order::STATUS_DELIVERED );
 	}
@@ -277,6 +288,27 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	public function complete( $order ) {
 
 		self::updateStatus( $order, Order::STATUS_COMPLETED );
+	}
+
+	public function updateBaseStatus( $order ) {
+
+		$children	= $order->children;
+		$completed	= true;
+
+		foreach ( $children as $child ) {
+
+			if( !$child->isCompleted() ) {
+
+				$completed	= false;
+
+				break;
+			}
+		}
+
+		if( $completed ) {
+
+			$this->complete( $order );
+		}
 	}
 
 	// Delete -------------

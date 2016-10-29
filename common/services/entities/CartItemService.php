@@ -110,7 +110,6 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		$model->cartId		= $cart->id;
 		$model->createdBy	= isset( $user ) ? $user->id : null;
 
-		$model->save();
 		// Create Cart Item
 		return parent::create( $model, $config );
 	}
@@ -119,7 +118,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	public function update( $model, $config = [] ) {
 
-		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'purchasingUnitId', 'primaryUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ];
+		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'price', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ];
 		$addAttributes	= isset( $config[ 'addAttributes' ] ) ? $config[ 'addAttributes' ] : [ ];
 		$attributes		= ArrayHelper::merge( $attributes, $addAttributes );
 

@@ -24,6 +24,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property integer $id
  * @property integer $cartId
+ * @property integer $primaryUnitId
  * @property integer $purchasingUnitId
  * @property integer $quantityUnitId
  * @property integer $weightUnitId
@@ -37,6 +38,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $name
  * @property integer $sku
  * @property integer $price
+ * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
  * @property integer $weight
@@ -110,7 +112,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
-			[ [ 'cartId', 'name', 'price', 'purchase' ], 'required' ],
+			[ [ 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],

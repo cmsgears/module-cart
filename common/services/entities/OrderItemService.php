@@ -95,7 +95,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 		$orderItem->createdBy	= $user->id;
 
 		// Copy from Cart Item
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'name', 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
+		$orderItem->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
 
 		$orderItem->save();
 

@@ -47,9 +47,13 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	public function process( $order );
 
+	public function ship( $order );
+
 	public function deliver( $order );
 
 	public function complete( $order );
+
+	public function updateBaseStatus( $order );
 
 	// Delete -------------
 

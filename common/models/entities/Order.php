@@ -62,9 +62,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	const STATUS_REFUNDED			=  5000; // Order refunded - money returned
 	const STATUS_CONFIRMED			=  6000; // Confirmed by vendor
 	const STATUS_PROCESSED			=  7000; // Processed by vendor
-	const STATUS_DELIVERED			=  8000; // Delivered by vendor
-	const STATUS_COMPLETED			=  9000; // Order completed
+	const STATUS_SHIPPED			=  8000; // Shipped by vendor
+	const STATUS_DELIVERED			=  9000; // Delivered by vendor
 	const STATUS_RETURNED			= 10000; // Returned to vendor - no receiver
+	const STATUS_DISPUTE			= 11000; // Order dispute
+	const STATUS_COMPLETED			= 12000; // Order completed
 
 	// Public -----------------
 
@@ -77,9 +79,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		self::STATUS_REFUNDED => 'Refunded',
 		self::STATUS_CONFIRMED => 'Confirmed',
 		self::STATUS_PROCESSED => 'Processed',
+		self::STATUS_SHIPPED => 'Shipped',
 		self::STATUS_DELIVERED => 'Delivered',
-		self::STATUS_COMPLETED => 'Completed',
-		self::STATUS_RETURNED => 'Returned'
+		self::STATUS_RETURNED => 'Returned',
+		self::STATUS_DISPUTE => 'Dispute',
+		self::STATUS_COMPLETED => 'Completed'
 		);
 
 	// Used for external docs
@@ -92,9 +96,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		'Refunded' => self::STATUS_REFUNDED,
 		'Confirmed' => self::STATUS_CONFIRMED,
 		'Processed' => self::STATUS_PROCESSED,
+		'Shipped' => self::STATUS_SHIPPED,
 		'Delivered' => self::STATUS_DELIVERED,
-		'Completed'  => self::STATUS_COMPLETED,
-		'Returned' => self::STATUS_RETURNED
+		'Returned' => self::STATUS_RETURNED,
+		'Dispute' => self::STATUS_DISPUTE,
+		'Completed'  => self::STATUS_COMPLETED
 	];
 
 	// Used for url params
@@ -107,9 +113,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		'refunded' => self::STATUS_REFUNDED,
 		'confirmed' => self::STATUS_CONFIRMED,
 		'processed' => self::STATUS_PROCESSED,
+		'shipped' => self::STATUS_SHIPPED,
 		'delivered' => self::STATUS_DELIVERED,
-		'completed' => self::STATUS_COMPLETED,
-		'returned' => self::STATUS_RETURNED
+		'returned' => self::STATUS_RETURNED,
+		'dispute' => self::STATUS_DISPUTE,
+		'completed' => self::STATUS_COMPLETED
 	];
 
 	// Protected --------------
@@ -213,11 +221,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Order ---------------------------------
 
-	public function getParentOrder() {
+	public function getBase() {
 
 		$orderTable = CartTables::TABLE_ORDER;
 
-		return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] )->from( "$orderTable as parent" );
+		return $this->hasOne( Order::className(), [ 'id' => 'baseId' ] )->from( "$orderTable as base" );
 	}
 
 	public function getPayment() {
@@ -225,7 +233,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasOne( Transaction::className(), [ 'parentId' => 'id' ] );
 	}
 
-	public function getChildOrders() {
+	public function getChildren() {
 
 		return $this->hasMany( Order::className(), [ 'baseId' => 'id' ] );
 	}
@@ -250,54 +258,129 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return $this->status == self::STATUS_NEW;
 	}
 
-	public function isApproved() {
+	public function isApproved( $strict = true ) {
 
-		return $this->status == self::STATUS_APPROVED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_APPROVED;
+		}
+
+		return $this->status >= self::STATUS_APPROVED;
 	}
 
-	public function isPlaced() {
+	public function isPlaced( $strict = true ) {
 
-		return $this->status == self::STATUS_PLACED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_PLACED;
+		}
+
+		return $this->status >= self::STATUS_PLACED;
 	}
 
-	public function isPaid() {
+	public function isPaid( $strict = true ) {
 
-		return $this->status == self::STATUS_PAID;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_PAID;
+		}
+
+		return $this->status >= self::STATUS_PAID;
 	}
 
-	public function isCancelled() {
+	public function isCancelled( $strict = true ) {
 
-		return $this->status == self::STATUS_CANCELLED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_CANCELLED;
+		}
+
+		return $this->status >= self::STATUS_CANCELLED;
 	}
 
-	public function isRefunded() {
+	public function isRefunded( $strict = true ) {
 
-		return $this->status == self::STATUS_REFUNDED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_REFUNDED;
+		}
+
+		return $this->status >= self::STATUS_REFUNDED;
 	}
 
-	public function isConfirmed() {
+	public function isConfirmed( $strict = true ) {
 
-		return $this->status == self::STATUS_CONFIRMED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_CONFIRMED;
+		}
+
+		return $this->status >= self::STATUS_CONFIRMED;
 	}
 
-	public function isProcessed() {
+	public function isProcessed( $strict = true ) {
 
-		return $this->status == self::STATUS_PROCESSED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_PROCESSED;
+		}
+
+		return $this->status >= self::STATUS_PROCESSED;
 	}
 
-	public function isDelivered() {
+	public function isShipped( $strict = true ) {
 
-		return $this->status == self::STATUS_DELIVERED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_SHIPPED;
+		}
+
+		return $this->status >= self::STATUS_SHIPPED;
 	}
 
-	public function isReturned() {
+	public function isDelivered( $strict = true ) {
 
-		return $this->status == self::STATUS_RETURNED;
+		if( $strict ) {
+
+			return $this->status == self::STATUS_DELIVERED;
+		}
+
+		return $this->status >= self::STATUS_DELIVERED;
 	}
 
-	public function isPrintable() {
+	public function isReturned( $strict = true ) {
 
-		return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED ] );
+		if( $strict ) {
+
+			return $this->status == self::STATUS_RETURNED;
+		}
+
+		return $this->status >= self::STATUS_RETURNED;
+	}
+
+	public function isDispute( $strict = true ) {
+
+		if( $strict ) {
+
+			return $this->status == self::STATUS_DISPUTE;
+		}
+
+		return $this->status >= self::STATUS_DISPUTE;
+	}
+
+	public function isCompleted( $strict = true ) {
+
+		if( $strict ) {
+
+			return $this->status == self::STATUS_COMPLETED;
+		}
+
+		return $this->status >= self::STATUS_COMPLETED;
+	}
+
+	public function isPrintable( $strict = true ) {
+
+		return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED, self::STATUS_COMPLETED ] );
 	}
 
 	// Static Methods ----------------------------------------------
