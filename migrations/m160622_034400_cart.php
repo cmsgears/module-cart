@@ -43,6 +43,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->upOrder();
 		$this->upOrderItem();
 		$this->upOrderHistory();
+		$this->upTransaction();
 
 		// Voucher
 		$this->upVoucher();
@@ -247,6 +248,14 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'order_history_creator', $this->prefix . 'cart_order_history', 'createdBy' );
 	}
 
+	private function upTransaction() {
+
+		$this->addColumn( $this->prefix . 'transaction', 'orderId', $this->bigInteger( 20 )->after( 'id' ) );
+
+		// Index for order
+		$this->createIndex( 'idx_' . $this->prefix . 'transaction_order', $this->prefix . 'transaction', 'orderId' );
+	}
+
 	private function upVoucher() {
 
 		$this->createTable( $this->prefix . 'cart_voucher', [
@@ -317,6 +326,9 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_history_order', $this->prefix . 'cart_order_history', 'orderId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_history_creator', $this->prefix . 'cart_order_history', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 
+		// Transaction
+		$this->addForeignKey( 'fk_' . $this->prefix . 'transaction_order', $this->prefix . 'transaction', 'orderId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
+
 		// Voucher
 		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_creator', $this->prefix . 'cart_voucher', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_modifier', $this->prefix . 'cart_voucher', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
@@ -381,6 +393,9 @@ class m160622_034400_cart extends \yii\db\Migration {
 		// Order History
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_history_order', $this->prefix . 'cart_order_history' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_history_creator', $this->prefix . 'cart_order_history' );
+
+		// Transaction
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'transaction_order', $this->prefix . 'transaction' );
 
 		// Voucher
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_creator', $this->prefix . 'cart_voucher' );

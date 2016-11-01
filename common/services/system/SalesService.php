@@ -7,6 +7,10 @@ use yii\data\Sort;
 use yii\db\Query;
 
 // CMG Imports
+use cmsgears\payment\common\models\base\PaymentTables;
+use cmsgears\cart\common\models\base\CartTables;
+use cmsgears\cart\common\models\entities\Order;
+
 use cmsgears\cart\common\services\interfaces\system\ISalesService;
 
 use cmsgears\core\common\utilities\DateUtil;
@@ -59,25 +63,36 @@ class SalesService extends \yii\base\Component implements ISalesService {
 
 	// Read - Others ---
 
-	public function getSalesData( $duration ) {
+	public function getSalesData( $duration, $config = [] ) {
 
 		$dates			= [];
 		$transactions	= [];
 		$transactionskv = [];
 		$amount			= [];
+		$base			= isset( $config[ 'base' ] ) ? $config[ 'base' ] : false;
+		$children		= isset( $config[ 'children' ] ) ? $config[ 'children' ] : false;
 
-		$statusPaid		= [ Order::STATUS_PAID, Order::STATUS_DELIVERED ];
-		$statusPaid		= join( ",", $statusPaid );
+		$statusComplete	= Order::STATUS_COMPLETED;
 
+		$txnTable		= PaymentTables::TABLE_TRANSACTION;
 		$orderTable		= CartTables::TABLE_ORDER;
-		$txnTable		= CartTables::TABLE_ORDER_TRANSACTION;
+
 		$query			= new Query();
 
 		$query->select( [ "date(`$txnTable`.`createdAt`) as date", 'sum( amount ) as amount' ] );
 		$query->from( $txnTable );
 
 		$query->join( 'LEFT JOIN', $orderTable, "orderId = `$orderTable`.`id`" );
-		$query->where( " $orderTable.status in ( $statusPaid )" );
+		$query->where( " $orderTable.status=$statusComplete" );
+
+		if( $base ) {
+
+			$query->andWhere( " $orderTable.baseId IS NULL" );
+		}
+		else if( $children ) {
+
+			$query->andWhere( " $orderTable.baseId IS NOT NULL" );
+		}
 
 		switch( $duration ) {
 

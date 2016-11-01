@@ -74,6 +74,9 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartService', 'cmsgears\cart\common\services\entities\CartService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IVoucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
+
+		$factory->set( 'cmsgears\payment\common\services\interfaces\entities\ITransactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ITransactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
 	}
 
 	public function registerSystemServices() {
@@ -101,6 +104,7 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
 		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
 		$factory->set( 'voucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
+		$factory->set( 'transactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
 	}
 
 	public function initSystemServices() {
