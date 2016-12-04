@@ -108,7 +108,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		$cart	= $config[ 'cart' ];
 
 		$model->cartId		= $cart->id;
-		$model->createdBy	= isset( $user ) ? $user->id : null;
+		$model->createdBy	= $user != null ? $user->id : null;
 
 		// Create Cart Item
 		return parent::create( $model, $config );
@@ -123,7 +123,7 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 		$attributes		= ArrayHelper::merge( $attributes, $addAttributes );
 
 		$user				= Yii::$app->core->getAppUser();
-		$model->updatedBy	= isset( $user ) ? $user->id : null;
+		$model->modifiedBy	= $user != null ? $user->id : null;
 
 		// Update Cart Item
 		return parent::update( $model, [
