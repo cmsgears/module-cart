@@ -71,7 +71,7 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 	public function create( $model, $config = [] ) {
 
-		$user	= $this->userService->findByEmail( $model->email );
+		$user	= $this->userService->getByEmail( $model->email );
 
 		if( !isset( $user ) ) {
 

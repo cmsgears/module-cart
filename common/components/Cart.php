@@ -62,7 +62,7 @@ class Cart extends \yii\base\Component {
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
-		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\forms\IGuestService', 'cmsgears\cart\common\services\forms\GuestService' );
 	}
 
 	public function registerEntityServices() {
@@ -92,7 +92,7 @@ class Cart extends \yii\base\Component {
 
 		$factory->set( 'uomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'uomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
-		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\resources\GuestService' );
+		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\forms\GuestService' );
 	}
 
 	public function initEntityServices() {
