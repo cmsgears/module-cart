@@ -124,12 +124,16 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		$rules = [
+			// Required, Safe
 			[ [ 'type', 'name', 'amount' ], 'required' ],
 			[ [ 'id', 'description' ], 'safe' ],
-			[ 'name', 'unique' ],
+			// Unique
+			[ [ 'name', 'type' ], 'unique', 'targetAttribute' => [ 'name', 'type' ] ],
+			// Text Limit
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
-			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			// Other
 			[ [ 'taxType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'freeShipping', 'boolean' ],
 			[ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],

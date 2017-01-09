@@ -112,10 +112,13 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
+			// Required, Safe
 			[ [ 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
+			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			// Other
 			[ [ 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
 			[ 'keep', 'boolean' ],
 			[ [ 'parentId', 'parentType', 'cartId' ], 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'cartId' ] ],

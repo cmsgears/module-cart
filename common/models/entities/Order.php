@@ -174,10 +174,14 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
+			// Required, Safe
 			[ 'title', 'required' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
+			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'title', 'description' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ 'sameAddress', 'boolean' ],

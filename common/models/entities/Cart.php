@@ -111,11 +111,14 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
+			// Required, Safe
 			[ [ 'token' ], 'required', 'on' => 'guest' ],
 			[ [ 'createdBy' ], 'required', 'on' => 'user' ],
 			[ [ 'id', 'content', 'data' ], 'safe' ],
+			// Text Limit
 			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]

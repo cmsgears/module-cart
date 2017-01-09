@@ -102,11 +102,15 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		$rules = [
+			// Required, Safe
 			[ [ 'code', 'name', 'group' ], 'required' ],
 			[ [ 'id' ], 'safe' ],
+			// Unique
 			[ [ 'name', 'group' ], 'unique', 'targetAttribute' => [ 'name', 'group' ] ],
+			// Text Limit
 			[ 'code', 'string', 'min' => 1, 'max' => Yii::$app->core->smallText ],
 			[ [ 'name' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			// Other
 			[ [ 'group' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'base', 'active' ], 'boolean' ]
 		];
