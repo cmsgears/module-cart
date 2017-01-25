@@ -4,7 +4,7 @@ Module  	- Cart
 
 License 	- GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
 
-Description - The core cart module for CMSGears based projects. It's required for all the projects requiring cart and order system.
+Description - The Cart Module for CMSGears based projects. It's required for all the projects requiring cart and order system.
 
 =========================================
 Highlighted Features

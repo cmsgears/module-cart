@@ -8,10 +8,14 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\entities\CmgEntity;
+use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
+use cmsgears\core\common\models\traits\ResourceTrait;
+
+use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
  * Cart Entity - The primary class.
@@ -20,94 +24,194 @@ use cmsgears\core\common\models\traits\CreateModifyTrait;
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
- * @property integer $parentType 
- * @property string $name
+ * @property integer $parentType
+ * @property string $type
+ * @property string $title
+ * @property string $token
+ * @property short $status
  * @property datetime $createdAt
  * @property datetime $modifiedAt
+ * @property string $content
+ * @property string $data
  */
-class Cart extends CmgEntity {
+class Cart extends \cmsgears\core\common\models\base\Entity {
+
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	const STATUS_ACTIVE			= 1000;
+	const STATUS_CHECKOUT		= 2000;
+	const STATUS_PAYMENT		= 3000;
+	const STATUS_SUCCESS		= 4000;
+	const STATUS_FAILED			= 5000;
+	const STATUS_ABANDONED		= 6000;
+
+	// Public -----------------
+
+	public static $statusMap = [
+		self::STATUS_ACTIVE => 'Active',
+		self::STATUS_CHECKOUT => 'Checkout',
+		self::STATUS_PAYMENT => 'Payment',
+		self::STATUS_SUCCESS => 'Success',
+		self::STATUS_FAILED => 'Failed',
+		self::STATUS_ABANDONED => 'Abandoned'
+	];
+
+	// Protected --------------
+
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
 
 	use CreateModifyTrait;
+	use ResourceTrait;
 
-	// Instance methods --------------------------------------------------
+	// Constructor and Initialisation ------------------------------
 
-	public function generateName() {
+	// Instance methods --------------------------------------------
 
-		$this->name = Yii::$app->security->generateRandomString();;
-	}
-	
-	public function getCartTotal( $items ) {
-		
-		$cartTotal	= 0;
+	// Yii interfaces ------------------------
 
-		foreach ( $items as $item ) {
-			
-			$cartTotal += $item->getTotalPrice();
-		}
-		
-		return $cartTotal;
-	}
+	// Yii parent classes --------------------
 
-	// yii\base\Component ----------------
+	// yii\base\Component -----
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors() {
+	/**
+	 * @inheritdoc
+	 */
+	public function behaviors() {
 
-        return [
-
-            'timestampBehavior' => [
-                'class' => TimestampBehavior::className(),
+		return [
+			'authorBehavior' => [
+				'class' => AuthorBehavior::className()
+			],
+			'timestampBehavior' => [
+				'class' => TimestampBehavior::className(),
 				'createdAtAttribute' => 'createdAt',
- 				'updatedAtAttribute' => 'modifiedAt',
- 				'value' => new Expression('NOW()')
-            ]
-        ];
-    }
+				'updatedAtAttribute' => 'modifiedAt',
+				'value' => new Expression('NOW()')
+			]
+		];
+	}
 
-	// yii\base\Model --------------------
+	// yii\base\Model ---------
 
-    /**
-     * @inheritdoc
-     */
+	/**
+	 * @inheritdoc
+	 */
 	public function rules() {
 
-        return [
-			[ [ 'id', 'parentId', 'parentType', 'name' ], 'safe' ],
-            [ [ 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+		return [
+			// Required, Safe
+			[ [ 'token' ], 'required', 'on' => 'guest' ],
+			[ [ 'createdBy' ], 'required', 'on' => 'user' ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
+			// Text Limit
+			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			// Other
+			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
-        ];
-    }
+		];
+	}
 
-    /**
-     * @inheritdoc
-     */
+	/**
+	 * @inheritdoc
+	 */
 	public function attributeLabels() {
 
 		return [
-			'parentId' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
-			'parentType' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
-			'createdBy' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
-			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME )
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
+			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
+			'token' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TOKEN ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
+	}
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// Cart ----------------------------------
+
+	public function getItems() {
+
+		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] );
+	}
+
+	public function generateName() {
+
+		$this->title = Yii::$app->security->generateRandomString( 16 );
+	}
+
+	public function getCartTotal() {
+
+		$items	= $this->items;
+
+		$total	= 0;
+
+		foreach( $items as $item ) {
+
+			if( $item->keep ) {
+
+				$total	+= $item->getTotalPrice();
+			}
+		}
+
+		return $total;
 	}
 
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord ---------------
+	// Yii parent classes --------------------
+
+	// yii\db\ActiveRecord ----
 
 	public static function tableName() {
 
 		return CartTables::TABLE_CART;
 	}
 
-	// Cart ------------------------------
+	// CMG parent classes --------------------
 
-	public static function findByParentIdParentType( $parentId, $parentType ) {
+	// Cart ----------------------------------
 
-		return self::find()->where( 'parentId=:id AND parentType=:type', [ ':id' => $parentId, ':type' => $parentType ] )->one();
+	// Read - Query -----------
+
+	public static function queryWithHasOne( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
 	}
-}
 
-?>
+	// Read - Find ------------
+
+	public static function findByToken( $token ) {
+
+		return self::find()->where( 'token=:token', [ 'token' => $token ] )->one();
+	}
+
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
+}

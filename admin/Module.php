@@ -4,15 +4,20 @@ namespace cmsgears\cart\admin;
 // Yii Imports
 use \Yii;
 
+// CMG Imports
+use cmsgears\cart\common\config\CartGlobal;
+
 class Module extends \cmsgears\core\common\base\Module {
 
-    public $controllerNamespace = 'cmsgears\cart\admin\controllers';
+	public $controllerNamespace = 'cmsgears\cart\admin\controllers';
 
-    public function init() {
+	public $config				= [ CartGlobal::CONFIG_CART ];
 
-        parent::init();
+	public function init() {
 
-        $this->setViewPath( '@cmsgears/cart/admin/views' );
+		parent::init();
+
+		$this->setViewPath( '@cmsgears/cart/admin/views' );
 	}
 
 	public function getSidebarHtml() {
@@ -22,5 +27,3 @@ class Module extends \cmsgears\core\common\base\Module {
 		return $path;
 	}
 }
-
-?>

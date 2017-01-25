@@ -1,7 +1,7 @@
 {
 	"name": "cmsgears/module-cart",
-	"description": "The core cart module for CMSGears based projects. It's required for all the projects requiring cart and order system.",
-	"homepage": "http://www.cmsgears.com", 
+	"description": "The Cart Module for CMSGears based projects. It's required for all the projects requiring cart and order system.",
+	"homepage": "http://www.cmsgears.com",
 	"type": "package",
 	"keywords": [ "yii2", "cmsgears", "module", "cart" ],
 	"license": "GPLv3",
@@ -15,6 +15,7 @@
 	},
     "require": {
         "php": ">=5.4.0",
-        "cmsgears/module-core": "*"
+        "cmsgears/module-core": "*",
+        "cmsgears/module-payment": "*"
     }
 }

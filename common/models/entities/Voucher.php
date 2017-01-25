@@ -3,107 +3,207 @@ namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
 use \Yii;
-use yii\validators\FilterValidator;
-use yii\helpers\ArrayHelper;
+use yii\db\Expression;
+use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\entities\NamedCmgEntity;
+use cmsgears\cart\common\models\base\CartTables;
 
-class Voucher extends NamedCmgEntity {
+use cmsgears\core\common\models\traits\CreateModifyTrait;
+use cmsgears\core\common\models\traits\ResourceTrait;
 
-	const TYPE_CART				=  0;
-	const TYPE_CART_PERCENT		= 10;
-	const TYPE_PRODUCT			= 20;
-	const TYPE_PRODUCT_PERCENT	= 30;
+use cmsgears\core\common\behaviors\AuthorBehavior;
+
+/**
+ * Voucher Entity - The primary class.
+ *
+ * @property integer $id
+ * @property integer $createdBy
+ * @property integer $modifiedBy
+ * @property integer $parentId
+ * @property string $parentType
+ * @property string $type
+ * @property string $name
+ * @property string $description
+ * @property integer $amount
+ * @property integer $taxType
+ * @property boolean $freeShipping
+ * @property float $minPurchase
+ * @property float $maxDiscount
+ * @property datetime $startTime
+ * @property datetime $endTime
+ * @property short $usageLimit
+ * @property short $usageCount
+ * @property datetime $createdAt
+ * @property datetime $modifiedAt
+ */
+class Voucher extends \cmsgears\core\common\models\base\Entity {
+
+	// Variables ---------------------------------------------------
+
+	// Globals -------------------------------
+
+	// Constants --------------
+
+	const TYPE_CART				= 'cart$';
+	const TYPE_CART_PERCENT		= 'cart%';
+	const TYPE_PRODUCT			= 'product$';
+	const TYPE_PRODUCT_PERCENT	= 'product%';
 
 	const TAX_BEFORE_DISCOUNT	=  0;
 	const TAX_AFTER_DISCOUNT	= 10;
 
+	// Public -----------------
+
 	public static $typesMap = [
-	    self::TYPE_CART  => 'Cart $',
-	    self::TYPE_CART_PERCENT => 'Cart %',
-	    self::TYPE_PRODUCT => 'Product $',
-	    self::TYPE_PRODUCT_PERCENT => 'Product %'
+		self::TYPE_CART	 => 'Cart $',
+		self::TYPE_CART_PERCENT => 'Cart %',
+		self::TYPE_PRODUCT => 'Product $',
+		self::TYPE_PRODUCT_PERCENT => 'Product %'
 	];
 
 	public static $typesMapRev = [
-	    'Cart $' => self::TYPE_CART,
-	    'Cart %' => self::TYPE_CART_PERCENT,
-	    'Product $' => self::TYPE_PRODUCT,
-	    'Product %' => self::TYPE_PRODUCT_PERCENT
+		'Cart $' => self::TYPE_CART,
+		'Cart %' => self::TYPE_CART_PERCENT,
+		'Product $' => self::TYPE_PRODUCT,
+		'Product %' => self::TYPE_PRODUCT_PERCENT
 	];
 
 	public static $taxTypeMap = [
-	    self::TAX_BEFORE_DISCOUNT  => 'Before discount',
-	    self::TAX_AFTER_DISCOUNT => 'After discount'
+		self::TAX_BEFORE_DISCOUNT  => 'Before discount',
+		self::TAX_AFTER_DISCOUNT => 'After discount'
 	];
 
 	public static $taxTypeMapRev = [
-	    'Before discount' => self::TAX_BEFORE_DISCOUNT,
-	    'After discount' => self::TAX_AFTER_DISCOUNT
+		'Before discount' => self::TAX_BEFORE_DISCOUNT,
+		'After discount' => self::TAX_AFTER_DISCOUNT
 	];
 
-	// Instance Methods --------------------------------------------
+	// Protected --------------
 
-	// yii\base\Model --------------------
+	// Variables -----------------------------
+
+	// Public -----------------
+
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	use CreateModifyTrait;
+	use ResourceTrait;
+
+	// Constructor and Initialisation ------------------------------
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// yii\base\Component -----
+
+	/**
+	 * @inheritdoc
+	 */
+	public function behaviors() {
+
+		return [
+			'authorBehavior' => [
+				'class' => AuthorBehavior::className()
+			]
+		];
+	}
+
+	// yii\base\Model ---------
 
 	public function rules() {
 
-		$trim		= [];
+		$rules = [
+			// Required, Safe
+			[ [ 'type', 'name', 'amount' ], 'required' ],
+			[ [ 'id', 'description' ], 'safe' ],
+			// Unique
+			[ [ 'name', 'type' ], 'unique', 'targetAttribute' => [ 'name', 'type' ] ],
+			// Text Limit
+			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			// Other
+			[ [ 'taxType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'freeShipping', 'boolean' ],
+			[ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],
+			[ [ 'startTime', 'endTime', 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+		];
 
-		if( Yii::$app->cmgCore->trimFieldValue ) {
+		if( Yii::$app->core->trimFieldValue ) {
 
 			$trim[] = [ [ 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
-		}
-
-        $rules = [
-            [ [ 'name', 'type', 'amount', 'taxType', 'freeShipping', 'minPurchase', 'maxDiscount' ], 'required' ],
-            [ [ 'id', 'description', 'usageLimit', 'usageCount' ], 'safe' ],
-            [ 'name', 'alphanumhyphenspace' ],
-            [ 'name', 'validateNameCreate', 'on' => [ 'create' ] ],
-            [ 'name', 'validateNameUpdate', 'on' => [ 'update' ] ],
-            [ [ 'taxType', 'freeShipping', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true ],
-            [ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],
-            [ [ 'startTime', 'endTime', 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
-        ];
-
-		if( Yii::$app->cmgCore->trimFieldValue ) {
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
 
 		return $rules;
-    }
+	}
 
 	public function attributeLabels() {
 
 		return [
-			'name' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_NAME ),
-			'description' => Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
-			'amount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_AMOUNT ),
-			'taxType' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_TAX_TYPE ),
-			'shippingType' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_SHIPPING_TYPE ),
-			'minPurchase' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_MIN_PURCHASE ),
-			'maxDiscount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_MAX_DISCOUNT ),
-			'usageLimit' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_USAGE_LIMIT ),
-			'usageCount' => Yii::$app->cmgCartMessage->getMessage( CartGlobal::FIELD_USAGE_COUNT ),
+			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
+			'amount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_AMOUNT ),
+			'taxType' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX_TYPE ),
+			'freeShipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING_FREE ),
+			'minPurchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_MIN_PURCHASE ),
+			'maxDiscount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_MAX_DISCOUNT ),
+			'usageLimit' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_USAGE_LIMIT ),
+			'usageCount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_USAGE_COUNT ),
 		];
 	}
 
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Validators ----------------------------
+
+	// Voucher -------------------------------
+
 	// Static Methods ----------------------------------------------
 
-	// yii\db\ActiveRecord ---------------
+	// Yii parent classes --------------------
+
+	// yii\db\ActiveRecord ----
 
 	public static function tableName() {
 
 		return CartTables::TABLE_VOUCHER;
 	}
 
-	// Voucher --------------------------
+	// CMG parent classes --------------------
 
+	// Voucher -------------------------------
+
+	// Read - Query -----------
+
+	public static function queryWithHasOne( $config = [] ) {
+
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$config[ 'relations' ]	= $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	// Read - Find ------------
+
+	// Create -----------------
+
+	// Update -----------------
+
+	// Delete -----------------
 }
-
-?>
