@@ -50,10 +50,10 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 		// Roles
 
-		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'adminUrl', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$roles = [
-			[ $this->master->id, $this->master->id, 'Order Manager', 'order-manager', 'dashboard', CoreGlobal::TYPE_SYSTEM, null, 'The role Order Manager is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Order Manager', 'order-manager', 'dashboard', NULL, CoreGlobal::TYPE_SYSTEM, NULL, 'The role Order Manager is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
