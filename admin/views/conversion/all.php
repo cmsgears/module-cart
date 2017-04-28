@@ -1,6 +1,5 @@
 <?php
 // Yii Imports
-use \Yii;
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
 use yii\helpers\Url;
@@ -73,6 +72,7 @@ if( !isset( $sortOrder ) ) {
 					<th>Target</th>
 					<th>Target Group</th>
 					<th>Quantity</th>
+					<th>Conversion</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
@@ -84,6 +84,7 @@ if( !isset( $sortOrder ) ) {
 						$id			= $conversion->id;
 						$source		= $conversion->source;
 						$target		= $conversion->target;
+						$demo		= "1 $source->name = $conversion->quantity $target->name";
 				?>
 					<tr>
 						<td><?= $source->name ?></td>
@@ -91,6 +92,7 @@ if( !isset( $sortOrder ) ) {
 						<td><?= $target->name ?></td>
 						<td><?= $target->getGroupStr() ?></td>
 						<td><?= $conversion->quantity ?></td>
+						<td><?= $demo ?></td>
 						<td class="actions">
 							<span title="Update"><?= Html::a( "", [ "update?id=$id" ], [ 'class' => 'cmti cmti-edit' ] )  ?></span>
 							<span title="Delete"><?= Html::a( "", [ "delete?id=$id" ], [ 'class' => 'cmti cmti-close-c-o' ] )  ?></span>

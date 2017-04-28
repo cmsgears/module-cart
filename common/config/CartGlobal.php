@@ -89,7 +89,7 @@ class CartGlobal {
 	// Orders
 	const FIELD_ORDER					= 'orderField';
 	const FIELD_PARENT_ORDER			= 'parentOrderField';
-	const FIELD_ADDRESS_SAME			= 'sameAddressField';
+	const FIELD_SHIP_TO_BILLING			= 'shipToBillingField';
 	const FIELD_ESTIMATED_DELIVERY		= 'estimatedDeliveryField';
 	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
 }

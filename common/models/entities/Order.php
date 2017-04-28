@@ -38,7 +38,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $total
  * @property integer $discount
  * @property integer $grandTotal
- * @property boolean $sameAddress
+ * @property boolean $shipToBilling
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $eta
@@ -57,8 +57,8 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	const STATUS_NEW				=	  0; // Order is created
 	const STATUS_APPROVED			=  1000; // Order need approval
 	const STATUS_PLACED				=  2000; // Order is placed
-	const STATUS_PAID				=  3000; // Payment is done
-	const STATUS_CANCELLED			=  4000; // Order cancelled - no money return
+	const STATUS_CANCELLED			=  3000; // Order cancelled - no money return
+	const STATUS_PAID				=  4000; // Payment is done
 	const STATUS_REFUNDED			=  5000; // Order refunded - money returned
 	const STATUS_CONFIRMED			=  6000; // Confirmed by vendor
 	const STATUS_PROCESSED			=  7000; // Processed by vendor
@@ -74,8 +74,8 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		self::STATUS_NEW  => 'New',
 		self::STATUS_APPROVED => 'Approved',
 		self::STATUS_PLACED => 'Placed',
-		self::STATUS_PAID => 'Paid',
 		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_PAID => 'Paid',
 		self::STATUS_REFUNDED => 'Refunded',
 		self::STATUS_CONFIRMED => 'Confirmed',
 		self::STATUS_PROCESSED => 'Processed',
@@ -91,8 +91,8 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		'New' => self::STATUS_NEW,
 		'Approved' => self::STATUS_APPROVED,
 		'Placed' => self::STATUS_PLACED,
-		'Paid' => self::STATUS_PAID,
 		'Cancelled' => self::STATUS_CANCELLED,
+		'Paid' => self::STATUS_PAID,
 		'Refunded' => self::STATUS_REFUNDED,
 		'Confirmed' => self::STATUS_CONFIRMED,
 		'Processed' => self::STATUS_PROCESSED,
@@ -108,8 +108,8 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		'new' => self::STATUS_NEW,
 		'approved' => self::STATUS_APPROVED,
 		'placed' => self::STATUS_PLACED,
-		'paid' => self::STATUS_PAID,
 		'cancelled' => self::STATUS_CANCELLED,
+		'paid' => self::STATUS_PAID,
 		'refunded' => self::STATUS_REFUNDED,
 		'confirmed' => self::STATUS_CONFIRMED,
 		'processed' => self::STATUS_PROCESSED,
@@ -184,7 +184,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
-			[ 'sameAddress', 'boolean' ],
+			[ 'shipToBilling', 'boolean' ],
 			[ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
@@ -209,7 +209,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
 			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
-			'sameAddress' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ADDRESS_SAME ),
+			'shipToBilling' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIP_TO_BILLING ),
 			'eta' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ESTIMATED_DELIVERY ),
 			'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
@@ -225,6 +225,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Order ---------------------------------
 
+	public function hasBase() {
+
+		return isset( $this->baseId ) && $this->baseId > 0;
+	}
+
 	public function getBase() {
 
 		$orderTable = CartTables::TABLE_ORDER;
@@ -235,6 +240,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	public function getPayment() {
 
 		return $this->hasOne( Transaction::className(), [ 'parentId' => 'id' ] );
+	}
+
+	public function hasChildren() {
+
+		return count( $this->children ) > 0;
 	}
 
 	public function getChildren() {
@@ -282,16 +292,6 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return $this->status >= self::STATUS_PLACED;
 	}
 
-	public function isPaid( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_PAID;
-		}
-
-		return $this->status >= self::STATUS_PAID;
-	}
-
 	public function isCancelled( $strict = true ) {
 
 		if( $strict ) {
@@ -300,6 +300,16 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		}
 
 		return $this->status >= self::STATUS_CANCELLED;
+	}
+
+	public function isPaid( $strict = true ) {
+
+		if( $strict ) {
+
+			return $this->status == self::STATUS_PAID;
+		}
+
+		return $this->status >= self::STATUS_PAID;
 	}
 
 	public function isRefunded( $strict = true ) {

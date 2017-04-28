@@ -100,7 +100,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function getByParent( $parentId, $parentType, $first = true ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		if( $first ) {
 
@@ -112,7 +112,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function getActiveByParent( $parentId, $parentType ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 		$active		= Cart::STATUS_ACTIVE;
 
 		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND status=$active", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();

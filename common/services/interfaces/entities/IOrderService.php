@@ -37,6 +37,8 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	public function updateStatus( $model, $status );
 
+	public function cancel( $order, $checkChildren = true, $checkBase = true );
+
 	public function approve( $order );
 
 	public function place( $order );

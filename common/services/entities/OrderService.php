@@ -120,7 +120,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	public function getPageByParent( $parentId, $parentType ) {
 
-		$modelTable	= self::$modelTable;
+		$modelTable	= static::$modelTable;
 
 		return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
 	}
@@ -129,21 +129,21 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	public function getByTitle( $title ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		return $modelClass::findByTitle( $title );
 	}
 
 	public function getCountByParent( $parentId, $parentType ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		return $modelClass::queryByParent( $parentId, $parentType )->count();
 	}
 
 	public function getCountByUserId( $userId ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		return $modelClass::queryByCreatorId( $userId )->count();
 	}
@@ -201,7 +201,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 			}
 
 			// Create Shipping Address
-			if( !$order->sameAddress && isset( $shippingAddress ) ) {
+			if( !$order->shipToBilling && isset( $shippingAddress ) ) {
 
 				$this->modelAddressService->createOrUpdateByType( $shippingAddress, [ 'parentId' => $order->id, 'parentType' => CartGlobal::TYPE_ORDER, 'type' => Address::TYPE_SHIPPING ] );
 			}
@@ -236,7 +236,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	public function updateStatus( $model, $status ) {
 
 		$user				= Yii::$app->core->getAppUser();
-		$model				= self::findById( $model->id );
+		$model				= static::findById( $model->id );
 
 		$model->modifiedBy	= $user->id;
 		$model->status		= $status;
@@ -246,34 +246,75 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		]);
 	}
 
+	public function cancel( $order, $checkChildren = true, $checkBase = true ) {
+
+		// Cancel all child orders
+		if( $checkChildren ) {
+
+			$children	= $order->children;
+
+			foreach ( $children as $child ) {
+
+				$this->updateStatus( $child, Order::STATUS_CANCELLED );
+			}
+		}
+
+		// Cancel order
+		$this->updateStatus( $order, Order::STATUS_CANCELLED );
+
+		// Cancel parent
+		if( $checkBase && $order->hasBase() ) {
+
+			$base		= $order->base;
+			$children	= $base->children;
+			$cancel		= true;
+
+			// No cancel if at least one child is not cancelled
+			foreach ( $children as $child ) {
+
+				if( !$child->isCancelled( true ) ) {
+
+					$cancel = false;
+
+					break;
+				}
+			}
+
+			if( $cancel ) {
+
+				$this->updateStatus( $base, Order::STATUS_CANCELLED );
+			}
+		}
+	}
+
 	public function approve( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_APPROVED );
+		$this->updateStatus( $order, Order::STATUS_APPROVED );
 	}
 
 	public function place( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PLACED );
+		$this->updateStatus( $order, Order::STATUS_PLACED );
 	}
 
 	public function paid( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PAID );
+		$this->updateStatus( $order, Order::STATUS_PAID );
 	}
 
 	public function confirm( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_CONFIRMED );
+		$this->updateStatus( $order, Order::STATUS_CONFIRMED );
 	}
 
 	public function process( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PROCESSED );
+		$this->updateStatus( $order, Order::STATUS_PROCESSED );
 	}
 
 	public function ship( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_SHIPPED );
+		$this->updateStatus( $order, Order::STATUS_SHIPPED );
 	}
 
 	public function deliver( $order ) {
@@ -282,12 +323,12 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 		$order->update();
 
-		self::updateStatus( $order, Order::STATUS_DELIVERED );
+		$this->updateStatus( $order, Order::STATUS_DELIVERED );
 	}
 
 	public function complete( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_COMPLETED );
+		$this->updateStatus( $order, Order::STATUS_COMPLETED );
 	}
 
 	public function updateBaseStatus( $order ) {
@@ -336,4 +377,5 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	// Update -------------
 
 	// Delete -------------
+
 }
