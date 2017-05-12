@@ -113,7 +113,10 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 			]
 		]);
 
-		$config[ 'sort' ] = $sort;
+		if( !isset( $config[ 'sort' ] ) ) {
+
+			$config[ 'sort' ] = $sort;
+		}
 
 		return parent::findPage( $config );
 	}

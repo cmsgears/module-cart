@@ -118,6 +118,13 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND status=$active", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
 	}
 
+	public function getByType( $parentId, $parentType, $type ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND type=:type", [ ':pId' => $parentId, ':pType' => $parentType, ':type' => $type ] )->one();
+	}
+
 	// Read - Lists ----
 
 	// Read - Maps -----
@@ -130,6 +137,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 		$parentId			= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
 		$parentType			= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
+		$type				= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
 		$title				= isset( $config[ 'title' ] ) ? $config[ 'title' ] : null;
 		$user				= Yii::$app->user->getIdentity();
 
@@ -144,6 +152,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		$cart->createdBy	= isset( $user ) ? $user->id : null;
 		$cart->parentId		= $parentId;
 		$cart->parentType	= $parentType;
+		$cart->type			= $type;
 		$cart->status		= Cart::STATUS_ACTIVE;
 		$cart->token		= Yii::$app->security->generateRandomString();
 

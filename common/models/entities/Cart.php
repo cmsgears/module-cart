@@ -155,6 +155,11 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] );
 	}
 
+	public function getActiveItems() {
+
+		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] )->where( 'keep=1' );
+	}
+
 	public function generateName() {
 
 		$this->title = Yii::$app->security->generateRandomString( 16 );

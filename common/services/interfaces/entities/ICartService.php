@@ -23,6 +23,8 @@ interface ICartService extends \cmsgears\core\common\services\interfaces\base\IE
 
 	public function getByParent( $parentId, $parentType, $first = true );
 
+	public function getByType( $parentId, $parentType, $type );
+
 	public function getActiveByParent( $parentId, $parentType );
 
 	// Read - Lists ----
