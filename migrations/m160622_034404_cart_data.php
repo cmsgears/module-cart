@@ -58,37 +58,37 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'adminUrl', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$roles = [
-			[ $this->master->id, $this->master->id, 'Order Manager', 'order-manager', 'dashboard', NULL, CoreGlobal::TYPE_SYSTEM, NULL, 'The role Order Manager is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Order Admin', 'order-admin', 'dashboard', NULL, CoreGlobal::TYPE_SYSTEM, NULL, 'The role Order Admin is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
 
 		$superAdminRole		= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
 		$adminRole			= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
-		$orderManagerRole	= Role::findBySlugType( 'order-manager', CoreGlobal::TYPE_SYSTEM );
+		$orderAdminRole		= Role::findBySlugType( 'order-admin', CoreGlobal::TYPE_SYSTEM );
 
 		// Permissions
 
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$permissions = [
-			[ $this->master->id, $this->master->id, 'Order', 'order', CoreGlobal::TYPE_SYSTEM, null, 'The permission Order is to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Admin Orders', 'admin-orders', CoreGlobal::TYPE_SYSTEM, null, 'The permission Admin Orders is to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
 
 		$adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
 		$userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
-		$orderPerm			= Permission::findBySlugType( 'order', CoreGlobal::TYPE_SYSTEM );
+		$adminOrdersPerm	= Permission::findBySlugType( 'admin-orders', CoreGlobal::TYPE_SYSTEM );
 
 		// RBAC Mapping
 
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $superAdminRole->id, $orderPerm->id ],
-			[ $adminRole->id, $orderPerm->id ],
-			[ $orderManagerRole->id, $adminPerm->id ], [ $orderManagerRole->id, $userPerm->id ], [ $orderManagerRole->id, $orderPerm->id ]
+			[ $superAdminRole->id, $adminOrdersPerm->id ],
+			[ $adminRole->id, $adminOrdersPerm->id ],
+			[ $orderAdminRole->id, $adminPerm->id ], [ $orderAdminRole->id, $userPerm->id ], [ $orderAdminRole->id, $adminOrdersPerm->id ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
@@ -115,7 +115,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
 
 		$fields	= [
-			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{\"title\":\"Enable/disable cart.\"}' ]
+			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
