@@ -165,6 +165,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'CM', 'Centimeter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'dm', 'Decimeter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'MT', 'Meter', Uom::GROUP_LENGTH_METRIC, true, true ],
+			[ 'ha', 'Hectare', Uom::GROUP_LENGTH_METRIC, true, true ],
 			[ 'dem', 'Decameter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'km', 'Kilometer', Uom::GROUP_LENGTH_METRIC, false, true ],
 
