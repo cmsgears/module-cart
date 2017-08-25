@@ -123,10 +123,10 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'sku' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
 			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'discount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
+			'total' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'purchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'total' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
@@ -175,9 +175,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'eta' => $this->dateTime(),
+			'shippedAt' => $this->dateTime(),
 			'deliveredAt' => $this->dateTime(),
 			'content' => $this->text(),
-			'data' => $this->text()
+			'data' => $this->text(),
+			'widgetData' => $this->text()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -205,11 +207,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 			'sku' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
 			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'discount' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'discount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
+			'total' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'purchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'total' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
@@ -241,6 +243,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'orderId' => $this->bigInteger( 20 )->notNull(),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
+			'message' => $this->string( Yii::$app->core->xtraLargeText ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'content' => $this->text(),
 			'data' => $this->text()

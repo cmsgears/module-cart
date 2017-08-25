@@ -91,5 +91,6 @@ class CartGlobal {
 	const FIELD_PARENT_ORDER			= 'parentOrderField';
 	const FIELD_SHIP_TO_BILLING			= 'shipToBillingField';
 	const FIELD_ESTIMATED_DELIVERY		= 'estimatedDeliveryField';
+	const FIELD_SHIPPING_DATE			= 'shippingDateField';
 	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
 }

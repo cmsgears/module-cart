@@ -42,9 +42,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $eta
+ * @property datetime $shippedAt
  * @property datetime $deliveredAt
  * @property string $content
  * @property string $data
+ * @property string $widgetData
  */
 class Order extends \cmsgears\core\common\models\base\Entity {
 
@@ -176,7 +178,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return [
 			// Required, Safe
 			[ 'title', 'required' ],
-			[ [ 'id', 'content', 'data' ], 'safe' ],
+			[ [ 'id', 'content', 'data', 'widgetData' ], 'safe' ],
 			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
@@ -186,7 +188,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ 'shipToBilling', 'boolean' ],
 			[ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+			[ [ 'createdAt', 'modifiedAt', 'eta', 'shippedAt', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
 
@@ -211,7 +213,8 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
 			'shipToBilling' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIP_TO_BILLING ),
 			'eta' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ESTIMATED_DELIVERY ),
-			'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
+			'shippedAt' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
+			'deliveredAt' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];

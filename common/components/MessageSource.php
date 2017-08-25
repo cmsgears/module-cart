@@ -59,6 +59,7 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_PARENT_ORDER => 'Parent Order',
 		CartGlobal::FIELD_SHIP_TO_BILLING => 'Same as Billing Address',
 		CartGlobal::FIELD_ESTIMATED_DELIVERY => 'Estimated Delivery Date',
+		CartGlobal::FIELD_SHIPPING_DATE => 'Shipping Date',
 		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date'
 	];
 

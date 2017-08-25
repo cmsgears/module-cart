@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
@@ -10,8 +10,6 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\resources\Option;
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\resources\Uom;
 
@@ -34,16 +32,16 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
- * @property integer $parentType
+ * @property string $parentType
  * @property string $type
- * @property integer $name
- * @property integer $sku
- * @property integer $price
- * @property integer $discount
+ * @property string $name
+ * @property string $sku
+ * @property double $price
+ * @property double $discount
+ * @property double $total
  * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
- * @property integer $total
  * @property integer $weight
  * @property integer $volume
  * @property integer $length

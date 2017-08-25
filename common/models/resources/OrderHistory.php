@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -20,6 +20,7 @@ use cmsgears\cart\common\models\entities\Order;
  * @property integer $orderId
  * @property integer $createdBy
  * @property string $type
+ * @property string $message
  * @property datetime $createdAt
  * @property string $content
  * @property string $data
@@ -68,6 +69,7 @@ class OrderHistory extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'id', 'content', 'data' ], 'safe' ],
 			// Text Limit
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ 'message', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'orderId', 'createdBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
@@ -80,6 +82,7 @@ class OrderHistory extends \cmsgears\core\common\models\base\Entity {
 			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+			'message' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_MESSAGE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
@@ -130,4 +133,5 @@ class OrderHistory extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }
