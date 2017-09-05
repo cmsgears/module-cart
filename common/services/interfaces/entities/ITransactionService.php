@@ -1,12 +1,6 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\entities;
 
-// Yii Imports
-use \Yii;
-
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 interface ITransactionService extends \cmsgears\payment\common\services\interfaces\entities\ITransactionService {
 
 	// Data Provider ------
@@ -26,7 +20,5 @@ interface ITransactionService extends \cmsgears\payment\common\services\interfac
 	// Update -------------
 
 	// Delete -------------
-
-	// Items --------------
 
 }

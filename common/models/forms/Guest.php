@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\forms;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
@@ -79,4 +79,5 @@ class Guest extends \yii\base\Model {
 	// Validators ----------------------------
 
 	// Guest ---------------------------------
+
 }

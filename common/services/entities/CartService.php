@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\data\Sort;
 
 // CMG Imports

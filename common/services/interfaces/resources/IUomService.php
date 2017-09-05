@@ -1,13 +1,10 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\resources;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\core\common\services\interfaces\base\IEntityService;
 
-interface IUomService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
+interface IUomService extends IEntityService {
 
 	// Data Provider ------
 

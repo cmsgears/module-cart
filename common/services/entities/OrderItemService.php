@@ -2,12 +2,9 @@
 namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cart\common\config\CartGlobal;
-
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\OrderItem;
 

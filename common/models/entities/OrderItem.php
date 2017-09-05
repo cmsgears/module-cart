@@ -34,20 +34,20 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $parentId
  * @property integer $parentType
  * @property string $type
- * @property string $name
- * @property string $sku
- * @property double $price
- * @property double $discount
- * @property double $total
- * @property float $primary
- * @property float $purchase
- * @property float $quantity
- * @property float $weight
- * @property float $volume
- * @property float $length
- * @property float $width
- * @property float $height
- * @property float $radius
+ * @property integer $name
+ * @property integer $sku
+ * @property integer $price
+ * @property integer $discount
+ * @property integer $primary
+ * @property integer $purchase
+ * @property integer $quantity
+ * @property integer $total
+ * @property integer $weight
+ * @property integer $volume
+ * @property integer $length
+ * @property integer $width
+ * @property integer $height
+ * @property integer $radius
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property string $content
@@ -122,7 +122,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			// Other
 			[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
-			[ [ 'orderId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'orderId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
@@ -134,6 +134,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 
 		return [
 			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
+			'primaryUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PRIMARY ),
 			'purchasingUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PURCHASING ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
@@ -172,36 +173,41 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasOne( Order::className(), [ 'id' => 'orderId' ] );
 	}
 
+	public function getPrimaryUnit() {
+
+		return $this->hasOne( Uom::className(), [ 'id' => 'primaryUnitId' ] )->from( CartTables::TABLE_UOM . ' as primaryUnit' );
+	}
+
 	public function getPurchasingUnit() {
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'purchasingUnitId' ] )->from( CartTables::TABLE_UOM . ' as pUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'purchasingUnitId' ] )->from( CartTables::TABLE_UOM . ' as purchasingUnit' );
 	}
 
 	public function getQuantityUnit() {
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'quantityUnitId' ] )->from( CartTables::TABLE_UOM . ' as qUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'quantityUnitId' ] )->from( CartTables::TABLE_UOM . ' as quantityUnit' );
 	}
 
 	public function getWeightUnit() {
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'weightUnitId' ] )->from( CartTables::TABLE_UOM . ' as wUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'weightUnitId' ] )->from( CartTables::TABLE_UOM . ' as weightUnit' );
 	}
 
 	public function getVolumeUnit() {
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'volumeUnitId' ] )->from( CartTables::TABLE_UOM . ' as vUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as volumeUnit' );
 	}
 
 	public function getLengthUnit() {
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
-	public function getTotalPrice() {
+	public function getTotalPrice( $precision = 2 ) {
 
 		$price	= $this->purchase * $this->price;
 
-		return round( $price, 2 );
+		return round( $price, $precision );
 	}
 
 	// Static Methods ----------------------------------------------

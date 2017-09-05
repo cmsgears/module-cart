@@ -2,13 +2,12 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 
@@ -58,6 +57,24 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		self::STATUS_SUCCESS => 'Success',
 		self::STATUS_FAILED => 'Failed',
 		self::STATUS_ABANDONED => 'Abandoned'
+	];
+
+	public static $revStatusMap = [
+		'Active' => self::STATUS_ACTIVE,
+		'Checkout' => self::STATUS_CHECKOUT,
+		'Payment' => self::STATUS_PAYMENT,
+		'Success' => self::STATUS_SUCCESS,
+		'Failed' => self::STATUS_FAILED,
+		'Abandoned' => self::STATUS_ABANDONED
+	];
+
+	public static $urlRevStatusMap = [
+		'active' => self::STATUS_ACTIVE,
+		'checkout' => self::STATUS_CHECKOUT,
+		'payment' => self::STATUS_PAYMENT,
+		'success' => self::STATUS_SUCCESS,
+		'failed' => self::STATUS_FAILED,
+		'abandoned' => self::STATUS_ABANDONED
 	];
 
 	// Protected --------------
@@ -117,7 +134,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'id', 'content', 'data' ], 'safe' ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -160,12 +177,12 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] )->where( 'keep=1' );
 	}
 
-	public function generateName() {
+	public function generateTitle() {
 
 		$this->title = Yii::$app->security->generateRandomString( 16 );
 	}
 
-	public function getCartTotal() {
+	public function getCartTotal( $precision = 2 ) {
 
 		$items	= $this->items;
 
@@ -179,7 +196,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 			}
 		}
 
-		return $total;
+		return round( $total, $precision );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -219,4 +236,5 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

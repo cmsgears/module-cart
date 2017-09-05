@@ -1,13 +1,10 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\entities;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\core\common\services\interfaces\base\IEntityService;
 
-interface ICartService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
+interface ICartService extends IEntityService {
 
 	public function setCartItemService( ICartItemService $cartItemService );
 

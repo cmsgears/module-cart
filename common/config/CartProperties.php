@@ -1,9 +1,6 @@
 <?php
 namespace cmsgears\cart\common\config;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
@@ -38,6 +35,9 @@ class CartProperties extends \cmsgears\core\common\config\CmgProperties {
 
 	// Singleton
 
+	/**
+	 * Return Singleton instance.
+	 */
 	public static function getInstance() {
 
 		if( !isset( self::$instance ) ) {

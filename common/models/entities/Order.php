@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
@@ -42,11 +42,9 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property datetime $eta
- * @property datetime $shippedAt
  * @property datetime $deliveredAt
  * @property string $content
  * @property string $data
- * @property string $widgetData
  */
 class Order extends \cmsgears\core\common\models\base\Entity {
 
@@ -128,7 +126,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Public -----------------
 
-	public $mParentType	= CartGlobal::TYPE_ORDER;
+	public $modelType	= CartGlobal::TYPE_ORDER;
 
 	// Protected --------------
 
@@ -178,17 +176,17 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return [
 			// Required, Safe
 			[ 'title', 'required' ],
-			[ [ 'id', 'content', 'data', 'widgetData' ], 'safe' ],
+			[ [ 'id', 'content', 'data' ], 'safe' ],
 			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ 'shipToBilling', 'boolean' ],
 			[ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt', 'eta', 'shippedAt', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
 
@@ -203,7 +201,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
-			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'subTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
 			'tax' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
@@ -213,8 +211,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
 			'shipToBilling' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIP_TO_BILLING ),
 			'eta' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ESTIMATED_DELIVERY ),
-			'shippedAt' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
-			'deliveredAt' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
+			'deliveryDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA )
 		];
@@ -260,7 +257,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasMany( OrderItem::className(), [ 'orderId' => 'id' ] );
 	}
 
-	public function generateName() {
+	public function generateTitle() {
 
 		$this->title = Yii::$app->security->generateRandomString( 16 );
 	}
@@ -396,6 +393,11 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	}
 
 	public function isPrintable( $strict = true ) {
+
+		if( $strict ) {
+
+			return $this->status == self::STATUS_COMPLETED;
+		}
 
 		return in_array( $this->status, [ self::STATUS_PAID, self::STATUS_DELIVERED, self::STATUS_COMPLETED ] );
 	}

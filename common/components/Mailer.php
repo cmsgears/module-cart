@@ -1,14 +1,8 @@
 <?php
 namespace cmsgears\cart\common\components;
 
-// Yii Imports
-use \Yii;
-
-// CMG Imports
-use cmsgears\cart\common\config\CartGlobal;
-
 /**
- * The mail component for CMSGears cms module. It must be initialised for app using the name cmgCmsMailer.
+ * The mail component for CMSGears cart module.
  */
 class Mailer extends \cmsgears\core\common\base\Mailer {
 

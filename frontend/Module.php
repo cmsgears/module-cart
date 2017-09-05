@@ -1,20 +1,43 @@
 <?php
 namespace cmsgears\cart\frontend;
 
-// Yii Imports
-use \Yii;
+// CMG Imports
 
 class Module extends \cmsgears\core\common\base\Module {
 
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
+
+	// Public -----------------
+
 	public $controllerNamespace = 'cmsgears\cart\frontend\controllers';
 
-	private $mailer;
+	// Protected --------------
+
+	// Private ----------------
+
+	// Traits ------------------------------------------------------
+
+	// Constructor and Initialisation ------------------------------
 
 	public function init() {
 
 		parent::init();
 
-		$this->setViewPath( '@cmsgears/cart/frontend/views' );
-
+		$this->setViewPath( '@cmsgears/module-cart/frontend/views' );
 	}
+
+	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
+
+	// Yii parent classes --------------------
+
+	// CMG interfaces ------------------------
+
+	// CMG parent classes --------------------
+
+	// Module --------------------------------
+
 }

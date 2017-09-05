@@ -2,15 +2,11 @@
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cart\common\config\CartGlobal;
-
 use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\resources\OrderHistory;
 
 use cmsgears\cart\common\services\interfaces\resources\IOrderHistoryService;
 
@@ -128,4 +124,5 @@ class OrderHistoryService extends \cmsgears\core\common\services\base\EntityServ
 	// Update -------------
 
 	// Delete -------------
+
 }

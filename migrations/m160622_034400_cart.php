@@ -1,6 +1,4 @@
 <?php
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 
 class m160622_034400_cart extends \yii\db\Migration {
 
@@ -42,7 +40,6 @@ class m160622_034400_cart extends \yii\db\Migration {
 		// Order
 		$this->upOrder();
 		$this->upOrderItem();
-		$this->upOrderHistory();
 		$this->upTransaction();
 
 		// Voucher
@@ -68,6 +65,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 
 	private function upUomConversion() {
 
+		// Uom = Quantity * Target
 		$this->createTable( $this->prefix . 'cart_uom_conversion', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'uomId' => $this->bigInteger( 20 )->notNull(),
@@ -89,7 +87,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
-			'title' => $this->string( Yii::$app->core->xLargeText )->notNull(),
+			'title' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 			'token' => $this->string( Yii::$app->core->mediumText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
@@ -162,8 +160,8 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
-			'title' => $this->string( Yii::$app->core->xLargeText )->notNull(),
-			'description' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
+			'title' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
+			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'subTotal' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'tax' => $this->float( 2 )->notNull()->defaultValue( 0 ),
@@ -175,11 +173,9 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'eta' => $this->dateTime(),
-			'shippedAt' => $this->dateTime(),
 			'deliveredAt' => $this->dateTime(),
 			'content' => $this->text(),
-			'data' => $this->text(),
-			'widgetData' => $this->text()
+			'data' => $this->text()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -207,11 +203,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 			'sku' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
 			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'discount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'total' => $this->double( 2 )->notNull()->defaultValue( 0 ),
+			'discount' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'purchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'total' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
@@ -236,24 +232,6 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_modifier', $this->prefix . 'cart_order_item', 'modifiedBy' );
 	}
 
-	private function upOrderHistory() {
-
-		$this->createTable( $this->prefix . 'cart_order_history', [
-			'id' => $this->bigPrimaryKey( 20 ),
-			'orderId' => $this->bigInteger( 20 )->notNull(),
-			'createdBy' => $this->bigInteger( 20 )->notNull(),
-			'type' => $this->string( Yii::$app->core->mediumText ),
-			'message' => $this->string( Yii::$app->core->xtraLargeText ),
-			'createdAt' => $this->dateTime()->notNull(),
-			'content' => $this->text(),
-			'data' => $this->text()
-		], $this->options );
-
-		// Index for columns creator and modifier
-		$this->createIndex( 'idx_' . $this->prefix . 'order_history_order', $this->prefix . 'cart_order_history', 'orderId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'order_history_creator', $this->prefix . 'cart_order_history', 'createdBy' );
-	}
-
 	private function upTransaction() {
 
 		$this->addColumn( $this->prefix . 'transaction', 'orderId', $this->bigInteger( 20 )->after( 'id' ) );
@@ -268,11 +246,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'id' => $this->bigPrimaryKey( 20 ),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
 			'modifiedBy' => $this->bigInteger( 20 ),
-			'parentId' => $this->bigInteger( 20 )->notNull(),
-			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
+			'parentId' => $this->bigInteger( 20 ),
+			'parentType' => $this->string( Yii::$app->core->mediumText ),
 			'type' => $this->string( Yii::$app->core->mediumText ),
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
-			'description' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
+			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'amount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 			'taxType' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'freeShipping' => $this->boolean()->notNull()->defaultValue( false ),
@@ -328,10 +306,6 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_creator', $this->prefix . 'cart_order_item', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_item_modifier', $this->prefix . 'cart_order_item', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
-		// Order History
-		$this->addForeignKey( 'fk_' . $this->prefix . 'order_history_order', $this->prefix . 'cart_order_history', 'orderId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'order_history_creator', $this->prefix . 'cart_order_history', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
-
 		// Transaction
 		$this->addForeignKey( 'fk_' . $this->prefix . 'transaction_order', $this->prefix . 'transaction', 'orderId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
 
@@ -355,7 +329,6 @@ class m160622_034400_cart extends \yii\db\Migration {
 
 		$this->dropTable( $this->prefix . 'cart_order' );
 		$this->dropTable( $this->prefix . 'cart_order_item' );
-		$this->dropTable( $this->prefix . 'cart_order_history' );
 
 		$this->dropTable( $this->prefix . 'cart_voucher' );
 	}
@@ -396,10 +369,6 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_length', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_creator', $this->prefix . 'cart_order_item' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_item_modifier', $this->prefix . 'cart_order_item' );
-
-		// Order History
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_history_order', $this->prefix . 'cart_order_history' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_history_creator', $this->prefix . 'cart_order_history' );
 
 		// Transaction
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'transaction_order', $this->prefix . 'transaction' );

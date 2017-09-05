@@ -20,8 +20,6 @@ class CartTables {
 	const TABLE_UOM					= 'cmg_cart_uom';
 	const TABLE_UOM_CONVERSION		= 'cmg_cart_uom_conversion';
 
-	// Order
-	const TABLE_ORDER_HISTORY		= 'cmg_cart_order_history';
-
 	// Mappers --------------
+
 }

@@ -62,6 +62,7 @@ class CartGlobal {
 	const FIELD_USAGE_COUNT				= 'usageCountField';
 
 	// Units
+	const FIELD_UNIT_PRIMARY			= 'primaryUnitField';
 	const FIELD_UNIT_PURCHASING			= 'purchasingUnitField';
 	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
@@ -77,7 +78,6 @@ class CartGlobal {
 	const FIELD_RADIUS					= 'radiusField';
 
 	// Totals
-	const FIELD_AMOUNT					= 'amountField';
 	const FIELD_PRICE					= 'priceField';
 	const FIELD_TOTAL_SUB				= 'subTotalField';
 	const FIELD_TAX						= 'taxField';
@@ -91,6 +91,5 @@ class CartGlobal {
 	const FIELD_PARENT_ORDER			= 'parentOrderField';
 	const FIELD_SHIP_TO_BILLING			= 'shipToBillingField';
 	const FIELD_ESTIMATED_DELIVERY		= 'estimatedDeliveryField';
-	const FIELD_SHIPPING_DATE			= 'shippingDateField';
 	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
 }

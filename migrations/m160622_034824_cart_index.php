@@ -47,9 +47,6 @@ class m160622_034824_cart_index extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_type', $this->prefix . 'cart_order_item', 'type' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_type_p', $this->prefix . 'cart_order_item', 'parentType' );
 
-		// Order History
-		$this->createIndex( 'idx_' . $this->prefix . 'order_history_type', $this->prefix . 'cart_order_history', 'type' );
-
 		// Voucher
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_name', $this->prefix . 'cart_voucher', 'name' );
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_type', $this->prefix . 'cart_voucher', 'type' );
@@ -87,9 +84,6 @@ class m160622_034824_cart_index extends \yii\db\Migration {
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_sku', $this->prefix . 'cart_order_item' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_type', $this->prefix . 'cart_order_item' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_type_p', $this->prefix . 'cart_order_item' );
-
-		// Order History
-		$this->dropIndex( 'idx_' . $this->prefix . 'order_history_type', $this->prefix . 'cart_order_history' );
 
 		// Voucher
 		$this->dropIndex( 'idx_' . $this->prefix . 'voucher_name', $this->prefix . 'cart_voucher' );
