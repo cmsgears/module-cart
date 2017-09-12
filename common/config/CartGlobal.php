@@ -30,16 +30,30 @@ class CartGlobal {
 
 	// Template Views --------------------------------------------------
 
-	// Simple checkout
+	// Checkout - Simple
 	const TEMPLATE_VIEW_CHECKOUT		= 'checkout';
 
-	// User/Guest checkout
-	const TEMPLATE_VIEW_CHECKOUT_GUEST	= 'checkout-guest';
-	const TEMPLATE_VIEW_CHECKOUT_USER	= 'checkout-user';
+	// Checkout - User or Guest
+	const TEMPLATE_VIEW_CHECKOUT_GUEST		= 'checkout-guest';
+	const TEMPLATE_VIEW_CHECKOUT_USER		= 'checkout-user';
 
-	const TEMPLATE_VIEW_ORDER_CONFIRM	= 'confirm';
+	// Checkout - Process
+	const TEMPLATE_VIEW_CHECKOUT_PROCESS	= 'checkout-process';
 
-	const TEMPLATE_VIEW_PAYMENT			= 'payment';
+	// Checkout - Address
+	const TEMPLATE_VIEW_CHECKOUT_ADDRESS	= 'checkout-address';
+
+	// Order confirmation before placing it
+	const TEMPLATE_VIEW_ORDER_CONFIRM	= 'order-confirm';
+
+	// Order success/failure - free orders
+	const TEMPLATE_VIEW_ORDER_SUCCESS	= 'order-success';
+	const TEMPLATE_VIEW_ORDER_FAILURE	= 'order-failure';
+
+	// Payment selection
+	const TEMPLATE_VIEW_ORDER_PAYMENT	= 'order-payment';
+
+	// Order success/failure - paid orders
 	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment-success';
 	const TEMPLATE_VIEW_PAYMENT_FAILURE	= 'payment-failure';
 
