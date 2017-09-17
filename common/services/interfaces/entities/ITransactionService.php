@@ -11,6 +11,8 @@ interface ITransactionService extends \cmsgears\payment\common\services\interfac
 
 	// Read - Models ---
 
+	public function getByOrderId( $orderId );
+
 	// Read - Lists ----
 
 	// Read - Maps -----

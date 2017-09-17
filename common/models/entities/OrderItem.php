@@ -35,7 +35,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $parentType
  * @property string $type
  * @property integer $name
- * @property integer $sku
+ * @property string $sku
+ * @property integer $status
  * @property integer $price
  * @property integer $discount
  * @property integer $primary
@@ -61,7 +62,19 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 
 	// Constants --------------
 
+	const STATUS_NEW		=   0;
+	const STATUS_CANCELLED	= 100;
+	const STATUS_RETURNED	= 200;
+	const STATUS_RECEIVED	= 500;
+
 	// Public -----------------
+
+	public static $statusMap = [
+		self::STATUS_NEW => 'New',
+		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_RETURNED => 'Returned',
+		self::STATUS_RECEIVED => 'Received'
+	];
 
 	// Protected --------------
 
@@ -122,6 +135,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			// Other
 			[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'orderId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
@@ -146,6 +160,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),

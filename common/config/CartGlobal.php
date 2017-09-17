@@ -48,14 +48,14 @@ class CartGlobal {
 
 	// Order success/failure - free orders
 	const TEMPLATE_VIEW_ORDER_SUCCESS	= 'order-success';
-	const TEMPLATE_VIEW_ORDER_FAILURE	= 'order-failure';
+	const TEMPLATE_VIEW_ORDER_FAILED	= 'order-failed';
 
 	// Payment selection
 	const TEMPLATE_VIEW_ORDER_PAYMENT	= 'order-payment';
 
 	// Order success/failure - paid orders
 	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment-success';
-	const TEMPLATE_VIEW_PAYMENT_FAILURE	= 'payment-failure';
+	const TEMPLATE_VIEW_PAYMENT_FAILED	= 'payment-failed';
 
 	// Messages --------------------------------------------------------
 

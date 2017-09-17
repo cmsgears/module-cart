@@ -237,11 +237,7 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	public function updateStatus( $model, $status ) {
 
-		$user				= Yii::$app->core->getAppUser();
-		$model				= static::findById( $model->id );
-
-		$model->modifiedBy	= $user->id;
-		$model->status		= $status;
+		$model->status	= $status;
 
 		return parent::update( $model, [
 			'attributes' => [ 'status' ]

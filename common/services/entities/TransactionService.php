@@ -2,6 +2,8 @@
 namespace cmsgears\cart\common\services\entities;
 
 // CMG Imports
+use cmsgears\cart\common\config\CartGlobal;
+
 use cmsgears\payment\common\models\entities\Transaction;
 
 use cmsgears\cart\common\services\interfaces\entities\ITransactionService;
@@ -165,6 +167,11 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 	// Read ---------------
 
 	// Read - Models ---
+
+	public function getByOrderId( $orderId ) {
+
+		return Transaction::findByParentIdParentType( $orderId, CartGlobal::TYPE_ORDER );
+	}
 
 	// Read - Lists ----
 
