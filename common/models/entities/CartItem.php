@@ -253,7 +253,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 
 	public static function findByParentCartId( $parentId, $parentType, $cartId ) {
 
-		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid', [ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] );
+		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid', [ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] )->one();
 	}
 
 	// Create -----------------

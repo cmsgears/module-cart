@@ -160,22 +160,20 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Create -------------
 
-	public function createFromCart( $order, $message, $cart, $config = [] ) {
+	public function createFromCart( $order, $cart, $config = [] ) {
 
 		// Init Transaction
 		$transaction		= Yii::$app->db->beginTransaction();
 
 		// Set Attributes
-		$user				= Yii::$app->core->getAppUser();
 		$billingAddress		= isset( $config[ 'billingAddress' ] ) ? $config[ 'billingAddress' ] : null;
 		$shippingAddress	= isset( $config[ 'shippingAddress' ] ) ? $config[ 'shippingAddress' ] : null;
 
 		// Order
-		$order->createdBy	= $user->id;
 		$order->parentId	= $cart->parentId;
 		$order->parentType	= $cart->parentType;
+		$order->type		= $cart->type;
 		$order->status		= Order::STATUS_NEW;
-		$order->description	= $message;
 
 		// Generate UID if required
 		if( !isset( $order->title ) ) {

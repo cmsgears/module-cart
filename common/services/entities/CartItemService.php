@@ -101,11 +101,12 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	public function create( $model, $config = [] ) {
 
-		$user	= Yii::$app->core->getAppUser();
-		$cart	= $config[ 'cart' ];
+		$cart = isset( $config[ 'cart' ] ) ? $config[ 'cart' ] : null;
 
-		$model->cartId		= $cart->id;
-		$model->createdBy	= $user != null ? $user->id : null;
+		if( empty( $model->cartId ) && isset( $cart ) ) {
+
+			$model->cartId = $cart->id;
+		}
 
 		// Create Cart Item
 		return parent::create( $model, $config );
@@ -115,12 +116,12 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	public function update( $model, $config = [] ) {
 
-		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'price', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ];
+		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'type', 'price', 'discount', 'total', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'keep' ];
 		$addAttributes	= isset( $config[ 'addAttributes' ] ) ? $config[ 'addAttributes' ] : [ ];
 		$attributes		= ArrayHelper::merge( $attributes, $addAttributes );
 
-		$user				= Yii::$app->core->getAppUser();
-		$model->modifiedBy	= $user != null ? $user->id : null;
+		$user				= Yii::$app->user->getIdentity();
+		$model->modifiedBy	= isset( $user ) ? $user->id : null;
 
 		// Update Cart Item
 		return parent::update( $model, [

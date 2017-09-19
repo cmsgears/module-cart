@@ -30,32 +30,38 @@ class CartGlobal {
 
 	// Template Views --------------------------------------------------
 
+	// Shop - Selection
+	const TEMPLATE_VIEW_SHOP		= 'shop/index';
+
 	// Checkout - Simple
-	const TEMPLATE_VIEW_CHECKOUT		= 'checkout';
+	const TEMPLATE_VIEW_CHECKOUT	= 'checkout/index';
 
 	// Checkout - User or Guest
-	const TEMPLATE_VIEW_CHECKOUT_GUEST		= 'checkout-guest';
-	const TEMPLATE_VIEW_CHECKOUT_USER		= 'checkout-user';
+	const TEMPLATE_VIEW_CHECKOUT_GUEST		= 'checkout/guest';
+	const TEMPLATE_VIEW_CHECKOUT_USER		= 'checkout/user';
 
 	// Checkout - Process
-	const TEMPLATE_VIEW_CHECKOUT_PROCESS	= 'checkout-process';
+	const TEMPLATE_VIEW_CHECKOUT_PROCESS	= 'checkout/process';
 
 	// Checkout - Address
-	const TEMPLATE_VIEW_CHECKOUT_ADDRESS	= 'checkout-address';
+	const TEMPLATE_VIEW_CHECKOUT_ADDRESS	= 'checkout/address';
 
 	// Order confirmation before placing it
-	const TEMPLATE_VIEW_ORDER_CONFIRM	= 'order-confirm';
+	const TEMPLATE_VIEW_ORDER_CONFIRM	= 'order/confirm';
 
 	// Order success/failure - free orders
-	const TEMPLATE_VIEW_ORDER_SUCCESS	= 'order-success';
-	const TEMPLATE_VIEW_ORDER_FAILED	= 'order-failed';
+	const TEMPLATE_VIEW_ORDER_SUCCESS	= 'order/success';
+	const TEMPLATE_VIEW_ORDER_FAILED	= 'order/failed';
 
 	// Payment selection
-	const TEMPLATE_VIEW_ORDER_PAYMENT	= 'order-payment';
+	const TEMPLATE_VIEW_ORDER_PAYMENT	= 'order/payment';
+
+	// Order Printing
+	const TEMPLATE_VIEW_ORDER_PRINT		= 'order/print';
 
 	// Order success/failure - paid orders
-	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment-success';
-	const TEMPLATE_VIEW_PAYMENT_FAILED	= 'payment-failed';
+	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment/success';
+	const TEMPLATE_VIEW_PAYMENT_FAILED	= 'payment/failed';
 
 	// Messages --------------------------------------------------------
 

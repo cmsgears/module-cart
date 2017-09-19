@@ -85,11 +85,9 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 	public function createFromCartItem( $order, $cartItem, $config = [] ) {
 
 		// Set Attributes
-		$user					= Yii::$app->core->getAppUser();
-
 		$orderItem				= new OrderItem();
 		$orderItem->orderId		= $order->id;
-		$orderItem->createdBy	= $user->id;
+		$orderItem->createdBy	= $order->creator->id;
 
 		// Copy from Cart Item
 		$orderItem->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );

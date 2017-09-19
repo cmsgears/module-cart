@@ -199,6 +199,22 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		return round( $total, $precision );
 	}
 
+	public function getActiveCount( $type = 'purchase' ) {
+
+		$cartItems	= $this->items;
+		$count		= 0;
+
+		foreach ( $cartItems as $cartItem ) {
+
+			if( $cartItem->keep ) {
+
+				$count += $cartItem->$type;
+			}
+		}
+
+		return $count;
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------

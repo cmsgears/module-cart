@@ -10,7 +10,6 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\payment\common\models\base\PaymentTables;
 use cmsgears\payment\common\models\entities\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
 

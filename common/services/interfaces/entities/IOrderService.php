@@ -28,7 +28,7 @@ interface IOrderService extends IEntityService {
 
 	// Create -------------
 
-	public function createFromCart( $order, $message, $cart, $config = [] );
+	public function createFromCart( $order, $cart, $config = [] );
 
 	// Update -------------
 

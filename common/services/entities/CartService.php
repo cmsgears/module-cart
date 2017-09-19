@@ -135,14 +135,17 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function createByParams( $params = [], $config = [] ) {
 
-		$parentId			= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
-		$parentType			= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
-		$type				= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
-		$title				= isset( $config[ 'title' ] ) ? $config[ 'title' ] : null;
-		$user				= Yii::$app->user->getIdentity();
+		$parentId		= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
+		$parentType		= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
 
-		$cart				= new Cart();
-		$cart->title		= $title;
+		$title			= isset( $params[ 'title' ] ) ? $params[ 'title' ] : null;
+		$token			= isset( $params[ 'token' ] ) ? $params[ 'token' ] : Yii::$app->security->generateRandomString();
+		$type			= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
+
+		$user			= Yii::$app->user->getIdentity();
+
+		$cart			= new Cart();
+		$cart->title	= $title;
 
 		if( empty( $cart->title ) ) {
 
@@ -154,7 +157,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		$cart->parentType	= $parentType;
 		$cart->type			= $type;
 		$cart->status		= Cart::STATUS_ACTIVE;
-		$cart->token		= Yii::$app->security->generateRandomString();
+		$cart->token		= $token;
 
 		$cart->save();
 
