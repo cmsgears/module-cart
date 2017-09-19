@@ -184,7 +184,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 	public function getCartTotal( $precision = 2 ) {
 
-		$items	= $this->items;
+		$items	= $this->activeItems;
 
 		$total	= 0;
 
@@ -201,7 +201,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 	public function getActiveCount( $type = 'purchase' ) {
 
-		$cartItems	= $this->items;
+		$cartItems	= $this->activeItems;
 		$count		= 0;
 
 		foreach ( $cartItems as $cartItem ) {
