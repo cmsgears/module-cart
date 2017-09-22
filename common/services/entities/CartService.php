@@ -3,7 +3,6 @@ namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
 use Yii;
-use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -80,7 +79,24 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function getByToken( $token ) {
 
-		return Cart::findByToken( $token );
+		$modelClass	= self::$modelClass;
+
+		return $modelClass::findByToken( $token );
+	}
+
+	public function getByModelToken( $model, $type ) {
+
+		$modelClass	= self::$modelClass;
+		$data		= Yii::$app->order->getCartToken( $model, $type );
+
+		if( isset( $data ) ) {
+
+			$cart = $modelClass::findByToken( $data[ 'token' ] );
+
+			return $cart;
+		}
+
+		return null;
 	}
 
 	/**

@@ -54,19 +54,20 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Constants --------------
 
-	const STATUS_NEW				=	  0; // Order is created
-	const STATUS_APPROVED			=  1000; // Order need approval
-	const STATUS_PLACED				=  2000; // Order is placed
-	const STATUS_CANCELLED			=  3000; // Order cancelled - no money return
-	const STATUS_PAID				=  4000; // Payment is done
-	const STATUS_REFUNDED			=  5000; // Order refunded - money returned
-	const STATUS_CONFIRMED			=  6000; // Confirmed by vendor
-	const STATUS_PROCESSED			=  7000; // Processed by vendor
-	const STATUS_SHIPPED			=  8000; // Shipped by vendor
-	const STATUS_DELIVERED			=  9000; // Delivered by vendor
-	const STATUS_RETURNED			= 10000; // Returned to vendor - no receiver
-	const STATUS_DISPUTE			= 11000; // Order dispute
-	const STATUS_COMPLETED			= 12000; // Order completed
+	const STATUS_NEW		=	  0; // Order is created
+	const STATUS_APPROVED	=  1000; // Order need approval
+	const STATUS_PLACED		=  2000; // Order is placed
+	const STATUS_CANCELLED	=  3000; // Order cancelled - no money return
+	const STATUS_FAILED		=  3500; // Payment is failed
+	const STATUS_PAID		=  4000; // Payment is done
+	const STATUS_REFUNDED	=  5000; // Order refunded - money returned
+	const STATUS_CONFIRMED	=  6000; // Confirmed by vendor
+	const STATUS_PROCESSED	=  7000; // Processed by vendor
+	const STATUS_SHIPPED	=  8000; // Shipped by vendor
+	const STATUS_DELIVERED	=  9000; // Delivered by vendor
+	const STATUS_RETURNED	= 10000; // Returned to vendor - no receiver
+	const STATUS_DISPUTE	= 11000; // Order dispute
+	const STATUS_COMPLETED	= 12000; // Order completed
 
 	// Public -----------------
 
@@ -75,6 +76,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		self::STATUS_APPROVED => 'Approved',
 		self::STATUS_PLACED => 'Placed',
 		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_FAILED => 'Failed',
 		self::STATUS_PAID => 'Paid',
 		self::STATUS_REFUNDED => 'Refunded',
 		self::STATUS_CONFIRMED => 'Confirmed',
@@ -92,6 +94,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		'Approved' => self::STATUS_APPROVED,
 		'Placed' => self::STATUS_PLACED,
 		'Cancelled' => self::STATUS_CANCELLED,
+		'Failed' => self::STATUS_FAILED,
 		'Paid' => self::STATUS_PAID,
 		'Refunded' => self::STATUS_REFUNDED,
 		'Confirmed' => self::STATUS_CONFIRMED,
@@ -429,6 +432,12 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Find ------------
 
+	/**
+	 * Use only if title is unique for order.
+	 *
+	 * @param string $title
+	 * @return Order
+	 */
 	public static function findByTitle( $title ) {
 
 		return self::find()->where( 'title=:title', [ ':title' => $title ] )->one();

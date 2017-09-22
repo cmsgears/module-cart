@@ -1,14 +1,10 @@
 <?php
 namespace cmsgears\cart\common\services\entities;
 
-// Yii Imports
-use Yii;
-
 // CMG Imports
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\OrderItem;
 
-use cmsgears\cart\common\services\interfaces\entities\IOrderService;
 use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
 
 class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
@@ -35,20 +31,11 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Protected --------------
 
-	protected $orderService;
-
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-
-	public function __construct( IOrderService $orderService, $config = [] ) {
-
-		$this->orderService	= $orderService;
-
-		parent::__construct( $config );
-	}
 
 	// Instance methods --------------------------------------------
 
@@ -70,7 +57,9 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	public function getByOrderId( $oderId ) {
 
-		return OrderItem::findByOrderId( $oderId );
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByOrderId( $oderId );
 	}
 
 	// Read - Lists ----
@@ -125,4 +114,5 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 	// Update -------------
 
 	// Delete -------------
+
 }

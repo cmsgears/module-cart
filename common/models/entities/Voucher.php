@@ -86,6 +86,8 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 
 	// Public -----------------
 
+	public $modelType = CartGlobal::TYPE_VOUCHER;
+
 	// Protected --------------
 
 	// Private ----------------

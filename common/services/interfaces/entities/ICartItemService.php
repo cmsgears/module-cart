@@ -12,13 +12,9 @@ interface ICartItemService extends IEntityService {
 
 	// Read - Models ---
 
-	public function getByCartId( $id );
-
-	public function getByUserId( $userId );
+	public function getByCartId( $cartId );
 
 	public function getByParentCartId( $parentId, $parentType, $cartId );
-
-	public function getParentIdObjectMap( $cart );
 
 	// Read - Lists ----
 

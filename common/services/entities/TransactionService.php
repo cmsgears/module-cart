@@ -183,7 +183,7 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 
 	public function createByParams( $params = [], $config = [] ) {
 
-		$transaction				= new Transaction();
+		$transaction	= new Transaction();
 
 		// Mandatory
 		$transaction->orderId		= $params[ 'orderId' ];

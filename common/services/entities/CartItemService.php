@@ -9,7 +9,6 @@ use yii\helpers\ArrayHelper;
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\CartItem;
 
-use cmsgears\cart\common\services\interfaces\entities\ICartService;
 use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
 
 class CartItemService extends \cmsgears\core\common\services\base\EntityService implements ICartItemService {
@@ -36,20 +35,11 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	// Protected --------------
 
-	protected $cartService;
-
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-
-	public function __construct( ICartService $cartService, $config = [] ) {
-
-		$this->cartService	= $cartService;
-
-		parent::__construct( $config );
-	}
 
 	// Instance methods --------------------------------------------
 
@@ -69,26 +59,14 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 	// Read - Models ---
 
-	public function getByCartId( $id ) {
+	public function getByCartId( $cartId ) {
 
-		return CartItem::findByCartId( $id );
-	}
-
-	public function getByUserId( $userId ) {
-
-		$cart	= $this->cartService->getByUserId( $userId );
-
-		return CartItem::findByCartId( $cart->id );
+		return CartItem::findByCartId( $cartId );
 	}
 
 	public function getByParentCartId( $parentId, $parentType, $cartId ) {
 
 		return CartItem::findByParentCartId( $parentId, $parentType, $cartId );
-	}
-
-	public function getParentIdObjectMap( $cart ) {
-
-		return $this->getObjectMap( [ 'key' => 'parentId', 'conditions' => [ 'cartId' => $cart->id ] ] );
 	}
 
 	// Read - Lists ----

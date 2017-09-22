@@ -13,20 +13,29 @@ class CartGlobal {
 
 	// Grouping by type ------------------------------------------------
 
-	const TYPE_CART						= 'cart';
+	const TYPE_CART			= 'cart';
 
-	const TYPE_ORDER					= 'order';
+	const TYPE_ORDER		= 'order';
 
+	const TYPE_VOUCHER		= 'voucher';
+	
 	// Config ----------------------------------------------------------
 
 	// Roles -----------------------------------------------------------
 
 	// Permissions -----------------------------------------------------
 
-	// Admin Permissions
-	const PERM_CART						= 'cart';
+	// Order Permissions
+	const PERM_ORDER_ADMIN		= 'admin-orders';
 
-	// Website Permissions
+	const PERM_ORDER_VIEW		= 'view-orders';
+	const PERM_ORDER_ADD		= 'add-order';
+	const PERM_ORDER_UPDATE		= 'update-order';
+	const PERM_ORDER_DELETE		= 'delete-order';
+	const PERM_ORDER_APPROVE	= 'approve-order';
+	const PERM_ORDER_PRINT		= 'print-order';
+	const PERM_ORDER_IMPORT		= 'import-orders';
+	const PERM_ORDER_EXPORT		= 'export-orders';
 
 	// Template Views --------------------------------------------------
 

@@ -6,11 +6,13 @@ use cmsgears\core\common\services\interfaces\base\IEntityService;
 
 interface IOrderService extends IEntityService {
 
-	public function setOrderItemService( IOrderItemService $orderItemService );
-
 	// Data Provider ------
 
 	public function getPageByParent( $parentId, $parentType );
+
+	public function getPageByUserId( $userId );
+
+	public function getPageByUserIdParentType( $userId, $parentType );
 
 	// Read ---------------
 
@@ -49,6 +51,10 @@ interface IOrderService extends IEntityService {
 	public function ship( $order );
 
 	public function deliver( $order );
+
+	public function back( $order );
+
+	public function dispute( $order );
 
 	public function complete( $order );
 

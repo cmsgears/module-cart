@@ -83,6 +83,8 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 	// Public -----------------
 
+	public $modelType = CartGlobal::TYPE_CART;
+
 	// Protected --------------
 
 	// Private ----------------

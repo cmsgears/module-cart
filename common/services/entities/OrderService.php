@@ -58,19 +58,16 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Constructor and Initialisation ------------------------------
 
-	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IModelAddressService $modelAddressService, $config = [] ) {
+	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IOrderItemService $orderItemService, IModelAddressService $modelAddressService, $config = [] ) {
 
 		$this->cartService			= $cartService;
 		$this->cartItemService		= $cartItemService;
 
+		$this->orderItemService		= $orderItemService;
+
 		$this->modelAddressService	= $modelAddressService;
 
 		parent::__construct( $config );
-	}
-
-	public function setOrderItemService( IOrderItemService $orderItemService ) {
-
-		$this->orderItemService	= $orderItemService;
 	}
 
 	// Instance methods --------------------------------------------
@@ -89,27 +86,57 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	public function getPage( $config = [] ) {
 
+		$modelClass		= static::$modelClass;
+		$modelTable		= static::$modelTable;
+
+		// Sorting ----------
+
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ 'id' => SORT_ASC ],
+					'desc' => [ 'id' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'ID'
+				],
 				'title' => [
 					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => ['title' => SORT_DESC ],
+					'desc' => [ 'title' => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Title'
 				],
 				'type' => [
-					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => ['title' => SORT_DESC ],
+					'asc' => [ 'type' => SORT_ASC ],
+					'desc' => [ 'type' => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Title'
+					'label' => 'Type'
 				],
 				'status' => [
-					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => ['title' => SORT_DESC ],
+					'asc' => [ 'status' => SORT_ASC ],
+					'desc' => [ 'status' => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Title'
+					'label' => 'Status'
+				],
+				'total' => [
+					'asc' => [ 'grandTotal' => SORT_ASC ],
+					'desc' => [ 'grandTotal' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Total'
+				],
+				'cdate' => [
+					'asc' => [ 'createdAt' => SORT_ASC ],
+					'desc' => [ 'createdAt' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Created At'
+				],
+				'udate' => [
+					'asc' => [ 'modifiedAt' => SORT_ASC ],
+					'desc' => [ 'modifiedAt' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Updated At'
 				]
-			]
+			],
+			'defaultOrder' => [ 'cdate' => 'SORT_ASC' ]
 		]);
 
 		if( !isset( $config[ 'sort' ] ) ) {
@@ -117,7 +144,46 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 			$config[ 'sort' ] = $sort;
 		}
 
-		return parent::findPage( $config );
+		// Query ------------
+
+		if( !isset( $config[ 'query' ] ) ) {
+
+			$config[ 'hasOne' ] = true;
+		}
+
+		// Filters ----------
+
+		// Filter - Status
+		$status	= Yii::$app->request->getQueryParam( 'status' );
+
+		if( isset( $status ) ) {
+
+			if( isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+
+				$config[ 'conditions' ][ "$modelTable.status" ] = $modelClass::$urlRevStatusMap[ $status ];
+			}
+		}
+
+		// Searching --------
+
+		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+
+		if( isset( $searchCol ) ) {
+
+			$search = [ 'title' => "$modelTable.title", 'description' => "$modelTable.description" ];
+
+			$config[ 'search-col' ] = $search[ $searchCol ];
+		}
+
+		// Reporting --------
+
+		$config[ 'report-col' ]	= [
+			'title' => "$modelTable.title", 'description' => "$modelTable.description", 'content' => "$modelTable.content"
+		];
+
+		// Result -----------
+
+		return parent::getPage( $config );
 	}
 
 	public function getPageByParent( $parentId, $parentType ) {
@@ -127,14 +193,24 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
 	}
 
-	// Read ---------------
+	public function getPageByUserId( $userId ) {
 
-	public function getByTitle( $title ) {
+		$modelTable	= self::$modelTable;
 
-		$modelClass	= static::$modelClass;
-
-		return $modelClass::findByTitle( $title );
+		return $this->getPage( [ 'conditions' => [ "$modelTable.createdBy" => $userId ] ] );
 	}
+
+	public function getPageByUserIdParentType( $userId, $parentType ) {
+
+		$modelTable	= self::$modelTable;
+		$paid		= Order::STATUS_PAID;
+
+		$config		= [ 'conditions' => [ "$modelTable.status >= $paid", "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
+
+		return $this->getPage( $config );
+	}
+
+	// Read ---------------
 
 	public function getCountByParent( $parentId, $parentType ) {
 
@@ -151,6 +227,19 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	}
 
 	// Read - Models ---
+
+	/**
+	 * Use only if title is unique for order.
+	 *
+	 * @param string $title
+	 * @return Order
+	 */
+	public function getByTitle( $title ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByTitle( $title );
+	}
 
 	// Read - Lists ----
 
@@ -173,12 +262,12 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		$order->parentId	= $cart->parentId;
 		$order->parentType	= $cart->parentType;
 		$order->type		= $cart->type;
-		$order->status		= Order::STATUS_NEW;
+		$order->status		= $order->status ?? Order::STATUS_NEW;
 
 		// Generate UID if required
 		if( !isset( $order->title ) ) {
 
-			$order->generateName();
+			$order->generateTitle();
 		}
 
 		// Set Order Totals
@@ -207,11 +296,11 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 			}
 
 			// Create Order Items
-			$cartItems	= $cart->items;
+			$cartItems	= $cart->activeItems;
 
 			foreach ( $cartItems as $item ) {
 
-				Yii::$app->factory->get( 'orderItemService' )->createFromCartItem( $order, $item, $config );
+				$this->orderItemService->createFromCartItem( $order, $item, $config );
 			}
 
 			// Delete Cart & Cart Items
@@ -320,6 +409,16 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 		$order->update();
 
 		$this->updateStatus( $order, Order::STATUS_DELIVERED );
+	}
+
+	public function back( $order ) {
+
+		$this->updateStatus( $order, Order::STATUS_RETURNED );
+	}
+
+	public function dispute( $order ) {
+
+		$this->updateStatus( $order, Order::STATUS_DISPUTE );
 	}
 
 	public function complete( $order ) {

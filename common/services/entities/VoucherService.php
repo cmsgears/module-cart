@@ -5,11 +5,13 @@ namespace cmsgears\cart\common\services\entities;
 use yii\data\Sort;
 
 // CMG Imports
+use cmsgears\cart\common\config\CartGlobal;
+
 use cmsgears\cart\common\models\base\CartTables;
 
-use cmsgears\cart\common\services\interfaces\entities\IVoucherServiceService;
+use cmsgears\cart\common\services\interfaces\entities\IVoucherService;
 
-class VoucherService extends \cmsgears\core\common\services\base\EntityService implements IVoucherServiceService {
+class VoucherService extends \cmsgears\core\common\services\base\EntityService implements IVoucherService {
 
 	// Variables ---------------------------------------------------
 
@@ -23,7 +25,7 @@ class VoucherService extends \cmsgears\core\common\services\base\EntityService i
 
 	public static $modelTable	= CartTables::TABLE_VOUCHER;
 
-	public static $parentType	= null;
+	public static $parentType	= CartGlobal::TYPE_VOUCHER;
 
 	// Protected --------------
 
@@ -38,11 +40,6 @@ class VoucherService extends \cmsgears\core\common\services\base\EntityService i
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-
-	public function __construct( $config = [] ) {
-
-		parent::__construct( $config );
-	}
 
 	// Instance methods --------------------------------------------
 
@@ -127,4 +124,5 @@ class VoucherService extends \cmsgears\core\common\services\base\EntityService i
 	// Update -------------
 
 	// Delete -------------
+
 }

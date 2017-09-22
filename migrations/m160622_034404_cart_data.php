@@ -58,40 +58,87 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'adminUrl', 'homeUrl', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
 
 		$roles = [
-			[ $this->master->id, $this->master->id, 'Order Admin', 'order-admin', 'dashboard', NULL, CoreGlobal::TYPE_SYSTEM, NULL, 'The role Order Admin is limited to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->master->id, $this->master->id, 'Order Admin', 'order-admin', 'dashboard', NULL, CoreGlobal::TYPE_SYSTEM, NULL, 'The role Order Admin is limited to manage orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
 
-		$superAdminRole		= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
-		$adminRole			= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
-		$orderAdminRole		= Role::findBySlugType( 'order-admin', CoreGlobal::TYPE_SYSTEM );
+		$superAdminRole	= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
+		$adminRole		= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
+		$orderAdminRole	= Role::findBySlugType( 'order-admin', CoreGlobal::TYPE_SYSTEM );
 
 		// Permissions
 
-		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'description', 'createdAt', 'modifiedAt' ];
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'group', 'description', 'createdAt', 'modifiedAt' ];
 
 		$permissions = [
-			[ $this->master->id, $this->master->id, 'Admin Orders', 'admin-orders', CoreGlobal::TYPE_SYSTEM, null, 'The permission Admin Orders is to manage abandoned carts and orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			// Admin Permissions - Hard Coded
+			[ $this->master->id, $this->master->id, 'Admin Orders', 'admin-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Admin Orders allows user to administer orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+
+			// Permission Groups - Default - Website - Individual, Organization
+			[ $this->master->id, $this->master->id, 'Manage Orders', 'manage-orders', CoreGlobal::TYPE_SYSTEM, NULL, true, 'The permission Manage Orders allows user to manage orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+
+			// Order Permissions - Hard Coded - Website - Individual, Organization
+			[ $this->master->id, $this->master->id, 'View Orders', 'view-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission View Orders allows user to view orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Add Order', 'add-order', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Add Order allows user to add orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Update Order', 'update-order', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Update Order allows user to update order from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Delete Order', 'delete-order', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Delete Order allows user to delete order from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Approve Order', 'approve-order', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Approve Order allows user to approve, cancel, refund order from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Print Order', 'print-order', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Print Order allows user to print order from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Import Orders', 'import-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Import Orders allows user to import orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Export Orders', 'export-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Export Orders allows user to export orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_permission', $columns, $permissions );
 
+		// Admin
 		$adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
 		$userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
-		$adminOrdersPerm	= Permission::findBySlugType( 'admin-orders', CoreGlobal::TYPE_SYSTEM );
+		$orderAdminPerm		= Permission::findBySlugType( 'admin-orders', CoreGlobal::TYPE_SYSTEM );
+
+		// Permission Groups
+		$orderManagePerm	= Permission::findBySlugType( 'manage-orders', CoreGlobal::TYPE_SYSTEM );
+
+		// Permissions
+		$vOrdersPerm	= Permission::findBySlugType( 'view-orders', CoreGlobal::TYPE_SYSTEM );
+		$aOrderPerm		= Permission::findBySlugType( 'add-order', CoreGlobal::TYPE_SYSTEM );
+		$uOrderPerm		= Permission::findBySlugType( 'update-order', CoreGlobal::TYPE_SYSTEM );
+		$dOrderPerm		= Permission::findBySlugType( 'delete-order', CoreGlobal::TYPE_SYSTEM );
+		$apOrderPerm	= Permission::findBySlugType( 'approve-order', CoreGlobal::TYPE_SYSTEM );
+		$pOrderPerm		= Permission::findBySlugType( 'print-order', CoreGlobal::TYPE_SYSTEM );
+		$iOrdersPerm	= Permission::findBySlugType( 'import-orders', CoreGlobal::TYPE_SYSTEM );
+		$eOrdersPerm	= Permission::findBySlugType( 'export-orders', CoreGlobal::TYPE_SYSTEM );
 
 		// RBAC Mapping
 
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $superAdminRole->id, $adminOrdersPerm->id ],
-			[ $adminRole->id, $adminOrdersPerm->id ],
-			[ $orderAdminRole->id, $adminPerm->id ], [ $orderAdminRole->id, $userPerm->id ], [ $orderAdminRole->id, $adminOrdersPerm->id ]
+			[ $superAdminRole->id, $orderAdminPerm->id ],
+			[ $adminRole->id, $orderAdminPerm->id ],
+			[ $orderAdminRole->id, $adminPerm->id ], [ $orderAdminRole->id, $userPerm->id ], [ $orderAdminRole->id, $orderAdminPerm->id ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_role_permission', $columns, $mappings );
+
+		//Hierarchy
+
+		$columns = [ 'parentId', 'childId', 'rootId', 'parentType', 'lValue', 'rValue' ];
+
+		$hierarchy = [
+				// Order Manager - Organization
+				[ null, null, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 1, 18 ],
+				[ $orderManagePerm->id, $vOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 2, 17 ],
+				[ $orderManagePerm->id, $aOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 3, 16 ],
+				[ $orderManagePerm->id, $uOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 4, 15 ],
+				[ $orderManagePerm->id, $dOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 5, 14 ],
+				[ $orderManagePerm->id, $apOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 6, 13 ],
+				[ $orderManagePerm->id, $pOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 7, 12 ],
+				[ $orderManagePerm->id, $iOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 8, 11 ],
+				[ $orderManagePerm->id, $eOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 9, 10 ]
+		];
+
+		$this->batchInsert( $this->prefix . 'core_model_hierarchy', $columns, $hierarchy );
 	}
 
 	private function insertCartConfig() {

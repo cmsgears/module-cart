@@ -16,6 +16,8 @@ interface ICartService extends IEntityService {
 
 	public function getByToken( $token );
 
+	public function getByModelToken( $model, $type );
+
 	public function getByUserId( $userId );
 
 	public function getByParent( $parentId, $parentType, $first = true );
