@@ -93,6 +93,15 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 			$cart = $modelClass::findByToken( $data[ 'token' ] );
 
+			if( empty( $cart ) ) {
+
+				$cart = $this->createByParams([
+					'parentId' => $model->id, 'parentType' => $type,
+					'title' => $model->name,
+					'token' => $data[ 'token' ]
+				]);
+			}
+
 			return $cart;
 		}
 
