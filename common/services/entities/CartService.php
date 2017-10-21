@@ -112,8 +112,10 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 	 * Find cart if exist for the given user. If does not exist create, it.
 	 */
 	public function getByUserId( $userId ) {
+            
+                $modelClass	= self::$modelClass;
 
-		$cart = self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+		$cart = $modelClass::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
 
 		if( !isset( $cart ) ) {
 
@@ -189,7 +191,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		return $cart;
 	}
 
-	public function createByUserId( $userId ) {
+	public function createByUserId( $userId, $config = [] ) {
 
 		// Set Attributes
 		$user				= Yii::$app->core->getAppUser();
@@ -198,6 +200,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		$cart->createdBy	= $user->id;
 		$cart->parentId		= $userId;
 		$cart->parentType	= CoreGlobal::TYPE_USER;
+                $cart->title            = isset( $config[ 'title' ] ) ? $config[ 'title' ] : "Generic Order";
 
 		$cart->save();
 
@@ -252,8 +255,8 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function addItem( $model, $item, $config = [] ) {
 
-		$user				= Yii::$app->core->getAppUser();
-		$cartItem->cartId	= $model->id;
+		$user			= Yii::$app->core->getAppUser();
+		$item->cartId           = $model->id;
 		$cartItemService	= Yii::$app->factory->get( 'cartItemService' );
 
 		// Remove in case it's not required

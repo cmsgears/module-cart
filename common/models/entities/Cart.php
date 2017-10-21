@@ -249,6 +249,11 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 		return self::find()->where( 'token=:token', [ 'token' => $token ] )->one();
 	}
+        
+        public static function findByParentIdParentType( $parentId, $parentType ) {
+            
+            return self::find()->where( 'parentId=:parentId AND parentType=:parentType', [ ':parentId' => $parentId, 'parentType' => $parentType ] )->one();
+        }
 
 	// Create -----------------
 
