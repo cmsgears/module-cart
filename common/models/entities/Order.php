@@ -57,6 +57,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	const STATUS_NEW		=	  0; // Order is created
 	const STATUS_APPROVED	=  1000; // Order need approval
 	const STATUS_PLACED		=  2000; // Order is placed
+    const STATUS_HOLD       =  2500; // Order on hold
 	const STATUS_CANCELLED	=  3000; // Order cancelled - no money return
 	const STATUS_FAILED		=  3500; // Payment is failed
 	const STATUS_PAID		=  4000; // Payment is done
@@ -75,6 +76,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 		self::STATUS_NEW  => 'New',
 		self::STATUS_APPROVED => 'Approved',
 		self::STATUS_PLACED => 'Placed',
+        self::STATUS_HOLD => 'Hold',
 		self::STATUS_CANCELLED => 'Cancelled',
 		self::STATUS_FAILED => 'Failed',
 		self::STATUS_PAID => 'Paid',
@@ -92,6 +94,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	public static $revStatusMap = [
 		'New' => self::STATUS_NEW,
 		'Approved' => self::STATUS_APPROVED,
+        'Hold' => self::STATUS_HOLD,
 		'Placed' => self::STATUS_PLACED,
 		'Cancelled' => self::STATUS_CANCELLED,
 		'Failed' => self::STATUS_FAILED,
@@ -110,6 +113,7 @@ class Order extends \cmsgears\core\common\models\base\Entity {
 	public static $urlRevStatusMap = [
 		'new' => self::STATUS_NEW,
 		'approved' => self::STATUS_APPROVED,
+        'hold' => self::STATUS_HOLD,
 		'placed' => self::STATUS_PLACED,
 		'cancelled' => self::STATUS_CANCELLED,
 		'paid' => self::STATUS_PAID,
