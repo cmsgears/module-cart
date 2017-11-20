@@ -43,7 +43,7 @@ class Order extends \yii\base\Component {
 
 			$data = json_decode( $_COOKIE[ self::COOKIE_CART ], true );
 
-			if( $model->slug !== $data[ 'slug' ] && $type !== $data[ 'type' ] ) {
+			if( $type !== $data[ 'type' ] || $model->slug !== $data[ 'slug' ] ) {
 
 				$data = [ 'slug' => $model->slug, 'type' => $type, 'token' => Yii::$app->security->generateRandomString() ];
 
