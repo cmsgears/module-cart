@@ -46,6 +46,8 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 	const GROUP_VOLUME_IMPERIAL	= 80;
 	const GROUP_VOLUME_US		= 90;
 
+	const GROUP_TIME			= 100;
+
 	public static $groupMap = [
 		self::GROUP_QUANTITY => 'Quantity',
 		self::GROUP_LENGTH_METRIC => 'Metric Length',
@@ -56,7 +58,8 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		self::GROUP_WEIGHT_US => 'US Weight',
 		self::GROUP_VOLUME_METRIC => 'Metric Volume',
 		self::GROUP_VOLUME_IMPERIAL => 'Imperial Volume',
-		self::GROUP_VOLUME_US => 'US Volume'
+		self::GROUP_VOLUME_US => 'US Volume',
+		self::GROUP_TIME => 'Time'
 	];
 
 	// Used for external docs
@@ -70,7 +73,8 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		'US Weight' => self::GROUP_WEIGHT_US,
 		'Metric Volume' => self::GROUP_VOLUME_METRIC,
 		'Imperial Volume' => self::GROUP_VOLUME_IMPERIAL,
-		'US Volume' => self::GROUP_VOLUME_US
+		'US Volume' => self::GROUP_VOLUME_US,
+		'Time' => self::GROUP_TIME
 	];
 
 	// Public -----------------

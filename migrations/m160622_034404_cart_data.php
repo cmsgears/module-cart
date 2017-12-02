@@ -215,6 +215,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'ha', 'Hectare', Uom::GROUP_LENGTH_METRIC, true, true ],
 			[ 'dem', 'Decameter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'km', 'Kilometer', Uom::GROUP_LENGTH_METRIC, false, true ],
+			[ 'Sq m', 'Square meter', Uom::GROUP_LENGTH_METRIC, false, true ],
 
 			[ 'IN', 'Inch', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
 			[ 'FT', 'Feet', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
@@ -293,7 +294,15 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'dp', 'Dry Pint', Uom::GROUP_VOLUME_US, false, true ],
 			[ 'dq', 'Dry Quart', Uom::GROUP_VOLUME_US, false, true ],
 			[ 'p', 'Peck', Uom::GROUP_VOLUME_US, false, true ],
-			[ 'ub', 'Bushel', Uom::GROUP_VOLUME_US, false, true ]
+			[ 'ub', 'Bushel', Uom::GROUP_VOLUME_US, false, true ],
+
+			[ 's', 'Second', Uom::GROUP_TIME, false, true ],
+			[ 'min', 'Minute', Uom::GROUP_TIME, false, true ],
+			[ 'hrs', 'Hour', Uom::GROUP_TIME, false, true ],
+			[ 'day', 'Day', Uom::GROUP_TIME, false, true ],
+			[ 'week', 'Week', Uom::GROUP_TIME, false, true ],
+			[ 'month', 'Month', Uom::GROUP_TIME, false, true ],
+			[ 'year', 'Year', Uom::GROUP_TIME, false, true ],
 		];
 
 		$this->batchInsert( $this->prefix . 'cart_uom', $columns, $uoms );
