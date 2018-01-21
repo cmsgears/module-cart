@@ -1,12 +1,6 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\forms;
 
-// Yii Imports
-use \Yii;
-
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 interface IGuestService {
 
 	// Data Provider ------
@@ -26,4 +20,5 @@ interface IGuestService {
 	// Update -------------
 
 	// Delete -------------
+
 }

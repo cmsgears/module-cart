@@ -2,8 +2,7 @@
 namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
-use \Yii;
-use yii\data\Sort;
+use Yii;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -80,15 +79,43 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function getByToken( $token ) {
 
-		return Cart::findByToken( $token );
+		$modelClass	= self::$modelClass;
+
+		return $modelClass::findByToken( $token );
+	}
+
+	public function getByModelToken( $model, $type ) {
+
+		$modelClass	= self::$modelClass;
+		$data		= Yii::$app->order->getCartToken( $model, $type );
+
+		if( isset( $data ) ) {
+
+			$cart = $modelClass::findByToken( $data[ 'token' ] );
+
+			if( empty( $cart ) ) {
+
+				$cart = $this->createByParams([
+					'parentId' => $model->id, 'parentType' => $type,
+					'title' => $model->name,
+					'token' => $data[ 'token' ]
+				]);
+			}
+
+			return $cart;
+		}
+
+		return null;
 	}
 
 	/**
 	 * Find cart if exist for the given user. If does not exist create, it.
 	 */
 	public function getByUserId( $userId ) {
+            
+                $modelClass	= self::$modelClass;
 
-		$cart = self::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+		$cart = $modelClass::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
 
 		if( !isset( $cart ) ) {
 
@@ -100,7 +127,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function getByParent( $parentId, $parentType, $first = true ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		if( $first ) {
 
@@ -112,10 +139,17 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function getActiveByParent( $parentId, $parentType ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 		$active		= Cart::STATUS_ACTIVE;
 
 		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND status=$active", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
+	}
+
+	public function getByType( $parentId, $parentType, $type ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND type=:type", [ ':pId' => $parentId, ':pType' => $parentType, ':type' => $type ] )->one();
 	}
 
 	// Read - Lists ----
@@ -128,13 +162,17 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function createByParams( $params = [], $config = [] ) {
 
-		$parentId			= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
-		$parentType			= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
-		$title				= isset( $config[ 'title' ] ) ? $config[ 'title' ] : null;
-		$user				= Yii::$app->user->getIdentity();
+		$parentId		= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
+		$parentType		= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
 
-		$cart				= new Cart();
-		$cart->title		= $title;
+		$title			= isset( $params[ 'title' ] ) ? $params[ 'title' ] : null;
+		$token			= isset( $params[ 'token' ] ) ? $params[ 'token' ] : Yii::$app->security->generateRandomString();
+		$type			= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
+
+		$user			= Yii::$app->user->getIdentity();
+
+		$cart			= new Cart();
+		$cart->title	= $title;
 
 		if( empty( $cart->title ) ) {
 
@@ -144,15 +182,16 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		$cart->createdBy	= isset( $user ) ? $user->id : null;
 		$cart->parentId		= $parentId;
 		$cart->parentType	= $parentType;
+		$cart->type			= $type;
 		$cart->status		= Cart::STATUS_ACTIVE;
-		$cart->token		= Yii::$app->security->generateRandomString();
+		$cart->token		= $token;
 
 		$cart->save();
 
 		return $cart;
 	}
 
-	public function createByUserId( $userId ) {
+	public function createByUserId( $userId, $config = [] ) {
 
 		// Set Attributes
 		$user				= Yii::$app->core->getAppUser();
@@ -161,6 +200,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 		$cart->createdBy	= $user->id;
 		$cart->parentId		= $userId;
 		$cart->parentType	= CoreGlobal::TYPE_USER;
+                $cart->title            = isset( $config[ 'title' ] ) ? $config[ 'title' ] : "Generic Order";
 
 		$cart->save();
 
@@ -215,8 +255,8 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function addItem( $model, $item, $config = [] ) {
 
-		$user				= Yii::$app->core->getAppUser();
-		$cartItem->cartId	= $model->id;
+		$user			= Yii::$app->core->getAppUser();
+		$item->cartId           = $model->id;
 		$cartItemService	= Yii::$app->factory->get( 'cartItemService' );
 
 		// Remove in case it's not required

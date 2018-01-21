@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
@@ -10,8 +10,7 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\resources\Option;
+use cmsgears\cart\common\models\resources\Uom;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
@@ -36,12 +35,14 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $parentType
  * @property string $type
  * @property integer $name
- * @property integer $sku
+ * @property string $sku
+ * @property integer $status
  * @property integer $price
  * @property integer $discount
  * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
+ * @property integer $total
  * @property integer $weight
  * @property integer $volume
  * @property integer $length
@@ -61,7 +62,19 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 
 	// Constants --------------
 
+	const STATUS_NEW		=   0;
+	const STATUS_CANCELLED	= 100;
+	const STATUS_RETURNED	= 200;
+	const STATUS_RECEIVED	= 500;
+
 	// Public -----------------
+
+	public static $statusMap = [
+		self::STATUS_NEW => 'New',
+		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_RETURNED => 'Returned',
+		self::STATUS_RECEIVED => 'Received'
+	];
 
 	// Protected --------------
 
@@ -121,8 +134,9 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			// Other
-			[ [ 'price', 'discount', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
-			[ [ 'orderId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ [ 'orderId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
@@ -134,6 +148,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 
 		return [
 			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
+			'primaryUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PRIMARY ),
 			'purchasingUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PURCHASING ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
@@ -145,6 +160,7 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
@@ -172,36 +188,41 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasOne( Order::className(), [ 'id' => 'orderId' ] );
 	}
 
+	public function getPrimaryUnit() {
+
+		return $this->hasOne( Uom::className(), [ 'id' => 'primaryUnitId' ] )->from( CartTables::TABLE_UOM . ' as primaryUnit' );
+	}
+
 	public function getPurchasingUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'purchasingUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as pUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'purchasingUnitId' ] )->from( CartTables::TABLE_UOM . ' as purchasingUnit' );
 	}
 
 	public function getQuantityUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'quantityUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as qUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'quantityUnitId' ] )->from( CartTables::TABLE_UOM . ' as quantityUnit' );
 	}
 
 	public function getWeightUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'weightUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as wUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'weightUnitId' ] )->from( CartTables::TABLE_UOM . ' as weightUnit' );
 	}
 
 	public function getVolumeUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'volumeUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as vUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as volumeUnit' );
 	}
 
 	public function getLengthUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'lengthUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as lUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
-	public function getTotalPrice() {
+	public function getTotalPrice( $precision = 2 ) {
 
 		$price	= $this->purchase * $this->price;
 
-		return round( $price, 2 );
+		return round( $price, $precision );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -246,4 +267,5 @@ class OrderItem extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

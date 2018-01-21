@@ -13,10 +13,10 @@ class CartFilter {
 
 	public function doFilter( $args = [] ) {
 
-		$this->cartProperties = CartProperties::getInstance();
+		$cartProperties = CartProperties::getInstance();
 
 		// Check whether cart is still active and available
-		if( $this->cartProperties->isActive() ) {
+		if( $cartProperties->isActive() ) {
 
 			return true;
 		}

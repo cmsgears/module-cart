@@ -2,12 +2,11 @@
 namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 
@@ -19,6 +18,7 @@ use cmsgears\cart\common\models\base\CartTables;
  * @property string $name
  * @property integer $group
  * @property boolean $base
+ * @property boolean $active
  */
 class Uom extends \cmsgears\core\common\models\base\Entity {
 
@@ -46,6 +46,8 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 	const GROUP_VOLUME_IMPERIAL	= 80;
 	const GROUP_VOLUME_US		= 90;
 
+	const GROUP_TIME			= 100;
+
 	public static $groupMap = [
 		self::GROUP_QUANTITY => 'Quantity',
 		self::GROUP_LENGTH_METRIC => 'Metric Length',
@@ -56,7 +58,8 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		self::GROUP_WEIGHT_US => 'US Weight',
 		self::GROUP_VOLUME_METRIC => 'Metric Volume',
 		self::GROUP_VOLUME_IMPERIAL => 'Imperial Volume',
-		self::GROUP_VOLUME_US => 'US Volume'
+		self::GROUP_VOLUME_US => 'US Volume',
+		self::GROUP_TIME => 'Time'
 	];
 
 	// Used for external docs
@@ -64,13 +67,14 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		'Quantity' => self::GROUP_QUANTITY,
 		'Metric Length' => self::GROUP_LENGTH_METRIC,
 		'Imperial Length' => self::GROUP_LENGTH_IMPERIAL,
-		'US Re Length' => self::GROUP_LENGTH_US,
+		'US Length' => self::GROUP_LENGTH_US,
 		'Metric Weight' => self::GROUP_WEIGHT_METRIC,
 		'Imperial Weight' => self::GROUP_WEIGHT_IMPERIAL,
 		'US Weight' => self::GROUP_WEIGHT_US,
 		'Metric Volume' => self::GROUP_VOLUME_METRIC,
 		'Imperial Volume' => self::GROUP_VOLUME_IMPERIAL,
-		'US Volume' => self::GROUP_VOLUME_US
+		'US Volume' => self::GROUP_VOLUME_US,
+		'Time' => self::GROUP_TIME
 	];
 
 	// Public -----------------
@@ -109,7 +113,7 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'name', 'group' ], 'unique', 'targetAttribute' => [ 'name', 'group' ] ],
 			// Text Limit
 			[ 'code', 'string', 'min' => 1, 'max' => Yii::$app->core->smallText ],
-			[ [ 'name' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			// Other
 			[ [ 'group' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'base', 'active' ], 'boolean' ]
@@ -159,6 +163,11 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		return Yii::$app->formatter->asBoolean( $this->base );
 	}
 
+	public function getActiveStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->active );
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------
@@ -191,4 +200,5 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

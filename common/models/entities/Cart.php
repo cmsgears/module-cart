@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
@@ -60,11 +60,31 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		self::STATUS_ABANDONED => 'Abandoned'
 	];
 
+	public static $revStatusMap = [
+		'Active' => self::STATUS_ACTIVE,
+		'Checkout' => self::STATUS_CHECKOUT,
+		'Payment' => self::STATUS_PAYMENT,
+		'Success' => self::STATUS_SUCCESS,
+		'Failed' => self::STATUS_FAILED,
+		'Abandoned' => self::STATUS_ABANDONED
+	];
+
+	public static $urlRevStatusMap = [
+		'active' => self::STATUS_ACTIVE,
+		'checkout' => self::STATUS_CHECKOUT,
+		'payment' => self::STATUS_PAYMENT,
+		'success' => self::STATUS_SUCCESS,
+		'failed' => self::STATUS_FAILED,
+		'abandoned' => self::STATUS_ABANDONED
+	];
+
 	// Protected --------------
 
 	// Variables -----------------------------
 
 	// Public -----------------
+
+	public $modelType = CartGlobal::TYPE_CART;
 
 	// Protected --------------
 
@@ -117,7 +137,7 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'id', 'content', 'data' ], 'safe' ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -155,14 +175,19 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] );
 	}
 
-	public function generateName() {
+	public function getActiveItems() {
+
+		return $this->hasMany( CartItem::className(), [ 'cartId' => 'id' ] )->where( 'keep=1' );
+	}
+
+	public function generateTitle() {
 
 		$this->title = Yii::$app->security->generateRandomString( 16 );
 	}
 
-	public function getCartTotal() {
+	public function getCartTotal( $precision = 2 ) {
 
-		$items	= $this->items;
+		$items	= $this->activeItems;
 
 		$total	= 0;
 
@@ -174,7 +199,23 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 			}
 		}
 
-		return $total;
+		return round( $total, $precision );
+	}
+
+	public function getActiveCount( $type = 'purchase' ) {
+
+		$cartItems	= $this->activeItems;
+		$count		= 0;
+
+		foreach ( $cartItems as $cartItem ) {
+
+			if( $cartItem->keep ) {
+
+				$count += $cartItem->$type;
+			}
+		}
+
+		return $count;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -208,10 +249,16 @@ class Cart extends \cmsgears\core\common\models\base\Entity {
 
 		return self::find()->where( 'token=:token', [ 'token' => $token ] )->one();
 	}
+        
+        public static function findByParentIdParentType( $parentId, $parentType ) {
+            
+            return self::find()->where( 'parentId=:parentId AND parentType=:parentType', [ ':parentId' => $parentId, 'parentType' => $parentType ] )->one();
+        }
 
 	// Create -----------------
 
 	// Update -----------------
 
 	// Delete -----------------
+
 }

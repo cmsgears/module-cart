@@ -1,13 +1,10 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\entities;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\core\common\services\interfaces\base\IEntityService;
 
-interface IVoucherService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
+interface IVoucherService extends IEntityService {
 
 	// Data Provider ------
 
@@ -24,4 +21,5 @@ interface IVoucherService extends \cmsgears\core\common\services\interfaces\base
 	// Update -------------
 
 	// Delete -------------
+
 }

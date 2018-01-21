@@ -2,11 +2,7 @@
 namespace cmsgears\cart\common\components;
 
 // Yii Imports
-use \Yii;
-use yii\di\Container;
-
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
+use Yii;
 
 class Cart extends \yii\base\Component {
 
@@ -62,6 +58,7 @@ class Cart extends \yii\base\Component {
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
+
 		$factory->set( 'cmsgears\cart\common\services\interfaces\forms\IGuestService', 'cmsgears\cart\common\services\forms\GuestService' );
 	}
 
@@ -69,14 +66,15 @@ class Cart extends \yii\base\Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartService', 'cmsgears\cart\common\services\entities\CartService' );
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IVoucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
 
-		$factory->set( 'cmsgears\payment\common\services\interfaces\entities\ITransactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ITransactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
+
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartService', 'cmsgears\cart\common\services\entities\CartService' );
+
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
 	}
 
 	public function registerSystemServices() {
@@ -92,6 +90,7 @@ class Cart extends \yii\base\Component {
 
 		$factory->set( 'uomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'uomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
+
 		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\forms\GuestService' );
 	}
 
@@ -99,12 +98,15 @@ class Cart extends \yii\base\Component {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
-		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
-		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
-		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
 		$factory->set( 'voucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
+
 		$factory->set( 'transactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
+
+		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
+		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
+
+		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
+		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
 	}
 
 	public function initSystemServices() {

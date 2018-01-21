@@ -1,14 +1,8 @@
 <?php
 namespace cmsgears\cart\common\components;
 
-// Yii Imports
-use \Yii;
-
-// CMG Imports
-use cmsgears\cart\common\config\CartGlobal;
-
 /**
- * The mail component for CMSGears cms module. It must be initialised for app using the name cmgCmsMailer.
+ * The mail component for CMSGears cart module.
  */
 class Mailer extends \cmsgears\core\common\base\Mailer {
 
@@ -18,7 +12,7 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Constants --------------
 
-	//const MAIL_CONTACT		= "contact";
+	const MAIL_STATUS	= 'status';
 
 	// Public -----------------
 
@@ -28,9 +22,9 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Public -----------------
 
-	public $htmlLayout		= '@cmsgears/module-cart/common/mails/layouts/html';
-	public $textLayout		= '@cmsgears/module-cart/common/mails/layouts/text';
-	public $viewPath		= '@cmsgears/module-cart/common/mails/views';
+	public $htmlLayout	= '@cmsgears/module-cart/common/mails/layouts/html';
+	public $textLayout	= '@cmsgears/module-cart/common/mails/layouts/text';
+	public $viewPath	= '@cmsgears/module-cart/common/mails/views';
 
 	// Protected --------------
 
@@ -52,23 +46,18 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Mailer --------------------------------
 
-	/*
-	public function sendContactMail( $contactForm ) {
+	public function sendStatusMail( $order, $user = null ) {
 
-		$mailProperties	= $this->mailProperties;
-		$adminEmail		= $mailProperties->getSenderEmail();
-		$adminName		= $mailProperties->getSenderName();
+		$fromEmail 	= $this->mailProperties->getSenderEmail();
+		$fromName 	= $this->mailProperties->getSenderName();
+		$status		= $order->getStatusStr();
+		$user		= isset( $user ) ? $user : $order->creator;
+		$toEmail	= $user->email;
 
-		$fromEmail		= $mailProperties->getContactEmail();
-		$fromName		= $mailProperties->getContactName();
-
-		// User Mail
-		$this->getMailer()->compose( self::MAIL_CONTACT, [ 'coreProperties' => $this->coreProperties, FormsGlobal::FORM_CONTACT => $contactForm ] )
-			->setTo( $contactForm->email )
+		$this->getMailer()->compose( self::MAIL_STATUS, [ 'coreProperties' => $this->coreProperties, 'order' => $order, 'user' => $user ] )
+			->setTo( $toEmail )
 			->setFrom( [ $fromEmail => $fromName ] )
-			->setSubject( $contactForm->subject )
-			//->setTextBody( $contact->contact_message )
+			->setSubject( "Order $status | " . $this->coreProperties->getSiteName() )
 			->send();
 	}
-	*/
 }

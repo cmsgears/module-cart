@@ -10,8 +10,8 @@ class m160622_034824_cart_index extends \yii\db\Migration {
 
 	public function init() {
 
-		// Fixed
-		$this->prefix	= 'cmg_';
+		// Table prefix
+		$this->prefix		= Yii::$app->migration->cmgPrefix;
 	}
 
 	public function up() {
@@ -46,9 +46,6 @@ class m160622_034824_cart_index extends \yii\db\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_sku', $this->prefix . 'cart_order_item', 'sku' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_type', $this->prefix . 'cart_order_item', 'type' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_type_p', $this->prefix . 'cart_order_item', 'parentType' );
-
-		// Order History
-		$this->createIndex( 'idx_' . $this->prefix . 'order_history_type', $this->prefix . 'cart_order_history', 'type' );
 
 		// Voucher
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_name', $this->prefix . 'cart_voucher', 'name' );
@@ -87,9 +84,6 @@ class m160622_034824_cart_index extends \yii\db\Migration {
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_sku', $this->prefix . 'cart_order_item' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_type', $this->prefix . 'cart_order_item' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_type_p', $this->prefix . 'cart_order_item' );
-
-		// Order History
-		$this->dropIndex( 'idx_' . $this->prefix . 'order_history_type', $this->prefix . 'cart_order_history' );
 
 		// Voucher
 		$this->dropIndex( 'idx_' . $this->prefix . 'voucher_name', $this->prefix . 'cart_voucher' );

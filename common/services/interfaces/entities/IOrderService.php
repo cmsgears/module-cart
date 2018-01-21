@@ -1,19 +1,18 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\entities;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\core\common\services\interfaces\base\IEntityService;
 
-interface IOrderService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
-
-	public function setOrderItemService( IOrderItemService $orderItemService );
+interface IOrderService extends IEntityService {
 
 	// Data Provider ------
 
 	public function getPageByParent( $parentId, $parentType );
+
+	public function getPageByUserId( $userId );
+
+	public function getPageByUserIdParentType( $userId, $parentType );
 
 	// Read ---------------
 
@@ -31,11 +30,13 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 
 	// Create -------------
 
-	public function createFromCart( $order, $message, $cart, $config = [] );
+	public function createFromCart( $order, $cart, $config = [] );
 
 	// Update -------------
 
 	public function updateStatus( $model, $status );
+
+	public function cancel( $order, $checkChildren = true, $checkBase = true );
 
 	public function approve( $order );
 
@@ -50,6 +51,10 @@ interface IOrderService extends \cmsgears\core\common\services\interfaces\base\I
 	public function ship( $order );
 
 	public function deliver( $order );
+
+	public function back( $order );
+
+	public function dispute( $order );
 
 	public function complete( $order );
 

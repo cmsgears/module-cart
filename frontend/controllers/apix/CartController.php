@@ -1,9 +1,10 @@
 <?php
-namespace cmsgears\cart\frontend;
+namespace cmsgears\cart\frontend\controllers\apix;
 
-// CMG Imports
+// Yii Imports
+use Yii;
 
-class Module extends \cmsgears\core\common\base\Module {
+class CartController extends \cmsgears\core\frontend\controllers\base\Controller {
 
 	// Variables ---------------------------------------------------
 
@@ -11,21 +12,17 @@ class Module extends \cmsgears\core\common\base\Module {
 
 	// Public -----------------
 
-	public $controllerNamespace = 'cmsgears\cart\frontend\controllers';
-
 	// Protected --------------
 
 	// Private ----------------
 
-	// Traits ------------------------------------------------------
-
 	// Constructor and Initialisation ------------------------------
 
-	public function init() {
+ 	public function init() {
 
-		parent::init();
+        parent::init();
 
-		$this->setViewPath( '@cmsgears/module-cart/frontend/views' );
+		$this->modelService	= Yii::$app->factory->get( 'cartService' );
 	}
 
 	// Instance methods --------------------------------------------
@@ -34,10 +31,14 @@ class Module extends \cmsgears\core\common\base\Module {
 
 	// Yii parent classes --------------------
 
+	// yii\base\Component -----
+
+	// yii\base\Controller ----
+
 	// CMG interfaces ------------------------
 
 	// CMG parent classes --------------------
 
-	// Module --------------------------------
+	// CartController ------------------------
 
 }

@@ -1,13 +1,7 @@
 <?php
 namespace cmsgears\cart\common\models\resources;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\cart\common\config\CartGlobal;
-
 use cmsgears\cart\common\models\base\CartTables;
 
 /**
@@ -55,8 +49,10 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 	public function rules() {
 
 		return [
+			// Required, Safe
 			[ [ 'uomId', 'targetId' ], 'required' ],
 			[ [ 'id' ], 'safe' ],
+			// Other
 			[ [ 'uomId', 'targetId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ 'quantity', 'number' ]
 		];
@@ -83,14 +79,14 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 		$uomTable = CartTables::TABLE_UOM;
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'uomId' ] )->from( "$uomTable as source" );
+		return $this->hasOne( Uom::className(), [ 'id' => 'uomId' ] )->from( "$uomTable as sourceUom" );
 	}
 
 	public function getTarget() {
 
 		$uomTable = CartTables::TABLE_UOM;
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'targetId' ] )->from( "$uomTable as target" );
+		return $this->hasOne( Uom::className(), [ 'id' => 'targetId' ] )->from( "$uomTable as targetUom" );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -125,4 +121,5 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

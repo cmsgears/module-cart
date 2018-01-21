@@ -2,11 +2,10 @@
 namespace cmsgears\cart\common\services\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
@@ -59,19 +58,16 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Constructor and Initialisation ------------------------------
 
-	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IModelAddressService $modelAddressService, $config = [] ) {
+	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IOrderItemService $orderItemService, IModelAddressService $modelAddressService, $config = [] ) {
 
 		$this->cartService			= $cartService;
 		$this->cartItemService		= $cartItemService;
 
+		$this->orderItemService		= $orderItemService;
+
 		$this->modelAddressService	= $modelAddressService;
 
 		parent::__construct( $config );
-	}
-
-	public function setOrderItemService( IOrderItemService $orderItemService ) {
-
-		$this->orderItemService	= $orderItemService;
 	}
 
 	// Instance methods --------------------------------------------
@@ -90,65 +86,160 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	public function getPage( $config = [] ) {
 
+		$modelClass		= static::$modelClass;
+		$modelTable		= static::$modelTable;
+
+		// Sorting ----------
+
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ 'id' => SORT_ASC ],
+					'desc' => [ 'id' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'ID'
+				],
 				'title' => [
 					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => ['title' => SORT_DESC ],
+					'desc' => [ 'title' => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Title'
 				],
 				'type' => [
-					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => ['title' => SORT_DESC ],
+					'asc' => [ 'type' => SORT_ASC ],
+					'desc' => [ 'type' => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Title'
+					'label' => 'Type'
 				],
 				'status' => [
-					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => ['title' => SORT_DESC ],
+					'asc' => [ 'status' => SORT_ASC ],
+					'desc' => [ 'status' => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Title'
+					'label' => 'Status'
+				],
+				'total' => [
+					'asc' => [ 'grandTotal' => SORT_ASC ],
+					'desc' => [ 'grandTotal' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Total'
+				],
+				'cdate' => [
+					'asc' => [ 'createdAt' => SORT_ASC ],
+					'desc' => [ 'createdAt' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Created At'
+				],
+				'udate' => [
+					'asc' => [ 'modifiedAt' => SORT_ASC ],
+					'desc' => [ 'modifiedAt' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Updated At'
 				]
-			]
+			],
+			'defaultOrder' => [ 'cdate' => 'SORT_ASC' ]
 		]);
 
-		$config[ 'sort' ] = $sort;
+		if( !isset( $config[ 'sort' ] ) ) {
 
-		return parent::findPage( $config );
+			$config[ 'sort' ] = $sort;
+		}
+
+		// Query ------------
+
+		if( !isset( $config[ 'query' ] ) ) {
+
+			$config[ 'hasOne' ] = true;
+		}
+
+		// Filters ----------
+
+		// Filter - Status
+		$status	= Yii::$app->request->getQueryParam( 'status' );
+
+		if( isset( $status ) ) {
+
+			if( isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+
+				$config[ 'conditions' ][ "$modelTable.status" ] = $modelClass::$urlRevStatusMap[ $status ];
+			}
+		}
+
+		// Searching --------
+
+		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+
+		if( isset( $searchCol ) ) {
+
+			$search = [ 'title' => "$modelTable.title", 'description' => "$modelTable.description" ];
+
+			$config[ 'search-col' ] = $search[ $searchCol ];
+		}
+
+		// Reporting --------
+
+		$config[ 'report-col' ]	= [
+			'title' => "$modelTable.title", 'description' => "$modelTable.description", 'content' => "$modelTable.content"
+		];
+
+		// Result -----------
+
+		return parent::getPage( $config );
 	}
 
 	public function getPageByParent( $parentId, $parentType ) {
 
-		$modelTable	= self::$modelTable;
+		$modelTable	= static::$modelTable;
 
 		return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
 	}
 
-	// Read ---------------
+	public function getPageByUserId( $userId ) {
 
-	public function getByTitle( $title ) {
+		$modelTable	= self::$modelTable;
 
-		$modelClass	= self::$modelClass;
-
-		return $modelClass::findByTitle( $title );
+		return $this->getPage( [ 'conditions' => [ "$modelTable.createdBy" => $userId ] ] );
 	}
+
+	public function getPageByUserIdParentType( $userId, $parentType ) {
+
+		$modelTable	= self::$modelTable;
+		$paid		= Order::STATUS_PAID;
+
+		$config		= [ 'conditions' => [ "$modelTable.status >= $paid", "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
+
+		return $this->getPage( $config );
+	}
+
+	// Read ---------------
 
 	public function getCountByParent( $parentId, $parentType ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		return $modelClass::queryByParent( $parentId, $parentType )->count();
 	}
 
 	public function getCountByUserId( $userId ) {
 
-		$modelClass	= self::$modelClass;
+		$modelClass	= static::$modelClass;
 
 		return $modelClass::queryByCreatorId( $userId )->count();
 	}
 
 	// Read - Models ---
+
+	/**
+	 * Use only if title is unique for order.
+	 *
+	 * @param string $title
+	 * @return Order
+	 */
+	public function getByTitle( $title ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByTitle( $title );
+	}
 
 	// Read - Lists ----
 
@@ -158,27 +249,25 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	// Create -------------
 
-	public function createFromCart( $order, $message, $cart, $config = [] ) {
+	public function createFromCart( $order, $cart, $config = [] ) {
 
 		// Init Transaction
 		$transaction		= Yii::$app->db->beginTransaction();
 
 		// Set Attributes
-		$user				= Yii::$app->core->getAppUser();
 		$billingAddress		= isset( $config[ 'billingAddress' ] ) ? $config[ 'billingAddress' ] : null;
 		$shippingAddress	= isset( $config[ 'shippingAddress' ] ) ? $config[ 'shippingAddress' ] : null;
 
 		// Order
-		$order->createdBy	= $user->id;
 		$order->parentId	= $cart->parentId;
 		$order->parentType	= $cart->parentType;
-		$order->status		= Order::STATUS_NEW;
-		$order->description	= $message;
+		$order->type		= $cart->type;
+		$order->status		= $order->status ?? Order::STATUS_NEW;
 
 		// Generate UID if required
 		if( !isset( $order->title ) ) {
 
-			$order->generateName();
+			$order->generateTitle();
 		}
 
 		// Set Order Totals
@@ -201,17 +290,17 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 			}
 
 			// Create Shipping Address
-			if( !$order->sameAddress && isset( $shippingAddress ) ) {
+			if( !$order->shipToBilling && isset( $shippingAddress ) ) {
 
 				$this->modelAddressService->createOrUpdateByType( $shippingAddress, [ 'parentId' => $order->id, 'parentType' => CartGlobal::TYPE_ORDER, 'type' => Address::TYPE_SHIPPING ] );
 			}
 
 			// Create Order Items
-			$cartItems	= $cart->items;
+			$cartItems	= $cart->activeItems;
 
 			foreach ( $cartItems as $item ) {
 
-				Yii::$app->factory->get( 'orderItemService' )->createFromCartItem( $order, $item, $config );
+				$this->orderItemService->createFromCartItem( $order, $item, $config );
 			}
 
 			// Delete Cart & Cart Items
@@ -235,45 +324,82 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 	public function updateStatus( $model, $status ) {
 
-		$user				= Yii::$app->core->getAppUser();
-		$model				= self::findById( $model->id );
-
-		$model->modifiedBy	= $user->id;
-		$model->status		= $status;
+		$model->status	= $status;
 
 		return parent::update( $model, [
 			'attributes' => [ 'status' ]
 		]);
 	}
 
+	public function cancel( $order, $checkChildren = true, $checkBase = true ) {
+
+		// Cancel all child orders
+		if( $checkChildren ) {
+
+			$children	= $order->children;
+
+			foreach ( $children as $child ) {
+
+				$this->updateStatus( $child, Order::STATUS_CANCELLED );
+			}
+		}
+
+		// Cancel order
+		$this->updateStatus( $order, Order::STATUS_CANCELLED );
+
+		// Cancel parent
+		if( $checkBase && $order->hasBase() ) {
+
+			$base		= $order->base;
+			$children	= $base->children;
+			$cancel		= true;
+
+			// No cancel if at least one child is not cancelled
+			foreach ( $children as $child ) {
+
+				if( !$child->isCancelled( true ) ) {
+
+					$cancel = false;
+
+					break;
+				}
+			}
+
+			if( $cancel ) {
+
+				$this->updateStatus( $base, Order::STATUS_CANCELLED );
+			}
+		}
+	}
+
 	public function approve( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_APPROVED );
+		$this->updateStatus( $order, Order::STATUS_APPROVED );
 	}
 
 	public function place( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PLACED );
+		$this->updateStatus( $order, Order::STATUS_PLACED );
 	}
 
 	public function paid( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PAID );
+		$this->updateStatus( $order, Order::STATUS_PAID );
 	}
 
 	public function confirm( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_CONFIRMED );
+		$this->updateStatus( $order, Order::STATUS_CONFIRMED );
 	}
 
 	public function process( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_PROCESSED );
+		$this->updateStatus( $order, Order::STATUS_PROCESSED );
 	}
 
 	public function ship( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_SHIPPED );
+		$this->updateStatus( $order, Order::STATUS_SHIPPED );
 	}
 
 	public function deliver( $order ) {
@@ -282,12 +408,22 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 
 		$order->update();
 
-		self::updateStatus( $order, Order::STATUS_DELIVERED );
+		$this->updateStatus( $order, Order::STATUS_DELIVERED );
+	}
+
+	public function back( $order ) {
+
+		$this->updateStatus( $order, Order::STATUS_RETURNED );
+	}
+
+	public function dispute( $order ) {
+
+		$this->updateStatus( $order, Order::STATUS_DISPUTE );
 	}
 
 	public function complete( $order ) {
 
-		self::updateStatus( $order, Order::STATUS_COMPLETED );
+		$this->updateStatus( $order, Order::STATUS_COMPLETED );
 	}
 
 	public function updateBaseStatus( $order ) {
@@ -336,4 +472,5 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	// Update -------------
 
 	// Delete -------------
+
 }

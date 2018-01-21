@@ -1,11 +1,7 @@
 <?php
 namespace cmsgears\cart\common\components;
 
-// Yii Imports
-use \Yii;
-
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 class MessageSource extends \yii\base\Component {
@@ -30,6 +26,7 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_USAGE_COUNT => 'Usage Count',
 
 		// Units
+		CartGlobal::FIELD_UNIT_PRIMARY => 'Primary Unit',
 		CartGlobal::FIELD_UNIT_PURCHASING => 'Purchasing Unit',
 		CartGlobal::FIELD_UNIT_QUANTITY => 'Quantity Unit',
 		CartGlobal::FIELD_UNIT_WEIGHT => 'Weight Unit',
@@ -45,7 +42,6 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_RADIUS => 'Radius',
 
 		// Totals
-		CartGlobal::FIELD_AMOUNT => 'Amount',
 		CartGlobal::FIELD_PRICE => 'Price',
 		CartGlobal::FIELD_TOTAL_SUB	=> 'Sub Total',
 		CartGlobal::FIELD_TAX => 'Tax',
@@ -57,7 +53,7 @@ class MessageSource extends \yii\base\Component {
 		// Orders
 		CartGlobal::FIELD_ORDER => 'Order',
 		CartGlobal::FIELD_PARENT_ORDER => 'Parent Order',
-		CartGlobal::FIELD_ADDRESS_SAME => 'Same as Billing Address',
+		CartGlobal::FIELD_SHIP_TO_BILLING => 'Same as Billing Address',
 		CartGlobal::FIELD_ESTIMATED_DELIVERY => 'Estimated Delivery Date',
 		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date'
 	];

@@ -1,6 +1,5 @@
 <?php
 // Yii Imports
-use \Yii;
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
 use yii\helpers\Url;
@@ -17,7 +16,7 @@ $pagination		= $dataProvider->getPagination();
 $models			= $dataProvider->getModels();
 
 // Searching
-$searchTerms	= Yii::$app->request->getQueryParam( 'keywords' );
+$keywords		= Yii::$app->request->getQueryParam( 'keywords' );
 
 // Sorting
 $sortOrder		= Yii::$app->request->getQueryParam( 'sort' );
@@ -27,40 +26,40 @@ if( !isset( $sortOrder ) ) {
 	$sortOrder	= '';
 }
 ?>
-<div class="header-content clearfix">
-	<div class="header-actions col15x10">
+<div class="row header-content">
+	<div class="col-small col15x10 header-actions">
 		<span class="frm-icon-element element-small">
 			<i class="cmti cmti-plus"></i>
 			<?= Html::a( 'Add', [ 'create' ], [ 'class' => 'btn' ] ) ?>
 		</span>
 	</div>
-	<div class="header-search col15x5">
-		<input id="search-terms" class="element-large" type="text" name="search" value="<?= $searchTerms ?>">
+	<div class="col-small col15x5 header-search">
+		<input id="search-terms" class="element-large" type="text" name="search" value="<?= $keywords ?>">
 		<span class="frm-icon-element element-medium">
 			<i class="cmti cmti-search"></i>
 			<button id="btn-search">Search</button>
 		</span>
 	</div>
 </div>
-<div class="header-content clearfix">
-	<div class="header-actions col12x8">
+<div class="row header-content">
+	<div class="col col12x8 header-actions">
 		<span class="bold">Sort By:</span>
 		<span class="wrap-sort">
 			<?= $dataProvider->sort->link( 'source', [ 'class' => 'sort btn btn-medium' ] ) ?>
 			<?= $dataProvider->sort->link( 'target', [ 'class' => 'sort btn btn-medium' ] ) ?>
 		</span>
 	</div>
-	<div class="header-actions col12x4 align align-right">
+	<div class="col col12x4 header-actions align align-right">
 		<span class="wrap-filters"></span>
 	</div>
 </div>
 
 <div class="data-grid">
-	<div class="grid-header clearfix">
-		<div class="col12x6 info">
+	<div class="row grid-header">
+		<div class="col col12x6 info">
 			<?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?>
 		</div>
-		<div class="col12x6 pagination">
+		<div class="col col12x6 pagination">
 			<?= LinkPager::widget( [ 'pagination' => $pagination, 'options' => [ 'class' => 'pagination-basic' ] ] ); ?>
 		</div>
 	</div>
@@ -73,6 +72,7 @@ if( !isset( $sortOrder ) ) {
 					<th>Target</th>
 					<th>Target Group</th>
 					<th>Quantity</th>
+					<th>Conversion</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
@@ -84,6 +84,7 @@ if( !isset( $sortOrder ) ) {
 						$id			= $conversion->id;
 						$source		= $conversion->source;
 						$target		= $conversion->target;
+						$demo		= "1 $source->name = $conversion->quantity $target->name";
 				?>
 					<tr>
 						<td><?= $source->name ?></td>
@@ -91,6 +92,7 @@ if( !isset( $sortOrder ) ) {
 						<td><?= $target->name ?></td>
 						<td><?= $target->getGroupStr() ?></td>
 						<td><?= $conversion->quantity ?></td>
+						<td><?= $demo ?></td>
 						<td class="actions">
 							<span title="Update"><?= Html::a( "", [ "update?id=$id" ], [ 'class' => 'cmti cmti-edit' ] )  ?></span>
 							<span title="Delete"><?= Html::a( "", [ "delete?id=$id" ], [ 'class' => 'cmti cmti-close-c-o' ] )  ?></span>
@@ -100,11 +102,11 @@ if( !isset( $sortOrder ) ) {
 			</tbody>
 		</table>
 	</div>
-	<div class="grid-header clearfix">
-		<div class="col12x6 info">
+	<div class="row grid-header">
+		<div class="col col12x6 info">
 			<?=CodeGenUtil::getPaginationDetail( $dataProvider ) ?>
 		</div>
-		<div class="col12x6 pagination">
+		<div class="col col12x6 pagination">
 			<?= LinkPager::widget( [ 'pagination' => $pagination, 'options' => [ 'class' => 'pagination-basic' ] ] ); ?>
 		</div>
 	</div>

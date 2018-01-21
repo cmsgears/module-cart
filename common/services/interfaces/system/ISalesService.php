@@ -1,12 +1,6 @@
 <?php
 namespace cmsgears\cart\common\services\interfaces\system;
 
-// Yii Imports
-use \Yii;
-
-// CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
-
 interface ISalesService {
 
 	// Data Provider ------

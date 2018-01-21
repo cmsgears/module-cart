@@ -2,9 +2,7 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
-use yii\db\Expression;
-use yii\behaviors\TimestampBehavior;
+use Yii;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -88,6 +86,8 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 
 	// Public -----------------
 
+	public $modelType = CartGlobal::TYPE_VOUCHER;
+
 	// Protected --------------
 
 	// Private ----------------
@@ -132,7 +132,7 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 			// Text Limit
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'taxType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'freeShipping', 'boolean' ],
@@ -142,7 +142,7 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 
 		if( Yii::$app->core->trimFieldValue ) {
 
-			$trim[] = [ [ 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'name', 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -206,4 +206,5 @@ class Voucher extends \cmsgears\core\common\models\base\Entity {
 	// Update -----------------
 
 	// Delete -----------------
+
 }

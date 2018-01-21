@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\entities;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 
@@ -10,9 +10,8 @@ use yii\behaviors\TimestampBehavior;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\models\base\CoreTables;
-use cmsgears\core\common\models\resources\Option;
 use cmsgears\cart\common\models\base\CartTables;
+use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
 use cmsgears\core\common\models\traits\ResourceTrait;
@@ -38,6 +37,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $name
  * @property integer $sku
  * @property integer $price
+ * @property integer $discount
+ * @property integer $total
  * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
@@ -48,6 +49,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $height
  * @property integer $radius
  * @property boolean $keep
+ * @property datetime $createdAt
+ * @property datetime $modifiedAt
  * @property string $content
  * @property string $data
  */
@@ -119,10 +122,10 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			// Other
-			[ [ 'price', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ [ 'price', 'discount', 'total', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
 			[ 'keep', 'boolean' ],
 			[ [ 'parentId', 'parentType', 'cartId' ], 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'cartId' ] ],
-			[ [ 'cartId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'cartId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 	}
@@ -134,6 +137,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 
 		return [
 			'cartId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CART ),
+			'primaryUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PRIMARY ),
 			'purchasingUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PURCHASING ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
 			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
@@ -146,6 +150,8 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PURCHASE ),
 			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
 			'weight' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),
@@ -171,36 +177,41 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasOne( Cart::className(), [ 'id' => 'cartId' ] );
 	}
 
+	public function getPrimaryUnit() {
+
+		return $this->hasOne( Uom::className(), [ 'id' => 'primaryUnitId' ] )->from( CartTables::TABLE_UOM . ' as primaryUnit' );
+	}
+
 	public function getPurchasingUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'purchasingUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as pUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'purchasingUnitId' ] )->from( CartTables::TABLE_UOM . ' as purchasingUnit' );
 	}
 
 	public function getQuantityUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'quantityUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as qUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'quantityUnitId' ] )->from( CartTables::TABLE_UOM . ' as quantityUnit' );
 	}
 
 	public function getWeightUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'weightUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as wUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'weightUnitId' ] )->from( CartTables::TABLE_UOM . ' as weightUnit' );
 	}
 
 	public function getVolumeUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'lengthUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as lUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as volumeUnit' );
 	}
 
 	public function getLengthUnit() {
 
-		return $this->hasOne( Option::className(), [ 'id' => 'lengthUnitId' ] )->from( CoreTables::TABLE_OPTION . ' as lUnit' );
+		return $this->hasOne( Uom::className(), [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
-	public function getTotalPrice() {
+	public function getTotalPrice( $precision = 2 ) {
 
 		$price	= $this->purchase * $this->price;
 
-		return round( $price, 2 );
+		return round( $price, $precision );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -222,7 +233,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
+		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
 		$config[ 'relations' ]	= $relations;
 
 		return parent::queryWithAll( $config );
@@ -242,7 +253,7 @@ class CartItem extends \cmsgears\core\common\models\base\Entity {
 
 	public static function findByParentCartId( $parentId, $parentType, $cartId ) {
 
-		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid', [ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] );
+		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid', [ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] )->one();
 	}
 
 	// Create -----------------

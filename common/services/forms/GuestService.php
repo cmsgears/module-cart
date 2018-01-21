@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\services\forms;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
 // CMG Imports
 use cmsgears\core\common\models\entities\User;
@@ -83,15 +83,12 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 			$user->save();
 		}
-
-		if( isset( $user ) ) {
+		else {
 
 			Yii::$app->core->setAppUser( $user );
-
-			return $user;
 		}
 
-		return false;
+		return $user;
 	}
 
 	// Update -------------
@@ -121,4 +118,5 @@ class GuestService extends \yii\base\Component implements IGuestService {
 	// Update -------------
 
 	// Delete -------------
+
 }

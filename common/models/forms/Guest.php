@@ -2,7 +2,7 @@
 namespace cmsgears\cart\common\models\forms;
 
 // Yii Imports
-use \Yii;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
@@ -27,6 +27,10 @@ class Guest extends \yii\base\Model {
 	public $firstName;
 	public $lastName;
 	public $email;
+	public $phone;
+
+	public $captcha;
+	public $captchaAction;	// Captcha url
 
 	// Protected --------------
 
@@ -49,13 +53,25 @@ class Guest extends \yii\base\Model {
 	public function rules() {
 
 		$rules = [
+			// Required, Safe
 			[ [ 'firstName', 'lastName', 'email' ], 'required' ],
+			[ 'phone', 'required', 'on' => [ 'phone', 'phone-captcha' ] ],
+			// Text Limit
+			[ [ 'email', 'phone' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			// Other
 			[ 'email', 'email' ]
 		];
 
+		if( empty( $this->captchaAction ) ) {
+
+			$this->captchaAction	= '/cart/cart/captcha';
+		}
+
+		$rules[] = [ 'captcha', 'captcha', 'captchaAction' => $this->captchaAction, 'on' => [ 'captcha', 'phone-captcha' ] ];
+
 		if( Yii::$app->core->trimFieldValue ) {
 
-			$trim[] = [ [ 'firstName', 'lastName', 'email' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'firstName', 'lastName', 'email', 'phone' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -68,7 +84,8 @@ class Guest extends \yii\base\Model {
 		return [
 			'firstName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FIRSTNAME ),
 			'lastName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_LASTNAME ),
-			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL )
+			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL ),
+			'phone' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PHONE )
 		];
 	}
 
@@ -79,4 +96,5 @@ class Guest extends \yii\base\Model {
 	// Validators ----------------------------
 
 	// Guest ---------------------------------
+
 }

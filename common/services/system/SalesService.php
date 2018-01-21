@@ -2,8 +2,6 @@
 namespace cmsgears\cart\common\services\system;
 
 // Yii Imports
-use \Yii;
-use yii\data\Sort;
 use yii\db\Query;
 
 // CMG Imports
@@ -187,4 +185,5 @@ class SalesService extends \yii\base\Component implements ISalesService {
 	// Update -------------
 
 	// Delete -------------
+
 }
