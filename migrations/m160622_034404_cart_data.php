@@ -1,6 +1,16 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+
+use cmsgears\core\common\base\Migration;
 
 use cmsgears\core\common\models\entities\Site;
 use cmsgears\core\common\models\entities\User;
@@ -13,7 +23,12 @@ use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\core\common\utilities\DateUtil;
 
-class m160622_034404_cart_data extends \yii\db\Migration {
+/**
+ * The cart data migration inserts the base data required to run the application.
+ *
+ * @since 1.0.0
+ */
+class m160622_034404_cart_data extends Migration {
 
 	// Public Variables
 
@@ -157,12 +172,13 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			'modifiedAt' => DateUtil::getDateTime()
 		]);
 
-		$config	= Form::findBySlug( 'config-cart', CoreGlobal::TYPE_SYSTEM );
+		$config	= Form::findBySlugType( 'config-cart', CoreGlobal::TYPE_SYSTEM );
 
 		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
 
 		$fields	= [
-			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ]
+			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ],
+			[ $config->id, 'remove-cart','Remove Cart', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Remove cart after converted to order."}' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
@@ -173,7 +189,8 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$columns = [ 'modelId', 'name', 'label', 'type', 'valueType', 'value' ];
 
 		$metas	= [
-			[ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ]
+			[ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ],
+			[ $this->site->id, 'remove-cart', 'Remove Cart', 'cart', 'flag', '1' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
@@ -317,4 +334,5 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 		return true;
 	}
+
 }

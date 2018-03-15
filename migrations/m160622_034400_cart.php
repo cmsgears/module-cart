@@ -1,6 +1,22 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
 
-class m160622_034400_cart extends \yii\db\Migration {
+// CMG Imports
+use cmsgears\core\common\base\Migration;
+
+/**
+ * The cart migration inserts the database tables of cart module. It also insert the foreign
+ * keys if FK flag of migration component is true.
+ *
+ * @since 1.0.0
+ */
+class m160622_034400_cart extends Migration {
 
 	// Public Variables
 
@@ -70,7 +86,7 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'id' => $this->bigPrimaryKey( 20 ),
 			'uomId' => $this->bigInteger( 20 )->notNull(),
 			'targetId' => $this->bigInteger( 20 )->notNull(),
-			'quantity' => $this->float( 2 )->defaultValue( 0 )
+			'quantity' => $this->float()->defaultValue( 0 )
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -92,8 +108,11 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
-			'content' => $this->text(),
-			'data' => $this->text()
+			'content' => $this->mediumText(),
+			'data' => $this->mediumText(),
+			'gridCache' => $this->longText(),
+			'gridCacheValid' => $this->boolean()->notNull()->defaultValue( false ),
+			'gridCachedAt' => $this->dateTime()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -117,25 +136,28 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
-			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
-			'sku' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
-			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'discount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'total' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'purchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'width' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'height' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'radius' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'name' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
+			'sku' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
+			'price' => $this->double()->notNull()->defaultValue( 0 ),
+			'discount' => $this->double()->notNull()->defaultValue( 0 ),
+			'total' => $this->double()->notNull()->defaultValue( 0 ),
+			'primary' => $this->float()->notNull()->defaultValue( 0 ),
+			'purchase' => $this->float()->notNull()->defaultValue( 0 ),
+			'quantity' => $this->float()->notNull()->defaultValue( 0 ),
+			'weight' => $this->float()->notNull()->defaultValue( 0 ),
+			'volume' => $this->float()->notNull()->defaultValue( 0 ),
+			'length' => $this->float()->notNull()->defaultValue( 0 ),
+			'width' => $this->float()->notNull()->defaultValue( 0 ),
+			'height' => $this->float()->notNull()->defaultValue( 0 ),
+			'radius' => $this->float()->notNull()->defaultValue( 0 ),
 			'keep' => $this->boolean()->notNull()->defaultValue( false ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
-			'content' => $this->text(),
-			'data' => $this->text()
+			'content' => $this->mediumText(),
+			'data' => $this->mediumText(),
+			'gridCache' => $this->longText(),
+			'gridCacheValid' => $this->boolean()->notNull()->defaultValue( false ),
+			'gridCachedAt' => $this->dateTime()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -163,19 +185,22 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'title' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),
-			'subTotal' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'tax' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'shipping' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'total' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'discount' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'grandTotal' => $this->double( 2 )->notNull()->defaultValue( 0 ),
+			'subTotal' => $this->double()->notNull()->defaultValue( 0 ),
+			'tax' => $this->float()->notNull()->defaultValue( 0 ),
+			'shipping' => $this->float()->notNull()->defaultValue( 0 ),
+			'total' => $this->double()->notNull()->defaultValue( 0 ),
+			'discount' => $this->float()->notNull()->defaultValue( 0 ),
+			'grandTotal' => $this->double()->notNull()->defaultValue( 0 ),
 			'shipToBilling' => $this->boolean()->notNull()->defaultValue( false ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'eta' => $this->dateTime(),
 			'deliveredAt' => $this->dateTime(),
-			'content' => $this->text(),
-			'data' => $this->text()
+			'content' => $this->mediumText(),
+			'data' => $this->mediumText(),
+			'gridCache' => $this->longText(),
+			'gridCacheValid' => $this->boolean()->notNull()->defaultValue( false ),
+			'gridCachedAt' => $this->dateTime()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -200,25 +225,28 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
-			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
-			'sku' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
+			'name' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
+			'sku' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),
-			'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-			'discount' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'purchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'total' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'weight' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'volume' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'length' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'width' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'height' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'radius' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'price' => $this->double()->notNull()->defaultValue( 0 ),
+			'discount' => $this->float()->notNull()->defaultValue( 0 ),
+			'total' => $this->float()->notNull()->defaultValue( 0 ),
+			'primary' => $this->float()->notNull()->defaultValue( 0 ),
+			'purchase' => $this->float()->notNull()->defaultValue( 0 ),
+			'quantity' => $this->float()->notNull()->defaultValue( 0 ),
+			'weight' => $this->float()->notNull()->defaultValue( 0 ),
+			'volume' => $this->float()->notNull()->defaultValue( 0 ),
+			'length' => $this->float()->notNull()->defaultValue( 0 ),
+			'width' => $this->float()->notNull()->defaultValue( 0 ),
+			'height' => $this->float()->notNull()->defaultValue( 0 ),
+			'radius' => $this->float()->notNull()->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
-			'content' => $this->text(),
-			'data' => $this->text()
+			'content' => $this->mediumText(),
+			'data' => $this->mediumText(),
+			'gridCache' => $this->longText(),
+			'gridCacheValid' => $this->boolean()->notNull()->defaultValue( false ),
+			'gridCachedAt' => $this->dateTime()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -249,20 +277,27 @@ class m160622_034400_cart extends \yii\db\Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 ),
 			'parentType' => $this->string( Yii::$app->core->mediumText ),
-			'type' => $this->string( Yii::$app->core->mediumText ),
+			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
+			'title' => $this->string( Yii::$app->core->xxxLargeText )->defaultValue( null ),
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
-			'amount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
+			'code' => $this->string( Yii::$app->core->mediumText )->defaultValue( null ),
+			'amount' => $this->double()->notNull()->defaultValue( 0 ),
 			'taxType' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'freeShipping' => $this->boolean()->notNull()->defaultValue( false ),
-			'minPurchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
-			'maxDiscount' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+			'minPurchase' => $this->float()->notNull()->defaultValue( 0 ),
+			'maxDiscount' => $this->float()->notNull()->defaultValue( 0 ),
 			'startTime' => $this->dateTime(),
 			'endTime' => $this->dateTime(),
 			'usageLimit' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'usageCount' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'createdAt' => $this->dateTime()->notNull(),
-			'modifiedAt' => $this->dateTime()
+			'modifiedAt' => $this->dateTime(),
+			'content' => $this->mediumText(),
+			'data' => $this->mediumText(),
+			'gridCache' => $this->longText(),
+			'gridCacheValid' => $this->boolean()->notNull()->defaultValue( false ),
+			'gridCachedAt' => $this->dateTime()
 		], $this->options );
 
 		// Index for columns creator and modifier
@@ -378,4 +413,5 @@ class m160622_034400_cart extends \yii\db\Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_creator', $this->prefix . 'cart_voucher' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_modifier', $this->prefix . 'cart_voucher' );
 	}
+
 }

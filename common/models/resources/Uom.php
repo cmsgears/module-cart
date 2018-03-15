@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
@@ -10,8 +18,10 @@ use cmsgears\core\common\config\CoreGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 
+use cmsgears\core\common\models\base\Resource;
+
 /**
- * Uom Entity - The primary class.
+ * Uom represents Unit Of Measurement.
  *
  * @property integer $id
  * @property string $code
@@ -19,8 +29,10 @@ use cmsgears\cart\common\models\base\CartTables;
  * @property integer $group
  * @property boolean $base
  * @property boolean $active
+ *
+ * @since 1.0.0
  */
-class Uom extends \cmsgears\core\common\models\base\Entity {
+class Uom extends Resource {
 
 	// Variables ---------------------------------------------------
 
@@ -103,22 +115,27 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// yii\base\Model ---------
 
+	/**
+	 * @inheritdoc
+	 */
 	public function rules() {
 
+		// Model Rules
 		$rules = [
 			// Required, Safe
 			[ [ 'code', 'name', 'group' ], 'required' ],
-			[ [ 'id' ], 'safe' ],
+			[ 'id', 'safe' ],
 			// Unique
-			[ [ 'name', 'group' ], 'unique', 'targetAttribute' => [ 'name', 'group' ] ],
+			[ [ 'group', 'name' ], 'unique', 'targetAttribute' => [ 'group', 'name' ] ],
 			// Text Limit
 			[ 'code', 'string', 'min' => 1, 'max' => Yii::$app->core->smallText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			// Other
-			[ [ 'group' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'group', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'base', 'active' ], 'boolean' ]
 		];
 
+		// Trim Text
 		if( Yii::$app->core->trimFieldValue ) {
 
 			$trim[] = [ [ 'name' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
@@ -129,6 +146,9 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		return $rules;
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function attributeLabels() {
 
 		return [
@@ -148,21 +168,40 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// Uom -----------------------------------
 
+	/**
+	 * Returns the conversions belonging to the Unit.
+	 * @return UomConversion[]
+	 */
 	public function getConversions() {
 
-		return $this->hasMany( UomConversion::className(), [ 'uomId' => 'id' ] );
+		return $this->hasMany( UomConversion::class, [ 'uomId' => 'id' ] );
 	}
 
+	/**
+	 * Return string representation of group.
+	 *
+	 * @return string
+	 */
 	public function getGroupStr() {
 
 		return self::$groupMap[ $this->group ];
 	}
 
+	/**
+	 * Return string representation of base flag.
+	 *
+	 * @return string
+	 */
 	public function getBaseStr() {
 
 		return Yii::$app->formatter->asBoolean( $this->base );
 	}
 
+	/**
+	 * Return string representation of active flag.
+	 *
+	 * @return string
+	 */
 	public function getActiveStr() {
 
 		return Yii::$app->formatter->asBoolean( $this->active );
@@ -174,9 +213,12 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// yii\db\ActiveRecord ----
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function tableName() {
 
-		return CartTables::TABLE_UOM;
+		return CartTables::getTableName( CartTables::TABLE_UOM );
 	}
 
 	// CMG parent classes --------------------
@@ -185,6 +227,9 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function queryWithConversions( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'conversions' ];

@@ -32,8 +32,10 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_UNIT_WEIGHT => 'Weight Unit',
 		CartGlobal::FIELD_UNIT_VOLUME => 'Volume Unit',
 		CartGlobal::FIELD_UNIT_LENGTH => 'Length Unit',
-		CartGlobal::FIELD_PURCHASE => 'Purchase',
+		CartGlobal::FIELD_QTY_PRIMARY => 'Primary Quantity',
+		CartGlobal::FIELD_QTY_PURCHASE => 'Purchase Quantity',
 		CartGlobal::FIELD_QUANTITY => 'Quantity',
+		CartGlobal::FIELD_QUANTITY_SOLD => 'Quantity Sold',
 		CartGlobal::FIELD_WEIGHT => 'Weight',
 		CartGlobal::FIELD_VOLUME => 'Volume',
 		CartGlobal::FIELD_LENGTH => 'Length',
@@ -48,6 +50,7 @@ class MessageSource extends \yii\base\Component {
 		CartGlobal::FIELD_SHIPPING => 'Shipping',
 		CartGlobal::FIELD_TOTAL => 'Total',
 		CartGlobal::FIELD_DISCOUNT => 'Discount',
+		CartGlobal::FIELD_DISCOUNT_TYPE => 'Discount Type',
 		CartGlobal::FIELD_TOTAL_GRAND => 'Grand Total',
 
 		// Orders
