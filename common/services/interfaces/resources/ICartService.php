@@ -1,10 +1,23 @@
 <?php
-namespace cmsgears\cart\common\services\interfaces\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IEntityService;
+use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 
-interface ICartService extends IEntityService {
+/**
+ * IOrderItemService declares methods specific to order items.
+ *
+ * @since 1.0.0
+ */
+interface ICartService extends IModelResourceService {
 
 	public function setCartItemService( ICartItemService $cartItemService );
 
@@ -30,6 +43,8 @@ interface ICartService extends IEntityService {
 
 	// Read - Maps -----
 
+	// Read - Others ---
+
 	// Create -------------
 
 	public function createByUserId( $userId );
@@ -45,4 +60,13 @@ interface ICartService extends IEntityService {
 	// Items --------------
 
 	public function addItem( $model, $item, $config = [] );
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
+
 }

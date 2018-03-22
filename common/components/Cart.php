@@ -1,10 +1,24 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\components;
 
 // Yii Imports
 use Yii;
+use yii\base\Component;
 
-class Cart extends \yii\base\Component {
+/**
+ * Cart component register the services provided by Cart Module.
+ *
+ * @since 1.0.0
+ */
+class Cart extends Component {
 
 	// Global -----------------
 
@@ -17,13 +31,13 @@ class Cart extends \yii\base\Component {
 	// Constructor and Initialisation ------------------------------
 
 	/**
-	 * Initialise the CMG Core Component.
+	 * Initialize the services.
 	 */
 	public function init() {
 
 		parent::init();
 
-		// Register application components and objects i.e. CMG and Project
+		// Register components and objects
 		$this->registerComponents();
 	}
 
@@ -35,36 +49,33 @@ class Cart extends \yii\base\Component {
 
 	// Cart ----------------------------------
 
-	// Properties
+	// Properties ----------------
 
-	// Components and Objects
+	// Components and Objects ----
 
+	/**
+	 * Register the services.
+	 */
 	public function registerComponents() {
 
 		// Register services
 		$this->registerResourceServices();
-		$this->registerEntityServices();
 		$this->registerSystemServices();
 
 		// Init services
 		$this->initResourceServices();
-		$this->initEntityServices();
 		$this->initSystemServices();
 	}
 
+	/**
+	 * Registers resource services.
+	 */
 	public function registerResourceServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
-
-		$factory->set( 'cmsgears\cart\common\services\interfaces\forms\IGuestService', 'cmsgears\cart\common\services\forms\GuestService' );
-	}
-
-	public function registerEntityServices() {
-
-		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IVoucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
 
@@ -77,26 +88,27 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
 	}
 
+	/**
+	 * Registers system services.
+	 */
 	public function registerSystemServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
+		$factory->set( 'cmsgears\cart\common\services\interfaces\system\IGuestService', 'cmsgears\cart\common\services\system\GuestService' );
+
 		$factory->set( 'cmsgears\cart\common\services\interfaces\system\ISalesService', 'cmsgears\cart\common\services\system\SalesService' );
 	}
 
+	/**
+	 * Initialize resource services.
+	 */
 	public function initResourceServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'uomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'uomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
-
-		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\forms\GuestService' );
-	}
-
-	public function initEntityServices() {
-
-		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'voucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
 
@@ -109,10 +121,16 @@ class Cart extends \yii\base\Component {
 		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
 	}
 
+	/**
+	 * Initialize system services.
+	 */
 	public function initSystemServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
+		$factory->set( 'cartGuestService', 'cmsgears\cart\common\services\system\GuestService' );
+
 		$factory->set( 'salesService', 'cmsgears\cart\common\services\system\SalesService' );
 	}
+
 }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\services\system;
 
 // Yii Imports
@@ -11,21 +19,20 @@ use cmsgears\cart\common\models\entities\Order;
 
 use cmsgears\cart\common\services\interfaces\system\ISalesService;
 
+use cmsgears\core\common\services\base\SystemService;
+
 use cmsgears\core\common\utilities\DateUtil;
 
-class SalesService extends \yii\base\Component implements ISalesService {
+/**
+ * SalesService provide methods specific to sales data and graphs.
+ *
+ * @since 1.0.0
+ */
+class SalesService extends SystemService implements ISalesService {
 
 	// Variables ---------------------------------------------------
 
-	// Globals -------------------------------
-
-	// Constants --------------
-
-	// Public -----------------
-
-	// Protected --------------
-
-	// Variables -----------------------------
+	// Globals ----------------
 
 	// Public -----------------
 
@@ -39,27 +46,15 @@ class SalesService extends \yii\base\Component implements ISalesService {
 
 	// Instance methods --------------------------------------------
 
-	// Yii parent classes --------------------
+	// Yii interfaces ------------------------
 
-	// yii\base\Component -----
+	// Yii parent classes --------------------
 
 	// CMG interfaces ------------------------
 
 	// CMG parent classes --------------------
 
 	// SalesService --------------------------
-
-	// Data Provider ------
-
-	// Read ---------------
-
-	// Read - Models ---
-
-	// Read - Lists ----
-
-	// Read - Maps -----
-
-	// Read - Others ---
 
 	public function getSalesData( $duration, $config = [] ) {
 
@@ -94,96 +89,69 @@ class SalesService extends \yii\base\Component implements ISalesService {
 
 		switch( $duration ) {
 
-			case 0:
-			{
+			case 0: {
+
 				// Current Week - Starting with Sun
-				$dates			= DateUtil::getCurrentWeekDates();
-				$transactions	= $query->andWhere( "YEARWEEK( `$txnTable`.`createdAt` ) = YEARWEEK( CURRENT_DATE ) " )
-										->groupBy( [ 'date' ] )
-										->all();
+				$dates = DateUtil::getCurrentWeekDates();
+
+				$transactions = $query->andWhere( "YEARWEEK( `$txnTable`.`createdAt` ) = YEARWEEK( CURRENT_DATE ) " )
+								->groupBy( [ 'date' ] )
+								->all();
 				break;
 			}
-			case 1:
-			{
+			case 1: {
 
 				// Last Week - Starting with Sun
-				$dates			= DateUtil::getLastWeekDates();
-				$transactions	= $query->andWhere( "YEARWEEK( `$txnTable`.`createdAt` ) = YEARWEEK( CURRENT_DATE - INTERVAL 7 DAY ) " )
-										->groupBy( [ 'date' ] )
-										->all();
+				$dates = DateUtil::getLastWeekDates();
+
+				$transactions = $query->andWhere( "YEARWEEK( `$txnTable`.`createdAt` ) = YEARWEEK( CURRENT_DATE - INTERVAL 7 DAY ) " )
+								->groupBy( [ 'date' ] )
+								->all();
 
 				break;
 			}
-			case 2:
-			{
+			case 2: {
+
 				// This Month
-				$dates			= DateUtil::getCurrentMonthDates();
-				$transactions	= $query->andWhere( "MONTH( `$txnTable`.`createdAt` ) = ( MONTH( NOW() ) ) AND YEAR( `$txnTable`.`createdAt` ) = YEAR( NOW() ) " )
-										->groupBy( [ 'date' ] )
-										->all();
+				$dates = DateUtil::getCurrentMonthDates();
+
+				$transactions = $query->andWhere( "MONTH( `$txnTable`.`createdAt` ) = ( MONTH( NOW() ) ) AND YEAR( `$txnTable`.`createdAt` ) = YEAR( NOW() ) " )
+								->groupBy( [ 'date' ] )
+								->all();
 
 				break;
 			}
-			case 3:
-			{
+			case 3: {
+
 				// Last Month
-				$dates			= DateUtil::getLastMonthDates();
-				$transactions	= $query->andWhere( "MONTH( `$txnTable`.`createdAt` ) = ( MONTH( NOW() ) - 1 ) AND YEAR( `$txnTable`.`createdAt` ) = YEAR( NOW() ) " )
-										->groupBy( [ 'date' ] )
-										->all();
+				$dates = DateUtil::getLastMonthDates();
+
+				$transactions = $query->andWhere( "MONTH( `$txnTable`.`createdAt` ) = ( MONTH( NOW() ) - 1 ) AND YEAR( `$txnTable`.`createdAt` ) = YEAR( NOW() ) " )
+								->groupBy( [ 'date' ] )
+								->all();
 
 				break;
 			}
 		}
 
-		foreach ( $transactions as $transaction ) {
+		foreach( $transactions as $transaction ) {
 
 			$transactionskv[ $transaction[ 'date' ] ] = $transaction[ 'amount' ];
 		}
 
-		foreach ( $dates as $date ) {
+		foreach( $dates as $date ) {
 
 			if( isset( $transactionskv[ $date ] ) ) {
 
-				$amount[]	= $transactionskv[ $date ];
+				$amount[] = $transactionskv[ $date ];
 			}
 			else {
 
-				$amount[]	= 0;
+				$amount[] = 0;
 			}
 		}
 
 		return $amount;
 	}
-
-	// Create -------------
-
-	// Update -------------
-
-	// Delete -------------
-
-	// Static Methods ----------------------------------------------
-
-	// CMG parent classes --------------------
-
-	// SalesService --------------------------
-
-	// Data Provider ------
-
-	// Read ---------------
-
-	// Read - Models ---
-
-	// Read - Lists ----
-
-	// Read - Maps -----
-
-	// Read - Others ---
-
-	// Create -------------
-
-	// Update -------------
-
-	// Delete -------------
 
 }

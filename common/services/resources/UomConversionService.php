@@ -1,8 +1,15 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
-use Yii;
 use yii\data\Sort;
 
 // CMG Imports
@@ -10,7 +17,14 @@ use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\cart\common\services\interfaces\resources\IUomConversionService;
 
-class UomConversionService extends \cmsgears\core\common\services\base\EntityService implements IUomConversionService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * UomConversionService provide service methods of uom conversion model.
+ *
+ * @since 1.0.0
+ */
+class UomConversionService extends ResourceService implements IUomConversionService {
 
 	// Variables ---------------------------------------------------
 
@@ -103,6 +117,14 @@ class UomConversionService extends \cmsgears\core\common\services\base\EntitySer
 	}
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

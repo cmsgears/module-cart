@@ -10,20 +10,24 @@
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IResourceService;
+use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 
 /**
- * IUomConversionService declares methods specific to UOM conversions.
+ * ICartItemService declares methods specific to cart items.
  *
  * @since 1.0.0
  */
-interface IUomConversionService extends IResourceService {
+interface ICartItemService extends IModelResourceService {
 
 	// Data Provider ------
 
 	// Read ---------------
 
 	// Read - Models ---
+
+	public function getByCartId( $cartId );
+
+	public function getByParentCartId( $parentId, $parentType, $cartId );
 
 	// Read - Lists ----
 
@@ -36,6 +40,8 @@ interface IUomConversionService extends IResourceService {
 	// Update -------------
 
 	// Delete -------------
+
+	public function deleteByCartId( $cartId );
 
 	// Bulk ---------------
 

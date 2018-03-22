@@ -1,5 +1,13 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use Yii;
@@ -7,11 +15,18 @@ use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\entities\CartItem;
+use cmsgears\cart\common\models\resources\CartItem;
 
-use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
+use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 
-class CartItemService extends \cmsgears\core\common\services\base\EntityService implements ICartItemService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * CartItemService provide service methods of cart item model.
+ *
+ * @since 1.0.0
+ */
+class CartItemService extends ResourceService implements ICartItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -113,6 +128,14 @@ class CartItemService extends \cmsgears\core\common\services\base\EntityService 
 
 		CartItem::deleteByCartId( $cartId );
 	}
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

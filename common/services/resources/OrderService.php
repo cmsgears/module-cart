@@ -1,5 +1,13 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use Yii;
@@ -8,19 +16,26 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\entities\Order;
 use cmsgears\core\common\models\resources\Address;
+use cmsgears\cart\common\models\base\CartTables;
+use cmsgears\cart\common\models\resources\Order;
 
 use cmsgears\core\common\services\interfaces\mappers\IModelAddressService;
-use cmsgears\cart\common\services\interfaces\entities\ICartService;
-use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
-use cmsgears\cart\common\services\interfaces\entities\IOrderService;
-use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
+use cmsgears\cart\common\services\interfaces\resources\ICartService;
+use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
+use cmsgears\cart\common\services\interfaces\resources\IOrderService;
+use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
+
+use cmsgears\core\common\services\base\ResourceService;
 
 use cmsgears\core\common\utilities\DateUtil;
 
-class OrderService extends \cmsgears\core\common\services\base\EntityService implements IOrderService {
+/**
+ * OrderService provide service methods of order model.
+ *
+ * @since 1.0.0
+ */
+class OrderService extends ResourceService implements IOrderService {
 
 	// Variables ---------------------------------------------------
 
@@ -448,6 +463,14 @@ class OrderService extends \cmsgears\core\common\services\base\EntityService imp
 	}
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

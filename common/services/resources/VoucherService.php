@@ -1,5 +1,13 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use yii\data\Sort;
@@ -9,9 +17,16 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 
-use cmsgears\cart\common\services\interfaces\entities\IVoucherService;
+use cmsgears\cart\common\services\interfaces\resources\IVoucherService;
 
-class VoucherService extends \cmsgears\core\common\services\base\EntityService implements IVoucherService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * VoucherService provide service methods of voucher model.
+ *
+ * @since 1.0.0
+ */
+class VoucherService extends ResourceService implements IVoucherService {
 
 	// Variables ---------------------------------------------------
 
@@ -100,6 +115,14 @@ class VoucherService extends \cmsgears\core\common\services\base\EntityService i
 	// Update -------------
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

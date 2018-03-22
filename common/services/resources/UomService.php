@@ -1,8 +1,15 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
-use Yii;
 use yii\data\Sort;
 
 // CMG Imports
@@ -11,7 +18,14 @@ use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\cart\common\services\interfaces\resources\IUomService;
 
-class UomService extends \cmsgears\core\common\services\base\EntityService implements IUomService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * UomService provide service methods of uom model.
+ *
+ * @since 1.0.0
+ */
+class UomService extends ResourceService implements IUomService {
 
 	// Variables ---------------------------------------------------
 
@@ -168,6 +182,14 @@ class UomService extends \cmsgears\core\common\services\base\EntityService imple
 	}
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

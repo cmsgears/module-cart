@@ -1,5 +1,13 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use Yii;
@@ -9,13 +17,19 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\entities\Cart;
+use cmsgears\cart\common\models\resources\Cart;
 
-use cmsgears\core\common\services\traits\ResourceTrait;
-use cmsgears\cart\common\services\interfaces\entities\ICartService;
-use cmsgears\cart\common\services\interfaces\entities\ICartItemService;
+use cmsgears\cart\common\services\interfaces\resources\ICartService;
+use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 
-class CartService extends \cmsgears\core\common\services\base\EntityService implements ICartService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * CartService provide service methods of cart model.
+ *
+ * @since 1.0.0
+ */
+class CartService extends ResourceService implements ICartService {
 
 	// Variables ---------------------------------------------------
 
@@ -44,8 +58,6 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
-
-	use ResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -112,7 +124,7 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 	 * Find cart if exist for the given user. If does not exist create, it.
 	 */
 	public function getByUserId( $userId ) {
-            
+
                 $modelClass	= self::$modelClass;
 
 		$cart = $modelClass::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
@@ -255,8 +267,9 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 	public function addItem( $model, $item, $config = [] ) {
 
-		$user			= Yii::$app->core->getAppUser();
-		$item->cartId           = $model->id;
+		$user = Yii::$app->core->getAppUser();
+
+		$item->cartId		= $model->id;
 		$cartItemService	= Yii::$app->factory->get( 'cartItemService' );
 
 		// Remove in case it's not required
@@ -280,6 +293,14 @@ class CartService extends \cmsgears\core\common\services\base\EntityService impl
 
 		return false;
 	}
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

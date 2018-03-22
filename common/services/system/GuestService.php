@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\services\forms;
 
 // Yii Imports
@@ -10,19 +18,18 @@ use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\services\interfaces\entities\IUserService;
 use cmsgears\cart\common\services\interfaces\forms\IGuestService;
 
-class GuestService extends \yii\base\Component implements IGuestService {
+use cmsgears\core\common\services\base\SystemService;
+
+/**
+ * GuestService provide methods specific to guest checkout.
+ *
+ * @since 1.0.0
+ */
+class GuestService extends SystemService implements IGuestService {
 
 	// Variables ---------------------------------------------------
 
-	// Globals -------------------------------
-
-	// Constants --------------
-
-	// Public -----------------
-
-	// Protected --------------
-
-	// Variables -----------------------------
+	// Globals ----------------
 
 	// Public -----------------
 
@@ -45,9 +52,9 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 	// Instance methods --------------------------------------------
 
-	// Yii parent classes --------------------
+	// Yii interfaces ------------------------
 
-	// yii\base\Component -----
+	// Yii parent classes --------------------
 
 	// CMG interfaces ------------------------
 
@@ -55,27 +62,13 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 	// GuestService --------------------------
 
-	// Data Provider ------
-
-	// Read ---------------
-
-	// Read - Models ---
-
-	// Read - Lists ----
-
-	// Read - Maps -----
-
-	// Read - Others ---
-
-	// Create -------------
-
 	public function create( $model, $config = [] ) {
 
-		$user	= $this->userService->getByEmail( $model->email );
+		$user = $this->userService->getByEmail( $model->email );
 
 		if( !isset( $user ) ) {
 
-			$user	= new User();
+			$user = new User();
 
 			$user->firstName	= $model->firstName;
 			$user->lastName		= $model->lastName;
@@ -90,33 +83,5 @@ class GuestService extends \yii\base\Component implements IGuestService {
 
 		return $user;
 	}
-
-	// Update -------------
-
-	// Delete -------------
-
-	// Static Methods ----------------------------------------------
-
-	// CMG parent classes --------------------
-
-	// GuestService --------------------------
-
-	// Data Provider ------
-
-	// Read ---------------
-
-	// Read - Models ---
-
-	// Read - Lists ----
-
-	// Read - Maps -----
-
-	// Read - Others ---
-
-	// Create -------------
-
-	// Update -------------
-
-	// Delete -------------
 
 }

@@ -10,14 +10,14 @@
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IResourceService;
+use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 
 /**
- * IUomConversionService declares methods specific to UOM conversions.
+ * IVoucherService declares methods specific to discount vouchers.
  *
  * @since 1.0.0
  */
-interface IUomConversionService extends IResourceService {
+interface IVoucherService extends IModelResourceService {
 
 	// Data Provider ------
 

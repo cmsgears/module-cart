@@ -1,14 +1,29 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\payment\common\models\entities\Transaction;
+use cmsgears\payment\common\models\resources\Transaction;
 
-use cmsgears\cart\common\services\interfaces\entities\ITransactionService;
+use cmsgears\cart\common\services\interfaces\resources\ITransactionService;
 
-class TransactionService extends \cmsgears\payment\common\services\entities\TransactionService implements ITransactionService {
+use cmsgears\payment\common\services\resources\TransactionService as BaseTransactionService;
+
+/**
+ * TransactionService provide service methods of transaction model.
+ *
+ * @since 1.0.0
+ */
+class TransactionService extends BaseTransactionService implements ITransactionService {
 
 	// Variables ---------------------------------------------------
 
@@ -197,6 +212,14 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 	// Update -------------
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

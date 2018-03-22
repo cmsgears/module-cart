@@ -7,7 +7,7 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\cart\common\models\entities;
+namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
 use Yii;
@@ -19,14 +19,14 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
-use cmsgears\core\common\models\interfaces\base\IEntityResource;
+use cmsgears\core\common\models\interfaces\base\IModelResource;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
 use cmsgears\core\common\models\base\Entity;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
-use cmsgears\core\common\models\traits\base\EntityResourceTrait;
+use cmsgears\core\common\models\traits\base\ModelResourceTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
@@ -54,7 +54,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Cart extends Entity implements IAuthor, IEntityResource, IGridCache {
+class Cart extends Entity implements IAuthor, IModelResource, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -113,8 +113,8 @@ class Cart extends Entity implements IAuthor, IEntityResource, IGridCache {
 	// Traits ------------------------------------------------------
 
 	use AuthorTrait;
-	use EntityResourceTrait;
 	use GridCacheTrait;
+	use ModelResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
 
