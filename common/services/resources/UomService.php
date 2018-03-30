@@ -13,9 +13,6 @@ namespace cmsgears\cart\common\services\resources;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\resources\Uom;
-
 use cmsgears\cart\common\services\interfaces\resources\IUomService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -35,11 +32,7 @@ class UomService extends ResourceService implements IUomService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\resources\Uom';
-
-	public static $modelTable	= CartTables::TABLE_UOM;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\cart\common\models\resources\Uom';
 
 	// Protected --------------
 
@@ -71,29 +64,38 @@ class UomService extends ResourceService implements IUomService {
 
 	public function getPage( $config = [] ) {
 
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
 				'name' => [
-					'asc' => [ 'name' => SORT_ASC ],
-					'desc' => ['name' => SORT_DESC ],
+					'asc' => [ "$modelTable.name" => SORT_ASC ],
+					'desc' => [ "$modelTable.name" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Name'
 				],
 				'code' => [
-					'asc' => [ 'code' => SORT_ASC ],
-					'desc' => ['code' => SORT_DESC ],
+					'asc' => [ "$modelTable.code" => SORT_ASC ],
+					'desc' => [ "$modelTable.code" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Code'
 				],
 				'group' => [
-					'asc' => [ 'group' => SORT_ASC ],
-					'desc' => ['group' => SORT_DESC ],
+					'asc' => [ "$modelTable.group" => SORT_ASC ],
+					'desc' => [ "$modelTable.group" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Group'
 				],
 				'base' => [
-					'asc' => [ 'base' => SORT_ASC ],
-					'desc' => ['base' => SORT_DESC ],
+					'asc' => [ "$modelTable.base" => SORT_ASC ],
+					'desc' => [ "$modelTable.base" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Basic Unit'
 				]
@@ -136,14 +138,15 @@ class UomService extends ResourceService implements IUomService {
 
 	public function getMapForConversion() {
 
-		$objects		= parent::getObjectMap();
-		$conversionMap	= [];
+		$objects = parent::getObjectMap();
 
-		foreach ( $objects as $key => $value ) {
+		$conversionMap = [];
 
-			$group					= $value->getGroupStr();
+		foreach( $objects as $key => $value ) {
 
-			$conversionMap[ $key ]	= "$value->name, $group";
+			$group = $value->getGroupStr();
+
+			$conversionMap[ $key ] = "$value->name, $group";
 		}
 
 		return $conversionMap;
@@ -177,7 +180,9 @@ class UomService extends ResourceService implements IUomService {
 
 		if( $model->base ) {
 
-			Uom::updateAll( [ 'base' => false ], "`base` = 1 AND `group` = $model->group" );
+			$modelClass	= static::$modelClass;
+
+			$modelClass::updateAll( [ 'base' => false ], "`base` = 1 AND `group` = $model->group" );
 		}
 	}
 

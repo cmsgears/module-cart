@@ -13,8 +13,6 @@ namespace cmsgears\cart\common\services\resources;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\cart\common\models\base\CartTables;
-
 use cmsgears\cart\common\services\interfaces\resources\IUomConversionService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -34,11 +32,7 @@ class UomConversionService extends ResourceService implements IUomConversionServ
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\resources\UomConversion';
-
-	public static $modelTable	= CartTables::TABLE_UOM_CONVERSION;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\cart\common\models\resources\UomConversion';
 
 	// Protected --------------
 
@@ -70,17 +64,26 @@ class UomConversionService extends ResourceService implements IUomConversionServ
 
 	public function getPage( $config = [] ) {
 
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
 				'source' => [
-					'asc' => [ 'uomId' => SORT_ASC ],
-					'desc' => ['uomId' => SORT_DESC ],
+					'asc' => [ "$modelTable.uomId" => SORT_ASC ],
+					'desc' => [ "$modelTable.uomId" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Source'
 				],
 				'target' => [
-					'asc' => [ 'targetId' => SORT_ASC ],
-					'desc' => [ 'targetId' => SORT_DESC ],
+					'asc' => [ "$modelTable.targetId" => SORT_ASC ],
+					'desc' => [ "$modelTable.targetId" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Target'
 				]

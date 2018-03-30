@@ -118,6 +118,7 @@ class CartGlobal {
 	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
 	const FIELD_UNIT_VOLUME				= 'volumeUnitField';
+	const FIELD_UNIT_SIZE				= 'sizeUnitField';
 	const FIELD_UNIT_LENGTH				= 'lengthUnitField';
 	const FIELD_QTY_PRIMARY				= 'primaryQtyField';
 	const FIELD_QTY_PURCHASE			= 'purchaseQtyField';
@@ -125,6 +126,7 @@ class CartGlobal {
 	const FIELD_QUANTITY_SOLD			= 'quantitySoldField';
 	const FIELD_WEIGHT					= 'weightField';
 	const FIELD_VOLUME					= 'volumeField';
+	const FIELD_SIZE					= 'sizeField';
 	const FIELD_LENGTH					= 'lengthField';
 	const FIELD_WIDTH					= 'widthField';
 	const FIELD_HEIGHT					= 'heightField';

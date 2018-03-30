@@ -10,9 +10,6 @@
 namespace cmsgears\cart\common\services\resources;
 
 // CMG Imports
-use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\resources\OrderItem;
-
 use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -32,11 +29,7 @@ class OrderItemService extends ResourceService implements IOrderItemService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\OrderItem';
-
-	public static $modelTable	= CartTables::TABLE_ORDER_ITEM;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\cart\common\models\entities\OrderItem';
 
 	// Protected --------------
 
@@ -88,18 +81,19 @@ class OrderItemService extends ResourceService implements IOrderItemService {
 	// Create Order Item from cart item
 	public function createFromCartItem( $order, $cartItem, $config = [] ) {
 
+		$model	= $this->getModelObject();
+
 		// Set Attributes
-		$orderItem				= new OrderItem();
-		$orderItem->orderId		= $order->id;
-		$orderItem->createdBy	= $order->creator->id;
+		$model->orderId		= $order->id;
+		$model->createdBy	= $order->creator->id;
 
 		// Copy from Cart Item
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
+		$model->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
 
-		$orderItem->save();
+		$model->save();
 
 		// Return OrderItem
-		return $orderItem;
+		return $model;
 	}
 
 	// Update -------------

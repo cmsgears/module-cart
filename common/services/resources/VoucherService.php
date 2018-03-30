@@ -15,8 +15,6 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\base\CartTables;
-
 use cmsgears\cart\common\services\interfaces\resources\IVoucherService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -37,8 +35,6 @@ class VoucherService extends ResourceService implements IVoucherService {
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\cart\common\models\entities\Voucher';
-
-	public static $modelTable	= CartTables::TABLE_VOUCHER;
 
 	public static $parentType	= CartGlobal::TYPE_VOUCHER;
 
@@ -72,23 +68,32 @@ class VoucherService extends ResourceService implements IVoucherService {
 
 	public function getPage( $config = [] ) {
 
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
 				'name' => [
-					'asc' => [ 'name' => SORT_ASC ],
-					'desc' => [ 'name' => SORT_DESC ],
+					'asc' => [ "$modelTable.name" => SORT_ASC ],
+					'desc' => [ "$modelTable.name" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Name'
 				],
 				'type' => [
-					'asc' => [ 'type' => SORT_ASC ],
-					'desc' => [ 'type' => SORT_DESC ],
+					'asc' => [ "$modelTable.type" => SORT_ASC ],
+					'desc' => [ "$modelTable.type" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Type'
 				],
 				'amount' => [
-					'asc' => [ 'amount' => SORT_ASC ],
-					'desc' => [ 'amount' => SORT_DESC ],
+					'asc' => [ "$modelTable.amount" => SORT_ASC ],
+					'desc' => [ "$modelTable.amount" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Amount'
 				]

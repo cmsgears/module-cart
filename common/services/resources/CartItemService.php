@@ -14,9 +14,6 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
-use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\resources\CartItem;
-
 use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -36,11 +33,7 @@ class CartItemService extends ResourceService implements ICartItemService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\CartItem';
-
-	public static $modelTable	= CartTables::TABLE_CART_ITEM;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\cart\common\models\entities\CartItem';
 
 	// Protected --------------
 
@@ -76,12 +69,16 @@ class CartItemService extends ResourceService implements ICartItemService {
 
 	public function getByCartId( $cartId ) {
 
-		return CartItem::findByCartId( $cartId );
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByCartId( $cartId );
 	}
 
 	public function getByParentCartId( $parentId, $parentType, $cartId ) {
 
-		return CartItem::findByParentCartId( $parentId, $parentType, $cartId );
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByParentCartId( $parentId, $parentType, $cartId );
 	}
 
 	// Read - Lists ----
@@ -126,7 +123,9 @@ class CartItemService extends ResourceService implements ICartItemService {
 
 	public function deleteByCartId( $cartId ) {
 
-		CartItem::deleteByCartId( $cartId );
+		$modelClass	= static::$modelClass;
+
+		$modelClass::deleteByCartId( $cartId );
 	}
 
 	// Bulk ---------------

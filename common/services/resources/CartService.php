@@ -16,7 +16,6 @@ use Yii;
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\resources\Cart;
 
 use cmsgears\cart\common\services\interfaces\resources\ICartService;
@@ -41,8 +40,6 @@ class CartService extends ResourceService implements ICartService {
 
 	public static $modelClass	= '\cmsgears\cart\common\models\entities\Cart';
 
-	public static $modelTable	= CartTables::TABLE_CART;
-
 	public static $parentType	= CartGlobal::TYPE_CART;
 
 	// Protected --------------
@@ -60,11 +57,6 @@ class CartService extends ResourceService implements ICartService {
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-
-	public function __construct( $config = [] ) {
-
-		parent::__construct( $config );
-	}
 
 	public function setCartItemService( ICartItemService $cartItemService ) {
 
@@ -99,7 +91,8 @@ class CartService extends ResourceService implements ICartService {
 	public function getByModelToken( $model, $type ) {
 
 		$modelClass	= self::$modelClass;
-		$data		= Yii::$app->order->getCartToken( $model, $type );
+
+		$data = Yii::$app->order->getCartToken( $model, $type );
 
 		if( isset( $data ) ) {
 
@@ -125,7 +118,7 @@ class CartService extends ResourceService implements ICartService {
 	 */
 	public function getByUserId( $userId ) {
 
-                $modelClass	= self::$modelClass;
+		$modelClass	= self::$modelClass;
 
 		$cart = $modelClass::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
 
@@ -152,7 +145,8 @@ class CartService extends ResourceService implements ICartService {
 	public function getActiveByParent( $parentId, $parentType ) {
 
 		$modelClass	= static::$modelClass;
-		$active		= Cart::STATUS_ACTIVE;
+
+		$active = Cart::STATUS_ACTIVE;
 
 		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND status=$active", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
 	}
@@ -174,17 +168,18 @@ class CartService extends ResourceService implements ICartService {
 
 	public function createByParams( $params = [], $config = [] ) {
 
-		$parentId		= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
-		$parentType		= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
+		$parentId	= isset( $params[ 'parentId' ] ) ? $params[ 'parentId' ] : null;
+		$parentType	= isset( $params[ 'parentType' ] ) ? $params[ 'parentType' ] : null;
 
-		$title			= isset( $params[ 'title' ] ) ? $params[ 'title' ] : null;
-		$token			= isset( $params[ 'token' ] ) ? $params[ 'token' ] : Yii::$app->security->generateRandomString();
-		$type			= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
+		$title	= isset( $params[ 'title' ] ) ? $params[ 'title' ] : null;
+		$token	= isset( $params[ 'token' ] ) ? $params[ 'token' ] : Yii::$app->security->generateRandomString();
+		$type	= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
 
-		$user			= Yii::$app->user->getIdentity();
+		$user = Yii::$app->user->getIdentity();
 
-		$cart			= new Cart();
-		$cart->title	= $title;
+		$cart = $this->getModelObject();
+
+		$cart->title = $title;
 
 		if( empty( $cart->title ) ) {
 
@@ -206,13 +201,14 @@ class CartService extends ResourceService implements ICartService {
 	public function createByUserId( $userId, $config = [] ) {
 
 		// Set Attributes
-		$user				= Yii::$app->core->getAppUser();
-		$cart				= new Cart();
+		$user	= Yii::$app->core->getAppUser();
+		$cart	= $this->getModelObject();
 
 		$cart->createdBy	= $user->id;
 		$cart->parentId		= $userId;
 		$cart->parentType	= CoreGlobal::TYPE_USER;
-                $cart->title            = isset( $config[ 'title' ] ) ? $config[ 'title' ] : "Generic Order";
+
+		$cart->title = isset( $config[ 'title' ] ) ? $config[ 'title' ] : "Generic Order";
 
 		$cart->save();
 
@@ -224,10 +220,11 @@ class CartService extends ResourceService implements ICartService {
 
 	public function update( $model, $config = [] ) {
 
-		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'type', 'title', 'token', 'status' ];
-		$user			= Yii::$app->core->getAppUser();
+		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'type', 'title', 'token', 'status' ];
 
-		$model->modifiedBy	= $user->id;
+		$user = Yii::$app->core->getAppUser();
+
+		$model->modifiedBy = $user->id;
 
 		// Update Cart
 		return parent::update( $model, [
@@ -237,9 +234,9 @@ class CartService extends ResourceService implements ICartService {
 
 	public function updateStatus( $model, $status, $config = [] ) {
 
-		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'status' ];
+		$attributes = isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'status' ];
 
-		$model->status	= $status;
+		$model->status = $status;
 
 		// Update Cart
 		return parent::update( $model, [
@@ -267,10 +264,9 @@ class CartService extends ResourceService implements ICartService {
 
 	public function addItem( $model, $item, $config = [] ) {
 
-		$user = Yii::$app->core->getAppUser();
+		$cartItemService = Yii::$app->factory->get( 'cartItemService' );
 
-		$item->cartId		= $model->id;
-		$cartItemService	= Yii::$app->factory->get( 'cartItemService' );
+		$item->cartId = $model->id;
 
 		// Remove in case it's not required
 		if( isset( $item->id ) && $item->id > 0 && !$item->keep ) {
@@ -325,4 +321,5 @@ class CartService extends ResourceService implements ICartService {
 	// Update -------------
 
 	// Delete -------------
+
 }

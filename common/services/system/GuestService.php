@@ -13,8 +13,6 @@ namespace cmsgears\cart\common\services\forms;
 use Yii;
 
 // CMG Imports
-use cmsgears\core\common\models\entities\User;
-
 use cmsgears\core\common\services\interfaces\entities\IUserService;
 use cmsgears\cart\common\services\interfaces\forms\IGuestService;
 
@@ -68,7 +66,7 @@ class GuestService extends SystemService implements IGuestService {
 
 		if( !isset( $user ) ) {
 
-			$user = new User();
+			$user = $this->userService->getModelObject();
 
 			$user->firstName	= $model->firstName;
 			$user->lastName		= $model->lastName;

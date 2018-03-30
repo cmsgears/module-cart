@@ -92,6 +92,7 @@ class m160622_034404_cart_data extends Migration {
 
 			// Permission Groups - Default - Website - Individual, Organization
 			[ $this->master->id, $this->master->id, 'Manage Orders', 'manage-orders', CoreGlobal::TYPE_SYSTEM, NULL, true, 'The permission Manage Orders allows user to manage orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Order Author', 'order-author', CoreGlobal::TYPE_SYSTEM, NULL, true, 'The permission order author allows user to perform crud operations of order belonging to respective author from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
 			// Order Permissions - Hard Coded - Website - Individual, Organization
 			[ $this->master->id, $this->master->id, 'View Orders', 'view-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission View Orders allows user to view orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
@@ -113,6 +114,7 @@ class m160622_034404_cart_data extends Migration {
 
 		// Permission Groups
 		$orderManagePerm	= Permission::findBySlugType( 'manage-orders', CoreGlobal::TYPE_SYSTEM );
+		$orderAuthorPerm	= Permission::findBySlugType( 'order-author', CoreGlobal::TYPE_SYSTEM );
 
 		// Permissions
 		$vOrdersPerm	= Permission::findBySlugType( 'view-orders', CoreGlobal::TYPE_SYSTEM );
@@ -141,16 +143,26 @@ class m160622_034404_cart_data extends Migration {
 		$columns = [ 'parentId', 'childId', 'rootId', 'parentType', 'lValue', 'rValue' ];
 
 		$hierarchy = [
-				// Order Manager - Organization
-				[ null, null, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 1, 18 ],
-				[ $orderManagePerm->id, $vOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 2, 17 ],
-				[ $orderManagePerm->id, $aOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 3, 16 ],
-				[ $orderManagePerm->id, $uOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 4, 15 ],
-				[ $orderManagePerm->id, $dOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 5, 14 ],
-				[ $orderManagePerm->id, $apOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 6, 13 ],
-				[ $orderManagePerm->id, $pOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 7, 12 ],
-				[ $orderManagePerm->id, $iOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 8, 11 ],
-				[ $orderManagePerm->id, $eOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 9, 10 ]
+			// Order Manager - Organization
+			[ null, null, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 1, 18 ],
+			[ $orderManagePerm->id, $vOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 2, 17 ],
+			[ $orderManagePerm->id, $aOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 3, 16 ],
+			[ $orderManagePerm->id, $uOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 4, 15 ],
+			[ $orderManagePerm->id, $dOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 5, 14 ],
+			[ $orderManagePerm->id, $apOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 6, 13 ],
+			[ $orderManagePerm->id, $pOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 7, 12 ],
+			[ $orderManagePerm->id, $iOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 8, 11 ],
+			[ $orderManagePerm->id, $eOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 9, 10 ],
+
+			// Order Author - Individual
+			[ null, null, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 16 ],
+			[ $orderAuthorPerm->id, $vOrdersPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 15 ],
+			[ $orderAuthorPerm->id, $aOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 3, 14 ],
+			[ $orderAuthorPerm->id, $uOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 13 ],
+			[ $orderAuthorPerm->id, $dOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 5, 12 ],
+			[ $orderAuthorPerm->id, $pOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 11 ],
+			[ $orderAuthorPerm->id, $iOrdersPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 7, 10 ],
+			[ $orderAuthorPerm->id, $eOrdersPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_model_hierarchy', $columns, $hierarchy );

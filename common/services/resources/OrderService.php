@@ -17,7 +17,6 @@ use yii\data\Sort;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\resources\Address;
-use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\resources\Order;
 
 use cmsgears\core\common\services\interfaces\mappers\IModelAddressService;
@@ -46,8 +45,6 @@ class OrderService extends ResourceService implements IOrderService {
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\cart\common\models\entities\Order';
-
-	public static $modelTable	= CartTables::TABLE_ORDER;
 
 	public static $parentType	= CartGlobal::TYPE_ORDER;
 
@@ -101,52 +98,52 @@ class OrderService extends ResourceService implements IOrderService {
 
 	public function getPage( $config = [] ) {
 
-		$modelClass		= static::$modelClass;
-		$modelTable		= static::$modelTable;
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
 
 		// Sorting ----------
 
 		$sort = new Sort([
 			'attributes' => [
 				'id' => [
-					'asc' => [ 'id' => SORT_ASC ],
-					'desc' => [ 'id' => SORT_DESC ],
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'ID'
+					'label' => 'Id'
 				],
 				'title' => [
-					'asc' => [ 'title' => SORT_ASC ],
-					'desc' => [ 'title' => SORT_DESC ],
+					'asc' => [ "$modelTable.title" => SORT_ASC ],
+					'desc' => [ "$modelTable.title" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Title'
 				],
 				'type' => [
-					'asc' => [ 'type' => SORT_ASC ],
-					'desc' => [ 'type' => SORT_DESC ],
+					'asc' => [ "$modelTable.type" => SORT_ASC ],
+					'desc' => [ "$modelTable.type" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Type'
 				],
 				'status' => [
-					'asc' => [ 'status' => SORT_ASC ],
-					'desc' => [ 'status' => SORT_DESC ],
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Status'
 				],
 				'total' => [
-					'asc' => [ 'grandTotal' => SORT_ASC ],
-					'desc' => [ 'grandTotal' => SORT_DESC ],
+					'asc' => [ "$modelTable.grandTotal" => SORT_ASC ],
+					'desc' => [ "$modelTable.grandTotal" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Total'
 				],
 				'cdate' => [
-					'asc' => [ 'createdAt' => SORT_ASC ],
-					'desc' => [ 'createdAt' => SORT_DESC ],
+					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Created At'
 				],
 				'udate' => [
-					'asc' => [ 'modifiedAt' => SORT_ASC ],
-					'desc' => [ 'modifiedAt' => SORT_DESC ],
+					'asc' => [ "$modelTable.modifiedAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.modifiedAt" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Updated At'
 				]
@@ -203,24 +200,25 @@ class OrderService extends ResourceService implements IOrderService {
 
 	public function getPageByParent( $parentId, $parentType ) {
 
-		$modelTable	= static::$modelTable;
+		$modelTable	= $this->getModelTable();
 
 		return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
 	}
 
 	public function getPageByUserId( $userId ) {
 
-		$modelTable	= self::$modelTable;
+		$modelTable	= $this->getModelTable();
 
 		return $this->getPage( [ 'conditions' => [ "$modelTable.createdBy" => $userId ] ] );
 	}
 
 	public function getPageByUserIdParentType( $userId, $parentType ) {
 
-		$modelTable	= self::$modelTable;
-		$paid		= Order::STATUS_PAID;
+		$modelTable	= $this->getModelTable();
 
-		$config		= [ 'conditions' => [ "$modelTable.status >= $paid", "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
+		$paid = Order::STATUS_PAID;
+
+		$config = [ 'conditions' => [ "$modelTable.status >= $paid", "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
 
 		return $this->getPage( $config );
 	}
@@ -267,7 +265,7 @@ class OrderService extends ResourceService implements IOrderService {
 	public function createFromCart( $order, $cart, $config = [] ) {
 
 		// Init Transaction
-		$transaction		= Yii::$app->db->beginTransaction();
+		$transaction = Yii::$app->db->beginTransaction();
 
 		// Set Attributes
 		$billingAddress		= isset( $config[ 'billingAddress' ] ) ? $config[ 'billingAddress' ] : null;

@@ -13,8 +13,6 @@ namespace cmsgears\cart\common\services\system;
 use yii\db\Query;
 
 // CMG Imports
-use cmsgears\payment\common\models\base\PaymentTables;
-use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\entities\Order;
 
 use cmsgears\cart\common\services\interfaces\system\ISalesService;
@@ -58,19 +56,21 @@ class SalesService extends SystemService implements ISalesService {
 
 	public function getSalesData( $duration, $config = [] ) {
 
-		$dates			= [];
 		$transactions	= [];
 		$transactionskv = [];
-		$amount			= [];
-		$base			= isset( $config[ 'base' ] ) ? $config[ 'base' ] : false;
-		$children		= isset( $config[ 'children' ] ) ? $config[ 'children' ] : false;
+
+		$dates	= [];
+		$amount	= [];
+
+		$base		= isset( $config[ 'base' ] ) ? $config[ 'base' ] : false;
+		$children	= isset( $config[ 'children' ] ) ? $config[ 'children' ] : false;
 
 		$statusComplete	= Order::STATUS_COMPLETED;
 
-		$txnTable		= PaymentTables::TABLE_TRANSACTION;
-		$orderTable		= CartTables::TABLE_ORDER;
+		$txnTable	= Yii::$app->get( 'transactionService' )->getModelTable();
+		$orderTable	= Yii::$app->get( 'orderService' )->getModelTable();
 
-		$query			= new Query();
+		$query = new Query();
 
 		$query->select( [ "date(`$txnTable`.`createdAt`) as date", 'sum( amount ) as amount' ] );
 		$query->from( $txnTable );
@@ -97,6 +97,7 @@ class SalesService extends SystemService implements ISalesService {
 				$transactions = $query->andWhere( "YEARWEEK( `$txnTable`.`createdAt` ) = YEARWEEK( CURRENT_DATE ) " )
 								->groupBy( [ 'date' ] )
 								->all();
+
 				break;
 			}
 			case 1: {
