@@ -198,11 +198,11 @@ class m160622_034404_cart_data extends Migration {
 
 	private function insertDefaultConfig() {
 
-		$columns = [ 'modelId', 'name', 'label', 'type', 'valueType', 'value' ];
+		$columns = [ 'modelId', 'name', 'label', 'type', 'active', 'valueType', 'value', 'data' ];
 
 		$metas	= [
-			[ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ],
-			[ $this->site->id, 'remove-cart', 'Remove Cart', 'cart', 'flag', '1' ]
+			[ $this->site->id, 'active', 'Active', 'cart', 1, 'flag', '1', NULL ],
+			[ $this->site->id, 'remove-cart', 'Remove Cart', 'cart', 1, 'flag', '1', NULL ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
