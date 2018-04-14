@@ -186,11 +186,11 @@ class m160622_034404_cart_data extends Migration {
 
 		$config	= Form::findBySlugType( 'config-cart', CoreGlobal::TYPE_SYSTEM );
 
-		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
+		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'meta', 'active', 'validators', 'order', 'icon', 'htmlOptions' ];
 
 		$fields	= [
-			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ],
-			[ $config->id, 'remove-cart','Remove Cart', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Remove cart after converted to order."}' ]
+			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ],
+			[ $config->id, 'remove-cart','Remove Cart', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Remove cart after converted to order."}' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
