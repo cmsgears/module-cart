@@ -88,6 +88,7 @@ class m160622_034404_cart_data extends Migration {
 
 		$permissions = [
 			// Admin Permissions - Hard Coded
+			[ $this->master->id, $this->master->id, 'Admin Cart', 'admin-cart', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Admin Cart allows user to administer cart, uom and conversions from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Admin Orders', 'admin-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Admin Orders allows user to administer orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
 			// Permission Groups - Default - Website - Individual, Organization
@@ -110,6 +111,7 @@ class m160622_034404_cart_data extends Migration {
 		// Admin
 		$adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
 		$userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
+		$cartAdminPerm		= Permission::findBySlugType( 'admin-cart', CoreGlobal::TYPE_SYSTEM );
 		$orderAdminPerm		= Permission::findBySlugType( 'admin-orders', CoreGlobal::TYPE_SYSTEM );
 
 		// Permission Groups
@@ -131,8 +133,8 @@ class m160622_034404_cart_data extends Migration {
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $superAdminRole->id, $orderAdminPerm->id ],
-			[ $adminRole->id, $orderAdminPerm->id ],
+			[ $superAdminRole->id, $orderAdminPerm->id ], [ $superAdminRole->id, $cartAdminPerm->id ],
+			[ $adminRole->id, $orderAdminPerm->id ], [ $adminRole->id, $cartAdminPerm->id ],
 			[ $orderAdminRole->id, $adminPerm->id ], [ $orderAdminRole->id, $userPerm->id ], [ $orderAdminRole->id, $orderAdminPerm->id ]
 		];
 

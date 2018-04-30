@@ -31,7 +31,7 @@ class ConversionController extends \cmsgears\core\admin\controllers\base\CrudCon
 
 		parent::init();
 
-		$this->crudPermission	= CartGlobal::PERM_CART;
+		$this->crudPermission	= CartGlobal::PERM_CART_ADMIN;
 
 		$this->viewPath			= '@cmsgears/module-cart/admin/views/conversion';
 
@@ -59,7 +59,7 @@ class ConversionController extends \cmsgears\core\admin\controllers\base\CrudCon
 
 	// ConversionController ------------------
 
-	public function actionAll() {
+	public function actionAll( $config = [] ) {
 
 		Url::remember( [ 'conversion/all' ], 'uomcons' );
 

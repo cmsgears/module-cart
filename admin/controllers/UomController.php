@@ -31,7 +31,7 @@ class UomController extends \cmsgears\core\admin\controllers\base\CrudController
 
 		parent::init();
 
-		$this->crudPermission	= CartGlobal::PERM_CART;
+		$this->crudPermission	= CartGlobal::PERM_CART_ADMIN;
 
 		$this->viewPath			= '@cmsgears/module-cart/admin/views/uom';
 
@@ -59,7 +59,7 @@ class UomController extends \cmsgears\core\admin\controllers\base\CrudController
 
 	// UomController -------------------------
 
-	public function actionAll() {
+	public function actionAll( $config = [] ) {
 
 		Url::remember( [ 'uom/all' ], 'uoms' );
 

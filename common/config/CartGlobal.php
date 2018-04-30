@@ -76,6 +76,8 @@ class CartGlobal {
 
 	// Permissions -----------------------------------------------------
 
+	const PERM_CART_ADMIN		= 'admin-cart';
+
 	// Order Permissions
 	const PERM_ORDER_ADMIN		= 'admin-orders';
 

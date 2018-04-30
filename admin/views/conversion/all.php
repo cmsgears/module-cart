@@ -2,7 +2,6 @@
 // Yii Imports
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
-use yii\helpers\Url;
 
 // CMG Imports
 use cmsgears\core\common\utilities\CodeGenUtil;
