@@ -157,6 +157,8 @@ class Cart extends Entity implements IAuthor, IModelResource, IGridCache {
 			[ 'token', 'required', 'on' => 'guest' ],
 			[ 'createdBy', 'required', 'on' => 'user' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			// Unique
+			[ 'token' => 'unique' ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],

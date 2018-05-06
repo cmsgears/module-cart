@@ -151,6 +151,8 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 			// Required, Safe
 			[ [ 'orderId', 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			// Unique
+			[ [ 'parentId', 'parentType', 'orderId' ], 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'orderId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],

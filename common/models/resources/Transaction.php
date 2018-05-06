@@ -85,9 +85,9 @@ class Transaction extends BaseTransaction {
 	 */
 	public function rules() {
 
-		$rules		= parent::rules();
+		$rules = parent::rules();
 
-		$rules[]	= [ 'orderId', 'number', 'integerOnly' => true, 'min' => 1 ];
+		$rules[] = [ 'orderId', 'number', 'integerOnly' => true, 'min' => 1 ];
 
 		return $rules;
 	}

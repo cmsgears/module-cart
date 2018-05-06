@@ -126,7 +126,7 @@ class Uom extends Resource {
 			[ [ 'code', 'name', 'group' ], 'required' ],
 			[ 'id', 'safe' ],
 			// Unique
-			[ [ 'group', 'name' ], 'unique', 'targetAttribute' => [ 'group', 'name' ] ],
+			[ [ 'group', 'name' ], 'unique', 'targetAttribute' => [ 'group', 'name' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ 'code', 'string', 'min' => 1, 'max' => Yii::$app->core->smallText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],

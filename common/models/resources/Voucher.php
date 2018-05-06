@@ -165,7 +165,7 @@ class Voucher extends Entity implements IAuthor, IModelResource, IGridCache {
 			[ [ 'type', 'name', 'amount' ], 'required' ],
 			[ [ 'id', 'description', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Unique
-			[ 'code', 'unique', 'targetAttribute' => 'code' ],
+			[ 'code', 'unique' ],
 			// Text Limit
 			[ [ 'parentType', 'code' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
