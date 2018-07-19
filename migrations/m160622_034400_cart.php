@@ -81,7 +81,7 @@ class m160622_034400_cart extends Migration {
 
 	private function upUomConversion() {
 
-		// Uom = Quantity * Target
+		// 1 Uom Unit = Quantity * (1 Target Unit)
 		$this->createTable( $this->prefix . 'cart_uom_conversion', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'uomId' => $this->bigInteger( 20 )->notNull(),

@@ -64,6 +64,7 @@ class m160622_034404_cart_data extends Migration {
 
 		// UOMs
 		$this->insertUom();
+		$this->insertUomConversions();
 	}
 
 	private function insertRolePermission() {
@@ -212,7 +213,7 @@ class m160622_034404_cart_data extends Migration {
 
 	private function insertUom() {
 
-		// Roles
+		// UOMs
 
 		$columns	= [ 'code', 'name', 'group', 'base', 'active' ];
 
@@ -244,10 +245,13 @@ class m160622_034404_cart_data extends Migration {
 			[ 'CM', 'Centimeter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'dm', 'Decimeter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'MT', 'Meter', Uom::GROUP_LENGTH_METRIC, true, true ],
-			[ 'ha', 'Hectare', Uom::GROUP_LENGTH_METRIC, true, true ],
 			[ 'dem', 'Decameter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'km', 'Kilometer', Uom::GROUP_LENGTH_METRIC, false, true ],
-			[ 'Sq m', 'Square meter', Uom::GROUP_LENGTH_METRIC, false, true ],
+
+			[ 'ha', 'Hectare', Uom::GROUP_AREA_METRIC, true, true ],
+			[ 'a', 'Are', Uom::GROUP_AREA_METRIC, false, true ],
+			[ 'km2', 'Square Kilometer', Uom::GROUP_AREA_METRIC, false, true ],
+			[ 'm2', 'Square Meter', Uom::GROUP_AREA_METRIC, false, true ],
 
 			[ 'IN', 'Inch', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
 			[ 'FT', 'Feet', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
@@ -340,6 +344,30 @@ class m160622_034404_cart_data extends Migration {
 		];
 
 		$this->batchInsert( $this->prefix . 'cart_uom', $columns, $uoms );
+	}
+
+	private function insertUomConversions() {
+
+		// UOM Conversions -> 1 Uom Unit = Quantity * (1 Target Unit)
+
+		$hectare	= Uom::find()->where( [ 'code' => 'ha', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+		$a			= Uom::find()->where( [ 'code' => 'a', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+		$km2		= Uom::find()->where( [ 'code' => 'km2', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+		$m2			= Uom::find()->where( [ 'code' => 'm2', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+
+		$columns	= [ 'uomId', 'targetId', 'quantity' ];
+
+		$conversions = [
+			[ $hectare->id, $a->id, 100 ],
+			[ $hectare->id, $km2->id, 0.01 ],
+			[ $hectare->id, $m2->id, 10000 ],
+			[ $hectare->id, $hectare->id, 1 ],
+			[ $a->id, $hectare->id, 0.01 ],
+			[ $km2->id, $hectare->id, 100 ],
+			[ $m2->id, $hectare->id, 0.0001 ]
+		];
+
+		$this->batchInsert( $this->prefix . 'cart_uom_conversion', $columns, $conversions );
 	}
 
 	public function down() {

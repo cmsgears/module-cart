@@ -46,25 +46,30 @@ class Uom extends Resource {
 
 	const GROUP_QUANTITY		= 0;
 
-	const GROUP_LENGTH_METRIC	= 10;
-	const GROUP_LENGTH_IMPERIAL	= 20;
-	const GROUP_LENGTH_US		= 30;
+	const GROUP_LENGTH_METRIC	= 20;
+	const GROUP_LENGTH_IMPERIAL	= 40;
+	const GROUP_LENGTH_US		= 60;
 
-	const GROUP_WEIGHT_METRIC	= 40;
-	const GROUP_WEIGHT_IMPERIAL	= 50;
-	const GROUP_WEIGHT_US		= 60;
+	const GROUP_AREA_METRIC		= 80;
+	const GROUP_AREA_IMPERIAL	= 100;
 
-	const GROUP_VOLUME_METRIC	= 70;
-	const GROUP_VOLUME_IMPERIAL	= 80;
-	const GROUP_VOLUME_US		= 90;
+	const GROUP_WEIGHT_METRIC	= 120;
+	const GROUP_WEIGHT_IMPERIAL	= 140;
+	const GROUP_WEIGHT_US		= 160;
 
-	const GROUP_TIME			= 100;
+	const GROUP_VOLUME_METRIC	= 180;
+	const GROUP_VOLUME_IMPERIAL	= 200;
+	const GROUP_VOLUME_US		= 220;
+
+	const GROUP_TIME			= 240;
 
 	public static $groupMap = [
 		self::GROUP_QUANTITY => 'Quantity',
 		self::GROUP_LENGTH_METRIC => 'Metric Length',
 		self::GROUP_LENGTH_IMPERIAL => 'Imperial Length',
 		self::GROUP_LENGTH_US => 'US Length',
+		self::GROUP_AREA_METRIC => 'Metric Area',
+		self::GROUP_AREA_IMPERIAL => 'Imperial Area',
 		self::GROUP_WEIGHT_METRIC => 'Metric Weight',
 		self::GROUP_WEIGHT_IMPERIAL => 'Imperial Weight',
 		self::GROUP_WEIGHT_US => 'US Weight',
@@ -80,6 +85,8 @@ class Uom extends Resource {
 		'Metric Length' => self::GROUP_LENGTH_METRIC,
 		'Imperial Length' => self::GROUP_LENGTH_IMPERIAL,
 		'US Length' => self::GROUP_LENGTH_US,
+		'Metric Area' => self::GROUP_AREA_METRIC,
+		'Imperial Area' => self::GROUP_AREA_IMPERIAL,
 		'Metric Weight' => self::GROUP_WEIGHT_METRIC,
 		'Imperial Weight' => self::GROUP_WEIGHT_IMPERIAL,
 		'US Weight' => self::GROUP_WEIGHT_US,
