@@ -16,14 +16,14 @@ use yii\helpers\ArrayHelper;
 // CMG Imports
 use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 
-use cmsgears\core\common\services\base\ResourceService;
+use cmsgears\core\common\services\base\ModelResourceService;
 
 /**
  * CartItemService provide service methods of cart item model.
  *
  * @since 1.0.0
  */
-class CartItemService extends ResourceService implements ICartItemService {
+class CartItemService extends ModelResourceService implements ICartItemService {
 
 	// Variables ---------------------------------------------------
 

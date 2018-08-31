@@ -21,8 +21,6 @@ interface IOrderService extends IModelResourceService {
 
 	// Data Provider ------
 
-	public function getPageByParent( $parentId, $parentType );
-
 	public function getPageByUserId( $userId );
 
 	public function getPageByUserIdParentType( $userId, $parentType );

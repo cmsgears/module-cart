@@ -25,7 +25,7 @@ use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 use cmsgears\cart\common\services\interfaces\resources\IOrderService;
 use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
 
-use cmsgears\core\common\services\base\ResourceService;
+use cmsgears\core\common\services\base\ModelResourceService;
 
 use cmsgears\core\common\utilities\DateUtil;
 
@@ -34,7 +34,7 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class OrderService extends ResourceService implements IOrderService {
+class OrderService extends ModelResourceService implements IOrderService {
 
 	// Variables ---------------------------------------------------
 
@@ -44,7 +44,7 @@ class OrderService extends ResourceService implements IOrderService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\Order';
+	public static $modelClass	= '\cmsgears\cart\common\models\resources\Order';
 
 	public static $parentType	= CartGlobal::TYPE_ORDER;
 
@@ -69,7 +69,7 @@ class OrderService extends ResourceService implements IOrderService {
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-
+/*
 	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IOrderItemService $orderItemService, IModelAddressService $modelAddressService, $config = [] ) {
 
 		$this->cartService			= $cartService;
@@ -81,7 +81,7 @@ class OrderService extends ResourceService implements IOrderService {
 
 		parent::__construct( $config );
 	}
-
+*/
 	// Instance methods --------------------------------------------
 
 	// Yii parent classes --------------------
@@ -196,13 +196,6 @@ class OrderService extends ResourceService implements IOrderService {
 		// Result -----------
 
 		return parent::getPage( $config );
-	}
-
-	public function getPageByParent( $parentId, $parentType ) {
-
-		$modelTable	= $this->getModelTable();
-
-		return $this->getpage( [ 'conditions' => [ "$modelTable.parentId" => $parentId, "$modelTable.parentType" => $parentType ] ] );
 	}
 
 	public function getPageByUserId( $userId ) {

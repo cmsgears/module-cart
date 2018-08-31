@@ -21,14 +21,14 @@ use cmsgears\cart\common\models\resources\Cart;
 use cmsgears\cart\common\services\interfaces\resources\ICartService;
 use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 
-use cmsgears\core\common\services\base\ResourceService;
+use cmsgears\core\common\services\base\ModelResourceService;
 
 /**
  * CartService provide service methods of cart model.
  *
  * @since 1.0.0
  */
-class CartService extends ResourceService implements ICartService {
+class CartService extends ModelResourceService implements ICartService {
 
 	// Variables ---------------------------------------------------
 

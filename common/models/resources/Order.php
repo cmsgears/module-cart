@@ -19,17 +19,15 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
-use cmsgears\core\common\models\interfaces\base\IModelResource;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 use cmsgears\core\common\models\interfaces\mappers\IAddress;
 
-use cmsgears\core\common\models\base\Entity;
+use cmsgears\core\common\models\base\ModelResource;
 use cmsgears\payment\common\models\base\PaymentTables;
 use cmsgears\payment\common\models\resources\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
-use cmsgears\core\common\models\traits\base\ModelResourceTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 use cmsgears\core\common\models\traits\mappers\AddressTrait;
 
@@ -67,7 +65,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Order extends Entity implements IAddress, IAuthor, IModelResource, IGridCache {
+class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -165,7 +163,6 @@ class Order extends Entity implements IAddress, IAuthor, IModelResource, IGridCa
 	use AddressTrait;
 	use AuthorTrait;
 	use GridCacheTrait;
-	use ModelResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
 
