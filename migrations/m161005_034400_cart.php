@@ -7,16 +7,13 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-// CMG Imports
-use cmsgears\core\common\base\Migration;
-
 /**
  * The cart migration inserts the database tables of cart module. It also insert the foreign
  * keys if FK flag of migration component is true.
  *
  * @since 1.0.0
  */
-class m160622_034400_cart extends Migration {
+class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
@@ -30,11 +27,11 @@ class m160622_034400_cart extends Migration {
 	public function init() {
 
 		// Table prefix
-		$this->prefix		= Yii::$app->migration->cmgPrefix;
+		$this->prefix = Yii::$app->migration->cmgPrefix;
 
 		// Get the values via config
-		$this->fk			= Yii::$app->migration->isFk();
-		$this->options		= Yii::$app->migration->getTableOptions();
+		$this->fk		= Yii::$app->migration->isFk();
+		$this->options	= Yii::$app->migration->getTableOptions();
 
 		// Default collation
 		if( $this->db->driverName === 'mysql' ) {
@@ -98,8 +95,8 @@ class m160622_034400_cart extends Migration {
 
 		$this->createTable( $this->prefix . 'cart', [
 			'id' => $this->bigPrimaryKey( 20 ),
-			'createdBy' => $this->bigInteger( 20 ),
-			'modifiedBy' => $this->bigInteger( 20 ),
+			'createdBy' => $this->bigInteger( 20 )->defaultValue( null ),
+			'modifiedBy' => $this->bigInteger( 20 )->defaultValue( null ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
@@ -131,8 +128,8 @@ class m160622_034400_cart extends Migration {
 			'weightUnitId' => $this->bigInteger( 20 ),
 			'volumeUnitId' => $this->bigInteger( 20 ),
 			'lengthUnitId' => $this->bigInteger( 20 ),
-			'createdBy' => $this->bigInteger( 20 ),
-			'modifiedBy' => $this->bigInteger( 20 ),
+			'createdBy' => $this->bigInteger( 20 )->defaultValue( null ),
+			'modifiedBy' => $this->bigInteger( 20 )->defaultValue( null ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
@@ -286,6 +283,7 @@ class m160622_034400_cart extends Migration {
 			'taxType' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'freeShipping' => $this->boolean()->notNull()->defaultValue( false ),
 			'minPurchase' => $this->float()->notNull()->defaultValue( 0 ),
+			'maxPurchase' => $this->float()->notNull()->defaultValue( 0 ),
 			'maxDiscount' => $this->float()->notNull()->defaultValue( 0 ),
 			'startTime' => $this->dateTime(),
 			'endTime' => $this->dateTime(),

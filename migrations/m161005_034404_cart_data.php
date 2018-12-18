@@ -10,8 +10,6 @@
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\core\common\base\Migration;
-
 use cmsgears\core\common\models\entities\Site;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
@@ -28,7 +26,7 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class m160622_034404_cart_data extends Migration {
+class m161005_034404_cart_data extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
@@ -43,7 +41,7 @@ class m160622_034404_cart_data extends Migration {
 	public function init() {
 
 		// Table prefix
-		$this->prefix	= Yii::$app->migration->cmgPrefix;
+		$this->prefix = Yii::$app->migration->cmgPrefix;
 
 		$this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
 		$this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
@@ -215,9 +213,9 @@ class m160622_034404_cart_data extends Migration {
 
 		// UOMs
 
-		$columns	= [ 'code', 'name', 'group', 'base', 'active' ];
+		$columns = [ 'code', 'name', 'group', 'base', 'active' ];
 
-		$uoms		= [
+		$uoms = [
 			[ 'BG', 'Bag', Uom::GROUP_QUANTITY, false, true ],
 			[ 'BL', 'Bale', Uom::GROUP_QUANTITY, false, true ],
 			[ 'BT', 'Bottle', Uom::GROUP_QUANTITY, false, true ],
@@ -355,7 +353,7 @@ class m160622_034404_cart_data extends Migration {
 		$km2		= Uom::find()->where( [ 'code' => 'km2', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
 		$m2			= Uom::find()->where( [ 'code' => 'm2', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
 
-		$columns	= [ 'uomId', 'targetId', 'quantity' ];
+		$columns = [ 'uomId', 'targetId', 'quantity' ];
 
 		$conversions = [
 			[ $hectare->id, $a->id, 100 ],
@@ -372,7 +370,7 @@ class m160622_034404_cart_data extends Migration {
 
 	public function down() {
 
-		echo "m160622_034404_cart_data will be deleted with m160621_014408_core and m160622_034400_cart.\n";
+		echo "m161005_034404_cart_data will be deleted with m160621_014408_core and m161005_034400_cart.\n";
 
 		return true;
 	}
