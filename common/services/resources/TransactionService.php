@@ -1,14 +1,27 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\payment\common\models\entities\Transaction;
+use cmsgears\cart\common\services\interfaces\resources\ITransactionService;
 
-use cmsgears\cart\common\services\interfaces\entities\ITransactionService;
+use cmsgears\payment\common\services\resources\TransactionService as BaseTransactionService;
 
-class TransactionService extends \cmsgears\payment\common\services\entities\TransactionService implements ITransactionService {
+/**
+ * TransactionService provide service methods of transaction model.
+ *
+ * @since 1.0.0
+ */
+class TransactionService extends BaseTransactionService implements ITransactionService {
 
 	// Variables ---------------------------------------------------
 
@@ -18,7 +31,7 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\Transaction';
+	public static $modelClass = '\cmsgears\cart\common\models\entities\Transaction';
 
 	// Protected --------------
 
@@ -50,13 +63,19 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 
 	public function getPage( $config = [] ) {
 
-		$modelClass	= self::$modelClass;
-		$modelTable	= self::$modelTable;
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
 
 		// Sorting ----------
 
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
 				'order' => [
 					'asc' => [ "$modelTable.orderId" => SORT_ASC ],
 					'desc' => [ "$modelTable.orderId" => SORT_DESC ],
@@ -159,7 +178,7 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 
 	public function getPageByOrderId( $orderId ) {
 
-		$modelTable = self::$modelTable;
+		$modelTable	= $this->getModelTable();
 
 		return $this->getPage( [ 'conditions' => [ "$modelTable.orderId" => $orderId ] ] );
 	}
@@ -170,7 +189,9 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 
 	public function getByOrderId( $orderId ) {
 
-		return Transaction::findByParentIdParentType( $orderId, CartGlobal::TYPE_ORDER );
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByParentIdParentType( $orderId, CartGlobal::TYPE_ORDER );
 	}
 
 	// Read - Lists ----
@@ -183,12 +204,13 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 
 	public function createByParams( $params = [], $config = [] ) {
 
-		$transaction	= new Transaction();
+		$model = $this->getModelObject();
 
-		// Mandatory
-		$transaction->orderId		= $params[ 'orderId' ];
+		// Required
+		$model->orderId = $params[ 'orderId' ];
 
-		$config[ 'transaction' ]	= $transaction;
+		// Config
+		$config[ 'transaction' ] = $model;
 
 		// Return Transaction
 		return parent::createByParams( $params, $config );
@@ -197,6 +219,14 @@ class TransactionService extends \cmsgears\payment\common\services\entities\Tran
 	// Update -------------
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

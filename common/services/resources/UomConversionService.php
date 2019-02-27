@@ -1,16 +1,28 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
-use Yii;
 use yii\data\Sort;
 
 // CMG Imports
-use cmsgears\cart\common\models\base\CartTables;
-
 use cmsgears\cart\common\services\interfaces\resources\IUomConversionService;
 
-class UomConversionService extends \cmsgears\core\common\services\base\EntityService implements IUomConversionService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * UomConversionService provide service methods of uom conversion model.
+ *
+ * @since 1.0.0
+ */
+class UomConversionService extends ResourceService implements IUomConversionService {
 
 	// Variables ---------------------------------------------------
 
@@ -20,11 +32,7 @@ class UomConversionService extends \cmsgears\core\common\services\base\EntitySer
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\resources\UomConversion';
-
-	public static $modelTable	= CartTables::TABLE_UOM_CONVERSION;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\cart\common\models\resources\UomConversion';
 
 	// Protected --------------
 
@@ -56,17 +64,26 @@ class UomConversionService extends \cmsgears\core\common\services\base\EntitySer
 
 	public function getPage( $config = [] ) {
 
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
 				'source' => [
-					'asc' => [ 'uomId' => SORT_ASC ],
-					'desc' => ['uomId' => SORT_DESC ],
+					'asc' => [ "$modelTable.uomId" => SORT_ASC ],
+					'desc' => [ "$modelTable.uomId" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Source'
 				],
 				'target' => [
-					'asc' => [ 'targetId' => SORT_ASC ],
-					'desc' => [ 'targetId' => SORT_DESC ],
+					'asc' => [ "$modelTable.targetId" => SORT_ASC ],
+					'desc' => [ "$modelTable.targetId" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Target'
 				]
@@ -103,6 +120,14 @@ class UomConversionService extends \cmsgears\core\common\services\base\EntitySer
 	}
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

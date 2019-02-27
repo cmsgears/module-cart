@@ -10,12 +10,12 @@
 namespace cmsgears\cart\common\services\interfaces\system;
 
 /**
- * ISalesService declares methods specific to sales data and graphs.
+ * IGuestService declares methods specific to manage guests for guest checkouts.
  *
  * @since 1.0.0
  */
-interface ISalesService {
+interface IGuestService {
 
-	public function getSalesData( $duration );
+	public function create( $model, $config = [] );
 
 }

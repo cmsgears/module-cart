@@ -1,5 +1,13 @@
 <?php
-namespace cmsgears\cart\common\models\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
 use Yii;
@@ -7,8 +15,10 @@ use Yii;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
+use cmsgears\payment\common\models\resources\Transaction as BaseTransaction;
+
 /**
- * Transaction Entity - The primary class.
+ * Transaction represents a financial transaction.
  *
  * @property integer $id
  * @property integer $orderId
@@ -18,11 +28,13 @@ use cmsgears\cart\common\config\CartGlobal;
  * @property string $parentType
  * @property string $title
  * @property string $description
- * @property string $type
- * @property string $mode
+ * @property integer $type
+ * @property integer $mode
+ * @property boolean $refund
  * @property string $code
  * @property string $service
- * @property integer $amount
+ * @property integer $status
+ * @property float $amount
  * @property string $currency
  * @property string $link
  * @property datetime $createdAt
@@ -30,8 +42,11 @@ use cmsgears\cart\common\config\CartGlobal;
  * @property date $processedAt
  * @property string $content
  * @property string $data
+ * @property string $gridCache
+ * @property boolean $gridCacheValid
+ * @property datetime $gridCachedAt
  */
-class Transaction extends \cmsgears\payment\common\models\entities\Transaction {
+class Transaction extends BaseTransaction {
 
 	// Variables ---------------------------------------------------
 
@@ -70,9 +85,9 @@ class Transaction extends \cmsgears\payment\common\models\entities\Transaction {
 	 */
 	public function rules() {
 
-		$rules		= parent::rules();
+		$rules = parent::rules();
 
-		$rules[]	= [ 'orderId', 'number', 'integerOnly' => true, 'min' => 1 ];
+		$rules[] = [ 'orderId', 'number', 'integerOnly' => true, 'min' => 1 ];
 
 		return $rules;
 	}
@@ -97,9 +112,14 @@ class Transaction extends \cmsgears\payment\common\models\entities\Transaction {
 
 	// Transaction ---------------------------
 
+	/**
+	 * Return the corresponding order.
+	 *
+	 * @return \cmsgears\cart\common\models\entities\Order
+	 */
 	public function getOrder() {
 
-		return $this->hasOne( Order::className(), [ 'id' => 'orderId' ] );
+		return $this->hasOne( Order::class, [ 'id' => 'orderId' ] );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -114,6 +134,9 @@ class Transaction extends \cmsgears\payment\common\models\entities\Transaction {
 
 	// Read - Query -----------
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order' ];

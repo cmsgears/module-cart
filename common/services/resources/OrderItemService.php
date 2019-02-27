@@ -1,13 +1,25 @@
 <?php
-namespace cmsgears\cart\common\services\entities;
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
+namespace cmsgears\cart\common\services\resources;
 
 // CMG Imports
-use cmsgears\cart\common\models\base\CartTables;
-use cmsgears\cart\common\models\entities\OrderItem;
+use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
 
-use cmsgears\cart\common\services\interfaces\entities\IOrderItemService;
+use cmsgears\core\common\services\base\ResourceService;
 
-class OrderItemService extends \cmsgears\core\common\services\base\EntityService implements IOrderItemService {
+/**
+ * OrderItemService provide service methods of order item model.
+ *
+ * @since 1.0.0
+ */
+class OrderItemService extends ResourceService implements IOrderItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -17,11 +29,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\OrderItem';
-
-	public static $modelTable	= CartTables::TABLE_ORDER_ITEM;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\cart\common\models\entities\OrderItem';
 
 	// Protected --------------
 
@@ -73,23 +81,32 @@ class OrderItemService extends \cmsgears\core\common\services\base\EntityService
 	// Create Order Item from cart item
 	public function createFromCartItem( $order, $cartItem, $config = [] ) {
 
+		$model	= $this->getModelObject();
+
 		// Set Attributes
-		$orderItem				= new OrderItem();
-		$orderItem->orderId		= $order->id;
-		$orderItem->createdBy	= $order->creator->id;
+		$model->orderId		= $order->id;
+		$model->createdBy	= $order->creator->id;
 
 		// Copy from Cart Item
-		$orderItem->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
+		$model->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
 
-		$orderItem->save();
+		$model->save();
 
 		// Return OrderItem
-		return $orderItem;
+		return $model;
 	}
 
 	// Update -------------
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 

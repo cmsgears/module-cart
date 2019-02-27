@@ -10,20 +10,24 @@
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IResourceService;
+use cmsgears\payment\common\services\interfaces\entities\ITransactionService as IBaseTransactionService;
 
 /**
- * IUomConversionService declares methods specific to UOM conversions.
+ * ITransactionService declares methods specific to order transactions.
  *
  * @since 1.0.0
  */
-interface IUomConversionService extends IResourceService {
+interface ITransactionService extends IBaseTransactionService {
 
 	// Data Provider ------
+
+	public function getPageByOrderId( $orderId );
 
 	// Read ---------------
 
 	// Read - Models ---
+
+	public function getByOrderId( $orderId );
 
 	// Read - Lists ----
 

@@ -1,18 +1,34 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\models\resources;
 
 // CMG Imports
 use cmsgears\cart\common\models\base\CartTables;
 
+use cmsgears\core\common\models\base\Resource;
+
 /**
- * UomConversion Entity - The primary class.
+ * UomConversion represent conversion factor from one unit to other. It must use the convertible
+ * units as source and target.
+ *
+ * Conversion Formula:
+ * target = quantity * source
  *
  * @property integer $id
  * @property integer $uomId
  * @property integer $targetId
  * @property float $quantity
+ *
+ * @since 1.0.0
  */
-class UomConversion extends \cmsgears\core\common\models\base\Entity {
+class UomConversion extends Resource {
 
 	// Variables ---------------------------------------------------
 
@@ -46,9 +62,13 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// yii\base\Model ---------
 
+	/**
+	 * @inheritdoc
+	 */
 	public function rules() {
 
-		return [
+		// Model Rules
+		$rules = [
 			// Required, Safe
 			[ [ 'uomId', 'targetId' ], 'required' ],
 			[ [ 'id' ], 'safe' ],
@@ -56,8 +76,13 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 			[ [ 'uomId', 'targetId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ 'quantity', 'number' ]
 		];
+
+		return $rules;
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function attributeLabels() {
 
 		return [
@@ -75,18 +100,28 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// UomConversion -------------------------
 
+	/**
+	 * Returns the source unit to be converted.
+	 *
+	 * @return Uom
+	 */
 	public function getSource() {
 
 		$uomTable = CartTables::TABLE_UOM;
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'uomId' ] )->from( "$uomTable as sourceUom" );
+		return $this->hasOne( Uom::class, [ 'id' => 'uomId' ] )->from( "$uomTable as sourceUom" );
 	}
 
+	/**
+	 * Returns the converted unit.
+	 *
+	 * @return Uom
+	 */
 	public function getTarget() {
 
 		$uomTable = CartTables::TABLE_UOM;
 
-		return $this->hasOne( Uom::className(), [ 'id' => 'targetId' ] )->from( "$uomTable as targetUom" );
+		return $this->hasOne( Uom::class, [ 'id' => 'targetId' ] )->from( "$uomTable as targetUom" );
 	}
 
 	// Static Methods ----------------------------------------------
@@ -95,9 +130,12 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// yii\db\ActiveRecord ----
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function tableName() {
 
-		return CartTables::TABLE_UOM_CONVERSION;
+		return CartTables::getTableName( CartTables::TABLE_UOM_CONVERSION );
 	}
 
 	// CMG parent classes --------------------
@@ -106,6 +144,9 @@ class UomConversion extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function queryWithHasOne( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'source', 'target' ];

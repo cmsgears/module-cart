@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
@@ -13,7 +21,12 @@ use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\core\common\utilities\DateUtil;
 
-class m160622_034404_cart_data extends \yii\db\Migration {
+/**
+ * The cart data migration inserts the base data required to run the application.
+ *
+ * @since 1.0.0
+ */
+class m161005_034404_cart_data extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
@@ -28,7 +41,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 	public function init() {
 
 		// Table prefix
-		$this->prefix	= Yii::$app->migration->cmgPrefix;
+		$this->prefix = Yii::$app->migration->cmgPrefix;
 
 		$this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
 		$this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
@@ -49,6 +62,7 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 		// UOMs
 		$this->insertUom();
+		$this->insertUomConversions();
 	}
 
 	private function insertRolePermission() {
@@ -73,10 +87,12 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 		$permissions = [
 			// Admin Permissions - Hard Coded
+			[ $this->master->id, $this->master->id, 'Admin Cart', 'admin-cart', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Admin Cart allows user to administer cart, uom and conversions from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->master->id, $this->master->id, 'Admin Orders', 'admin-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission Admin Orders allows user to administer orders from admin.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
 			// Permission Groups - Default - Website - Individual, Organization
 			[ $this->master->id, $this->master->id, 'Manage Orders', 'manage-orders', CoreGlobal::TYPE_SYSTEM, NULL, true, 'The permission Manage Orders allows user to manage orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->master->id, $this->master->id, 'Order Author', 'order-author', CoreGlobal::TYPE_SYSTEM, NULL, true, 'The permission order author allows user to perform crud operations of order belonging to respective author from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
 
 			// Order Permissions - Hard Coded - Website - Individual, Organization
 			[ $this->master->id, $this->master->id, 'View Orders', 'view-orders', CoreGlobal::TYPE_SYSTEM, NULL, false, 'The permission View Orders allows user to view orders from website.', DateUtil::getDateTime(), DateUtil::getDateTime() ],
@@ -94,10 +110,12 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		// Admin
 		$adminPerm			= Permission::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
 		$userPerm			= Permission::findBySlugType( 'user', CoreGlobal::TYPE_SYSTEM );
+		$cartAdminPerm		= Permission::findBySlugType( 'admin-cart', CoreGlobal::TYPE_SYSTEM );
 		$orderAdminPerm		= Permission::findBySlugType( 'admin-orders', CoreGlobal::TYPE_SYSTEM );
 
 		// Permission Groups
 		$orderManagePerm	= Permission::findBySlugType( 'manage-orders', CoreGlobal::TYPE_SYSTEM );
+		$orderAuthorPerm	= Permission::findBySlugType( 'order-author', CoreGlobal::TYPE_SYSTEM );
 
 		// Permissions
 		$vOrdersPerm	= Permission::findBySlugType( 'view-orders', CoreGlobal::TYPE_SYSTEM );
@@ -114,8 +132,8 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $superAdminRole->id, $orderAdminPerm->id ],
-			[ $adminRole->id, $orderAdminPerm->id ],
+			[ $superAdminRole->id, $orderAdminPerm->id ], [ $superAdminRole->id, $cartAdminPerm->id ],
+			[ $adminRole->id, $orderAdminPerm->id ], [ $adminRole->id, $cartAdminPerm->id ],
 			[ $orderAdminRole->id, $adminPerm->id ], [ $orderAdminRole->id, $userPerm->id ], [ $orderAdminRole->id, $orderAdminPerm->id ]
 		];
 
@@ -126,16 +144,26 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$columns = [ 'parentId', 'childId', 'rootId', 'parentType', 'lValue', 'rValue' ];
 
 		$hierarchy = [
-				// Order Manager - Organization
-				[ null, null, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 1, 18 ],
-				[ $orderManagePerm->id, $vOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 2, 17 ],
-				[ $orderManagePerm->id, $aOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 3, 16 ],
-				[ $orderManagePerm->id, $uOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 4, 15 ],
-				[ $orderManagePerm->id, $dOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 5, 14 ],
-				[ $orderManagePerm->id, $apOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 6, 13 ],
-				[ $orderManagePerm->id, $pOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 7, 12 ],
-				[ $orderManagePerm->id, $iOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 8, 11 ],
-				[ $orderManagePerm->id, $eOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 9, 10 ]
+			// Order Manager - Organization
+			[ null, null, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 1, 18 ],
+			[ $orderManagePerm->id, $vOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $orderManagePerm->id, $aOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $orderManagePerm->id, $uOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $orderManagePerm->id, $dOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ],
+			[ $orderManagePerm->id, $apOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 10, 11 ],
+			[ $orderManagePerm->id, $pOrderPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 12, 13 ],
+			[ $orderManagePerm->id, $iOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 14, 15 ],
+			[ $orderManagePerm->id, $eOrdersPerm->id, $orderManagePerm->id, CoreGlobal::TYPE_PERMISSION, 16, 17 ],
+
+			// Order Author - Individual
+			[ null, null, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 1, 16 ],
+			[ $orderAuthorPerm->id, $vOrdersPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 2, 3 ],
+			[ $orderAuthorPerm->id, $aOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 4, 5 ],
+			[ $orderAuthorPerm->id, $uOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 6, 7 ],
+			[ $orderAuthorPerm->id, $dOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 8, 9 ],
+			[ $orderAuthorPerm->id, $pOrderPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 10, 11 ],
+			[ $orderAuthorPerm->id, $iOrdersPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 12, 13 ],
+			[ $orderAuthorPerm->id, $eOrdersPerm->id, $orderAuthorPerm->id, CoreGlobal::TYPE_PERMISSION, 14, 15 ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_model_hierarchy', $columns, $hierarchy );
@@ -149,20 +177,21 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			'name' => 'Config Cart', 'slug' => 'config-cart',
 			'type' => CoreGlobal::TYPE_SYSTEM,
 			'description' => 'Cart configuration form.',
-			'successMessage' => 'All configurations saved successfully.',
+			'success' => 'All configurations saved successfully.',
 			'captcha' => false,
 			'visibility' => Form::VISIBILITY_PROTECTED,
-			'active' => true, 'userMail' => false,'adminMail' => false,
+			'status' => Form::STATUS_ACTIVE, 'userMail' => false,'adminMail' => false,
 			'createdAt' => DateUtil::getDateTime(),
 			'modifiedAt' => DateUtil::getDateTime()
 		]);
 
-		$config	= Form::findBySlug( 'config-cart', CoreGlobal::TYPE_SYSTEM );
+		$config	= Form::findBySlugType( 'config-cart', CoreGlobal::TYPE_SYSTEM );
 
-		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'validators', 'order', 'icon', 'htmlOptions' ];
+		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'meta', 'active', 'validators', 'order', 'icon', 'htmlOptions' ];
 
 		$fields	= [
-			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ]
+			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ],
+			[ $config->id, 'remove-cart','Remove Cart', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Remove cart after converted to order."}' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
@@ -170,10 +199,11 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 	private function insertDefaultConfig() {
 
-		$columns = [ 'modelId', 'name', 'label', 'type', 'valueType', 'value' ];
+		$columns = [ 'modelId', 'name', 'label', 'type', 'active', 'valueType', 'value', 'data' ];
 
 		$metas	= [
-			[ $this->site->id, 'active', 'Active', 'cart', 'flag', '1' ]
+			[ $this->site->id, 'active', 'Active', 'cart', 1, 'flag', '1', NULL ],
+			[ $this->site->id, 'remove-cart', 'Remove Cart', 'cart', 1, 'flag', '1', NULL ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
@@ -181,11 +211,11 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 
 	private function insertUom() {
 
-		// Roles
+		// UOMs
 
-		$columns	= [ 'code', 'name', 'group', 'base', 'active' ];
+		$columns = [ 'code', 'name', 'group', 'base', 'active' ];
 
-		$uoms		= [
+		$uoms = [
 			[ 'BG', 'Bag', Uom::GROUP_QUANTITY, false, true ],
 			[ 'BL', 'Bale', Uom::GROUP_QUANTITY, false, true ],
 			[ 'BT', 'Bottle', Uom::GROUP_QUANTITY, false, true ],
@@ -213,10 +243,13 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 			[ 'CM', 'Centimeter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'dm', 'Decimeter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'MT', 'Meter', Uom::GROUP_LENGTH_METRIC, true, true ],
-			[ 'ha', 'Hectare', Uom::GROUP_LENGTH_METRIC, true, true ],
 			[ 'dem', 'Decameter', Uom::GROUP_LENGTH_METRIC, false, true ],
 			[ 'km', 'Kilometer', Uom::GROUP_LENGTH_METRIC, false, true ],
-			[ 'Sq m', 'Square meter', Uom::GROUP_LENGTH_METRIC, false, true ],
+
+			[ 'ha', 'Hectare', Uom::GROUP_AREA_METRIC, true, true ],
+			[ 'a', 'Are', Uom::GROUP_AREA_METRIC, false, true ],
+			[ 'km2', 'Square Kilometer', Uom::GROUP_AREA_METRIC, false, true ],
+			[ 'm2', 'Square Meter', Uom::GROUP_AREA_METRIC, false, true ],
 
 			[ 'IN', 'Inch', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
 			[ 'FT', 'Feet', Uom::GROUP_LENGTH_IMPERIAL, false, true ],
@@ -311,10 +344,35 @@ class m160622_034404_cart_data extends \yii\db\Migration {
 		$this->batchInsert( $this->prefix . 'cart_uom', $columns, $uoms );
 	}
 
+	private function insertUomConversions() {
+
+		// UOM Conversions -> 1 Uom Unit = Quantity * (1 Target Unit)
+
+		$hectare	= Uom::find()->where( [ 'code' => 'ha', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+		$a			= Uom::find()->where( [ 'code' => 'a', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+		$km2		= Uom::find()->where( [ 'code' => 'km2', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+		$m2			= Uom::find()->where( [ 'code' => 'm2', 'group' => Uom::GROUP_AREA_METRIC ] )->one();
+
+		$columns = [ 'uomId', 'targetId', 'quantity' ];
+
+		$conversions = [
+			[ $hectare->id, $a->id, 100 ],
+			[ $hectare->id, $km2->id, 0.01 ],
+			[ $hectare->id, $m2->id, 10000 ],
+			[ $hectare->id, $hectare->id, 1 ],
+			[ $a->id, $hectare->id, 0.01 ],
+			[ $km2->id, $hectare->id, 100 ],
+			[ $m2->id, $hectare->id, 0.0001 ]
+		];
+
+		$this->batchInsert( $this->prefix . 'cart_uom_conversion', $columns, $conversions );
+	}
+
 	public function down() {
 
-		echo "m160622_034404_cart_data will be deleted with m160621_014408_core and m160622_034400_cart.\n";
+		echo "m161005_034404_cart_data will be deleted with m160621_014408_core and m161005_034400_cart.\n";
 
 		return true;
 	}
+
 }

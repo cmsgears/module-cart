@@ -1,43 +1,36 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\config;
 
+/**
+ * CmsGlobal defines the global constants and variables available for cms and dependent modules.
+ *
+ * @since 1.0.0
+ */
 class CartGlobal {
 
-	// Config ----------------------------------------------------------
+	// System Sites ---------------------------------------------------
 
-	const CONFIG_CART					= 'cart';
-
-	// Transactions ----------------------------------------------------
-
-	const TXN_MODE_ORDER_PAYMENT		= 'Order Payment';
+	// System Pages ---------------------------------------------------
 
 	// Grouping by type ------------------------------------------------
 
 	const TYPE_CART			= 'cart';
+	const TYPE_CART_ITEM	= 'cart-item';
 
 	const TYPE_ORDER		= 'order';
+	const TYPE_ORDER_ITEM	= 'order-item';
 
 	const TYPE_VOUCHER		= 'voucher';
-	
-	// Config ----------------------------------------------------------
 
-	// Roles -----------------------------------------------------------
-
-	// Permissions -----------------------------------------------------
-
-	// Order Permissions
-	const PERM_ORDER_ADMIN		= 'admin-orders';
-
-	const PERM_ORDER_VIEW		= 'view-orders';
-	const PERM_ORDER_ADD		= 'add-order';
-	const PERM_ORDER_UPDATE		= 'update-order';
-	const PERM_ORDER_DELETE		= 'delete-order';
-	const PERM_ORDER_APPROVE	= 'approve-order';
-	const PERM_ORDER_PRINT		= 'print-order';
-	const PERM_ORDER_IMPORT		= 'import-orders';
-	const PERM_ORDER_EXPORT		= 'export-orders';
-
-	// Template Views --------------------------------------------------
+	// Templates -------------------------------------------------------
 
 	// Shop - Selection
 	const TEMPLATE_VIEW_SHOP		= 'shop/index';
@@ -72,6 +65,37 @@ class CartGlobal {
 	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment/success';
 	const TEMPLATE_VIEW_PAYMENT_FAILED	= 'payment/failed';
 
+	// Config ----------------------------------------------------------
+
+	const CONFIG_CART	= 'cart';
+
+	// Roles -----------------------------------------------------------
+
+	// Order Roles
+	const ROLE_ORDER_ADMIN		= 'order-admin';
+
+	// Permissions -----------------------------------------------------
+
+	const PERM_CART_ADMIN		= 'admin-cart';
+
+	// Order Permissions
+	const PERM_ORDER_ADMIN		= 'admin-orders';
+
+	const PERM_ORDER_MANAGE		= 'manage-orders';
+
+	const PERM_ORDER_VIEW		= 'view-orders';
+	const PERM_ORDER_ADD		= 'add-order';
+	const PERM_ORDER_UPDATE		= 'update-order';
+	const PERM_ORDER_DELETE		= 'delete-order';
+	const PERM_ORDER_APPROVE	= 'approve-order';
+	const PERM_ORDER_PRINT		= 'print-order';
+	const PERM_ORDER_IMPORT		= 'import-orders';
+	const PERM_ORDER_EXPORT		= 'export-orders';
+
+	// Model Attributes ------------------------------------------------
+
+	// Default Maps ----------------------------------------------------
+
 	// Messages --------------------------------------------------------
 
 	// Errors ----------------------------------------------------------
@@ -96,11 +120,18 @@ class CartGlobal {
 	const FIELD_UNIT_QUANTITY			= 'quantityUnitField';
 	const FIELD_UNIT_WEIGHT				= 'weightUnitField';
 	const FIELD_UNIT_VOLUME				= 'volumeUnitField';
+	const FIELD_UNIT_SIZE				= 'sizeUnitField';
 	const FIELD_UNIT_LENGTH				= 'lengthUnitField';
-	const FIELD_PURCHASE				= 'purchaseField';
+	const FIELD_QTY_PRIMARY				= 'primaryQtyField';
+	const FIELD_QTY_PURCHASE			= 'purchaseQtyField';
 	const FIELD_QUANTITY				= 'quantityField';
+	const FIELD_QUANTITY_TRACK			= 'quantityTrackField';
+	const FIELD_QUANTITY_STOCK			= 'quantityStockField';
+	const FIELD_QUANTITY_SOLD			= 'quantitySoldField';
+	const FIELD_QUANTITY_WARN			= 'quantityWarnField';
 	const FIELD_WEIGHT					= 'weightField';
 	const FIELD_VOLUME					= 'volumeField';
+	const FIELD_SIZE					= 'sizeField';
 	const FIELD_LENGTH					= 'lengthField';
 	const FIELD_WIDTH					= 'widthField';
 	const FIELD_HEIGHT					= 'heightField';
@@ -108,11 +139,14 @@ class CartGlobal {
 
 	// Totals
 	const FIELD_PRICE					= 'priceField';
+	const FIELD_PRICE_UNIT				= 'priceUnitField';
 	const FIELD_TOTAL_SUB				= 'subTotalField';
 	const FIELD_TAX						= 'taxField';
 	const FIELD_SHIPPING				= 'shippingField';
 	const FIELD_TOTAL					= 'totalField';
 	const FIELD_DISCOUNT				= 'discountField';
+	const FIELD_DISCOUNT_UNIT			= 'discountUnitField';
+	const FIELD_DISCOUNT_TYPE			= 'discountTypeField';
 	const FIELD_TOTAL_GRAND				= 'grandTotalField';
 
 	// Orders
@@ -121,4 +155,5 @@ class CartGlobal {
 	const FIELD_SHIP_TO_BILLING			= 'shipToBillingField';
 	const FIELD_ESTIMATED_DELIVERY		= 'estimatedDeliveryField';
 	const FIELD_DELIVERY_DATE			= 'deliveryDateField';
+
 }

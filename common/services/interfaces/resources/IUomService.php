@@ -1,10 +1,23 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IEntityService;
+use cmsgears\core\common\services\interfaces\base\IResourceService;
 
-interface IUomService extends IEntityService {
+/**
+ * IUomService declares methods specific to UOM.
+ *
+ * @since 1.0.0
+ */
+interface IUomService extends IResourceService {
 
 	// Data Provider ------
 
@@ -22,6 +35,8 @@ interface IUomService extends IEntityService {
 
 	public function getMapForConversion();
 
+	// Read - Others ---
+
 	// Create -------------
 
 	// Update -------------
@@ -29,5 +44,13 @@ interface IUomService extends IEntityService {
 	public function updateBase( $model );
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 }

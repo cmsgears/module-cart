@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\models\resources;
 
 // Yii Imports
@@ -10,8 +18,10 @@ use cmsgears\core\common\config\CoreGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 
+use cmsgears\core\common\models\base\Resource;
+
 /**
- * Uom Entity - The primary class.
+ * Uom represents Unit Of Measurement.
  *
  * @property integer $id
  * @property string $code
@@ -19,8 +29,10 @@ use cmsgears\cart\common\models\base\CartTables;
  * @property integer $group
  * @property boolean $base
  * @property boolean $active
+ *
+ * @since 1.0.0
  */
-class Uom extends \cmsgears\core\common\models\base\Entity {
+class Uom extends Resource {
 
 	// Variables ---------------------------------------------------
 
@@ -34,25 +46,30 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	const GROUP_QUANTITY		= 0;
 
-	const GROUP_LENGTH_METRIC	= 10;
-	const GROUP_LENGTH_IMPERIAL	= 20;
-	const GROUP_LENGTH_US		= 30;
+	const GROUP_LENGTH_METRIC	= 20;
+	const GROUP_LENGTH_IMPERIAL	= 40;
+	const GROUP_LENGTH_US		= 60;
 
-	const GROUP_WEIGHT_METRIC	= 40;
-	const GROUP_WEIGHT_IMPERIAL	= 50;
-	const GROUP_WEIGHT_US		= 60;
+	const GROUP_AREA_METRIC		= 80;
+	const GROUP_AREA_IMPERIAL	= 100;
 
-	const GROUP_VOLUME_METRIC	= 70;
-	const GROUP_VOLUME_IMPERIAL	= 80;
-	const GROUP_VOLUME_US		= 90;
+	const GROUP_WEIGHT_METRIC	= 120;
+	const GROUP_WEIGHT_IMPERIAL	= 140;
+	const GROUP_WEIGHT_US		= 160;
 
-	const GROUP_TIME			= 100;
+	const GROUP_VOLUME_METRIC	= 180;
+	const GROUP_VOLUME_IMPERIAL	= 200;
+	const GROUP_VOLUME_US		= 220;
+
+	const GROUP_TIME			= 240;
 
 	public static $groupMap = [
 		self::GROUP_QUANTITY => 'Quantity',
 		self::GROUP_LENGTH_METRIC => 'Metric Length',
 		self::GROUP_LENGTH_IMPERIAL => 'Imperial Length',
 		self::GROUP_LENGTH_US => 'US Length',
+		self::GROUP_AREA_METRIC => 'Metric Area',
+		self::GROUP_AREA_IMPERIAL => 'Imperial Area',
 		self::GROUP_WEIGHT_METRIC => 'Metric Weight',
 		self::GROUP_WEIGHT_IMPERIAL => 'Imperial Weight',
 		self::GROUP_WEIGHT_US => 'US Weight',
@@ -68,6 +85,8 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		'Metric Length' => self::GROUP_LENGTH_METRIC,
 		'Imperial Length' => self::GROUP_LENGTH_IMPERIAL,
 		'US Length' => self::GROUP_LENGTH_US,
+		'Metric Area' => self::GROUP_AREA_METRIC,
+		'Imperial Area' => self::GROUP_AREA_IMPERIAL,
 		'Metric Weight' => self::GROUP_WEIGHT_METRIC,
 		'Imperial Weight' => self::GROUP_WEIGHT_IMPERIAL,
 		'US Weight' => self::GROUP_WEIGHT_US,
@@ -103,22 +122,27 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// yii\base\Model ---------
 
+	/**
+	 * @inheritdoc
+	 */
 	public function rules() {
 
+		// Model Rules
 		$rules = [
 			// Required, Safe
 			[ [ 'code', 'name', 'group' ], 'required' ],
-			[ [ 'id' ], 'safe' ],
+			[ 'id', 'safe' ],
 			// Unique
-			[ [ 'name', 'group' ], 'unique', 'targetAttribute' => [ 'name', 'group' ] ],
+			[ [ 'group', 'name' ], 'unique', 'targetAttribute' => [ 'group', 'name' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ 'code', 'string', 'min' => 1, 'max' => Yii::$app->core->smallText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			// Other
-			[ [ 'group' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'group', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'base', 'active' ], 'boolean' ]
 		];
 
+		// Trim Text
 		if( Yii::$app->core->trimFieldValue ) {
 
 			$trim[] = [ [ 'name' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
@@ -129,6 +153,9 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 		return $rules;
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function attributeLabels() {
 
 		return [
@@ -148,21 +175,40 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// Uom -----------------------------------
 
+	/**
+	 * Returns the conversions belonging to the Unit.
+	 * @return UomConversion[]
+	 */
 	public function getConversions() {
 
-		return $this->hasMany( UomConversion::className(), [ 'uomId' => 'id' ] );
+		return $this->hasMany( UomConversion::class, [ 'uomId' => 'id' ] );
 	}
 
+	/**
+	 * Return string representation of group.
+	 *
+	 * @return string
+	 */
 	public function getGroupStr() {
 
 		return self::$groupMap[ $this->group ];
 	}
 
+	/**
+	 * Return string representation of base flag.
+	 *
+	 * @return string
+	 */
 	public function getBaseStr() {
 
 		return Yii::$app->formatter->asBoolean( $this->base );
 	}
 
+	/**
+	 * Return string representation of active flag.
+	 *
+	 * @return string
+	 */
 	public function getActiveStr() {
 
 		return Yii::$app->formatter->asBoolean( $this->active );
@@ -174,9 +220,12 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// yii\db\ActiveRecord ----
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function tableName() {
 
-		return CartTables::TABLE_UOM;
+		return CartTables::getTableName( CartTables::TABLE_UOM );
 	}
 
 	// CMG parent classes --------------------
@@ -185,6 +234,9 @@ class Uom extends \cmsgears\core\common\models\base\Entity {
 
 	// Read - Query -----------
 
+	/**
+	 * @inheritdoc
+	 */
 	public static function queryWithConversions( $config = [] ) {
 
 		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'conversions' ];
