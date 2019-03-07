@@ -103,6 +103,10 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 			'title' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 			'token' => $this->string( Yii::$app->core->mediumText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
+			'guest' => $this->boolean()->notNull()->defaultValue( false ), // Guest cart for non-logged in users or guest checkout
+			'name' => $this->string( Yii::$app->core->xxLargeText ), // Guest name
+			'email' => $this->string( Yii::$app->core->xxLargeText ), // Guest email
+			'mobile' => $this->string( Yii::$app->core->mediumText ), // Guest mobile
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'content' => $this->mediumText(),
@@ -147,7 +151,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 			'width' => $this->float()->notNull()->defaultValue( 0 ),
 			'height' => $this->float()->notNull()->defaultValue( 0 ),
 			'radius' => $this->float()->notNull()->defaultValue( 0 ),
-			'keep' => $this->boolean()->notNull()->defaultValue( false ),
+			'keep' => $this->boolean()->notNull()->defaultValue( false ), // Keep the item for Order
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'content' => $this->mediumText(),
@@ -174,7 +178,8 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		$this->createTable( $this->prefix . 'cart_order', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'baseId' => $this->bigInteger( 20 ),
-			'createdBy' => $this->bigInteger( 20 )->notNull(),
+			'cartId' => $this->bigInteger( 20 ),
+			'createdBy' => $this->bigInteger( 20 ),
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
@@ -189,6 +194,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 			'discount' => $this->float()->notNull()->defaultValue( 0 ),
 			'grandTotal' => $this->double()->notNull()->defaultValue( 0 ),
 			'shipToBilling' => $this->boolean()->notNull()->defaultValue( false ),
+			'token' => $this->string( Yii::$app->core->mediumText )->defaultValue( null ), // Token for guest orders
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
 			'eta' => $this->dateTime(),
@@ -202,6 +208,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Index for columns creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order', 'baseId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order', 'modifiedBy' );
 	}
@@ -326,6 +333,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Order
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order', 'baseId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId', $this->prefix . 'cart_order', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
@@ -390,6 +398,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Order
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order' );
 

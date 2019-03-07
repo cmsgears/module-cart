@@ -43,7 +43,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $type
  * @property string $title
  * @property string $token
- * @property short $status
+ * @property integer $status
+ * @property boolean $guest
+ * @property string $name
+ * @property string $email
+ * @property string $mobile
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property string $content
@@ -160,11 +164,11 @@ class Cart extends Entity implements IAuthor, IModelResource, IGridCache {
 			// Unique
 			[ 'token' => 'unique' ],
 			// Text Limit
-			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'parentType', 'type', 'token', 'mobile' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'title', 'name', 'email' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ 'gridCacheValid', 'boolean' ],
+			[ [ 'guest', 'gridCacheValid' ], 'boolean' ],
 			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
@@ -185,6 +189,10 @@ class Cart extends Entity implements IAuthor, IModelResource, IGridCache {
 			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
 			'token' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TOKEN ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'guest' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GUEST ),
+			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL ),
+			'mobile' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_MOBILE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
 			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )

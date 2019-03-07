@@ -38,6 +38,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property integer $id
  * @property integer $baseId
+ * @property integer $cartId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -205,14 +206,14 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 			[ 'title', 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Text Limit
-			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ [ 'shipToBilling', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'baseId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'baseId', 'cartId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -295,6 +296,11 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 	public function getChildren() {
 
 		return $this->hasMany( Order::class, [ 'baseId' => 'id' ] );
+	}
+
+	public function getCart() {
+
+		return $this->hasOne( Cart::class, [ 'id' => 'orderId' ] );
 	}
 
 	/**

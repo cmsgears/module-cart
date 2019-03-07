@@ -9,15 +9,12 @@
 
 namespace cmsgears\cart\common\models\base;
 
-// CMG Imports
-use cmsgears\core\common\models\base\DbTables;
-
 /**
  * It provide table name constants of db tables available in Cart Module.
  *
  * @since 1.0.0
  */
-class CartTables extends DbTables {
+class CartTables extends \cmsgears\core\common\models\base\DbTables {
 
 	// Entities -------------
 
