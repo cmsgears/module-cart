@@ -73,15 +73,15 @@ class Factory extends Component {
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IUomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IVoucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IVoucherService', 'cmsgears\cart\common\services\resources\VoucherService' );
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ITransactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\ITransactionService', 'cmsgears\cart\common\services\resources\TransactionService' );
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\ICartService', 'cmsgears\cart\common\services\entities\CartService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\ICartItemService', 'cmsgears\cart\common\services\resources\CartItemService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\ICartService', 'cmsgears\cart\common\services\resources\CartService' );
 
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
-		$factory->set( 'cmsgears\cart\common\services\interfaces\entities\IOrderService', 'cmsgears\cart\common\services\entities\OrderService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IOrderItemService', 'cmsgears\cart\common\services\resources\OrderItemService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IOrderService', 'cmsgears\cart\common\services\resources\OrderService' );
 	}
 
 	/**
@@ -106,15 +106,15 @@ class Factory extends Component {
 		$factory->set( 'uomService', 'cmsgears\cart\common\services\resources\UomService' );
 		$factory->set( 'uomConversionService', 'cmsgears\cart\common\services\resources\UomConversionService' );
 
-		$factory->set( 'voucherService', 'cmsgears\cart\common\services\entities\VoucherService' );
+		$factory->set( 'voucherService', 'cmsgears\cart\common\services\resources\VoucherService' );
 
-		$factory->set( 'transactionService', 'cmsgears\cart\common\services\entities\TransactionService' );
+		$factory->set( 'transactionService', 'cmsgears\cart\common\services\resources\TransactionService' );
 
-		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\entities\CartItemService' );
-		$factory->set( 'cartService', 'cmsgears\cart\common\services\entities\CartService' );
+		$factory->set( 'cartItemService', 'cmsgears\cart\common\services\resources\CartItemService' );
+		$factory->set( 'cartService', 'cmsgears\cart\common\services\resources\CartService' );
 
-		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\entities\OrderItemService' );
-		$factory->set( 'orderService', 'cmsgears\cart\common\services\entities\OrderService' );
+		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\resources\OrderItemService' );
+		$factory->set( 'orderService', 'cmsgears\cart\common\services\resources\OrderService' );
 	}
 
 	/**
