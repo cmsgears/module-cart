@@ -33,7 +33,7 @@ class CartItemService extends ModelResourceService implements ICartItemService {
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\entities\CartItem';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\CartItem';
 
 	// Protected --------------
 

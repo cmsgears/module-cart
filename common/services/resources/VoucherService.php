@@ -17,14 +17,14 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\cart\common\services\interfaces\resources\IVoucherService;
 
-use cmsgears\core\common\services\base\ResourceService;
+use cmsgears\core\common\services\base\ModelResourceService;
 
 /**
  * VoucherService provide service methods of voucher model.
  *
  * @since 1.0.0
  */
-class VoucherService extends ResourceService implements IVoucherService {
+class VoucherService extends ModelResourceService implements IVoucherService {
 
 	// Variables ---------------------------------------------------
 
@@ -34,7 +34,7 @@ class VoucherService extends ResourceService implements IVoucherService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\Voucher';
+	public static $modelClass	= '\cmsgears\cart\common\models\resources\Voucher';
 
 	public static $parentType	= CartGlobal::TYPE_VOUCHER;
 

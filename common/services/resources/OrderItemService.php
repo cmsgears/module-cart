@@ -12,14 +12,14 @@ namespace cmsgears\cart\common\services\resources;
 // CMG Imports
 use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
 
-use cmsgears\core\common\services\base\ResourceService;
+use cmsgears\core\common\services\base\ModelResourceService;
 
 /**
  * OrderItemService provide service methods of order item model.
  *
  * @since 1.0.0
  */
-class OrderItemService extends ResourceService implements IOrderItemService {
+class OrderItemService extends ModelResourceService implements IOrderItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -29,7 +29,7 @@ class OrderItemService extends ResourceService implements IOrderItemService {
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\entities\OrderItem';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\OrderItem';
 
 	// Protected --------------
 

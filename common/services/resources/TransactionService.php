@@ -31,7 +31,7 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\entities\Transaction';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\Transaction';
 
 	// Protected --------------
 

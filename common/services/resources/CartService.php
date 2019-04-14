@@ -38,7 +38,7 @@ class CartService extends ModelResourceService implements ICartService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\entities\Cart';
+	public static $modelClass	= '\cmsgears\cart\common\models\resources\Cart';
 
 	public static $parentType	= CartGlobal::TYPE_CART;
 
