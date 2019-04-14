@@ -159,7 +159,7 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 			[ 'createdBy', 'required', 'on' => 'user' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Unique
-			[ 'token' => 'unique' ],
+			[ 'token', 'unique' ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'token', 'mobile' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'title', 'name', 'email' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
