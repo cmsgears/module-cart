@@ -19,10 +19,8 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
-use cmsgears\core\common\models\interfaces\base\IModelResource;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
-use cmsgears\core\common\models\base\Entity;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
@@ -58,7 +56,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Cart extends Entity implements IAuthor, IModelResource, IGridCache {
+class Cart extends \cmsgears\core\common\models\base\ModelResource implements IAuthor, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -118,7 +116,6 @@ class Cart extends Entity implements IAuthor, IModelResource, IGridCache {
 
 	use AuthorTrait;
 	use GridCacheTrait;
-	use ModelResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
 
