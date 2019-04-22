@@ -333,7 +333,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Order
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order', 'baseId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId', $this->prefix . 'cart_order', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId', $this->prefix . 'cart_cart', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
