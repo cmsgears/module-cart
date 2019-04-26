@@ -377,7 +377,15 @@ class OrderService extends ModelResourceService implements IOrderService {
 			}
 		}
 	}
+	public function hold( $order ) {
 
+		$this->updateStatus( $order, Order::STATUS_HOLD );
+	}
+
+	public function cancelled( $order ) {
+
+		$this->updateStatus( $order, Order::STATUS_CANCELLED );
+	}
 	public function approve( $order ) {
 
 		$this->updateStatus( $order, Order::STATUS_APPROVED );
@@ -456,6 +464,107 @@ class OrderService extends ModelResourceService implements IOrderService {
 	// Delete -------------
 
 	// Bulk ---------------
+
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'status': {
+
+				switch( $action ) {
+
+					case 'place': {
+
+						$this->place( $model );
+
+						break;
+					}
+					case 'hold': {
+
+						$this->hold( $model );
+
+						break;
+					}
+					case 'cancelled': {
+
+						$this->cancelled( $model );
+
+						break;
+					}
+					case 'approve': {
+
+						$this->approve( $model );
+
+						break;
+					}
+					case 'paid': {
+
+						$this->paid( $model );
+
+						break;
+					}
+					case 'confirm': {
+
+						$this->confirm( $model );
+
+						break;
+					}
+					case 'process': {
+
+						$this->process( $model );
+
+						break;
+					}
+					case 'ship': {
+
+						$this->ship( $model );
+
+						break;
+					}
+					case 'deliver': {
+
+						$this->deliver( $model );
+
+						break;
+					}
+					case 'back': {
+
+						$this->back( $model );
+
+						break;
+					}
+					case 'dispute': {
+
+						$this->dispute( $model );
+
+						break;
+					}
+					case 'complete': {
+
+						$this->complete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
 
 	// Notifications ------
 
