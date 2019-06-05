@@ -28,6 +28,7 @@ use cmsgears\payment\common\models\resources\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 use cmsgears\core\common\models\traits\mappers\AddressTrait;
 
@@ -161,6 +162,7 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 
 	// Traits ------------------------------------------------------
 
+	use DataTrait;
 	use AddressTrait;
 	use AuthorTrait;
 	use GridCacheTrait;
