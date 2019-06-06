@@ -371,6 +371,16 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 	}
 
 	/**
+	 * Check whether order is new.
+	 *
+	 * @return boolean
+	 */
+	public function isHold() {
+
+		return $this->status == self::STATUS_HOLD;
+	}
+
+	/**
 	 * Check whether order is approved.
 	 *
 	 * $param boolean $strict
