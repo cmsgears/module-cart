@@ -57,7 +57,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Voucher
 		$this->upVoucher();
-
+		
 		if( $this->fk ) {
 
 			$this->generateForeignKeys();
@@ -178,6 +178,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		$this->createTable( $this->prefix . 'cart_order', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'baseId' => $this->bigInteger( 20 ),
+			'voucherId' => $this->bigInteger( 20 ),
 			'cartId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 ),
 			'modifiedBy' => $this->bigInteger( 20 ),
@@ -209,6 +210,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		// Index for columns creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order', 'baseId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'order_referralId', $this->prefix . 'cart_order', 'voucherId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order', 'modifiedBy' );
 	}
@@ -287,6 +289,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'code' => $this->string( Yii::$app->core->mediumText )->defaultValue( null ),
 			'amount' => $this->double()->notNull()->defaultValue( 0 ),
+			'active' =>  $this->boolean()->notNull()->defaultValue( false ),
 			'taxType' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'freeShipping' => $this->boolean()->notNull()->defaultValue( false ),
 			'minPurchase' => $this->float()->notNull()->defaultValue( 0 ),

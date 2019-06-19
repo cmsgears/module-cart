@@ -27,7 +27,7 @@ use cmsgears\core\common\models\base\Entity;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
-use cmsgears\core\common\models\traits\base\ModelResourceTrait;
+//use cmsgears\core\common\models\traits\base\ModelResourceTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
@@ -64,7 +64,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Voucher extends Entity implements IAuthor, IModelResource, IGridCache {
+class Voucher extends Entity implements IAuthor, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -122,7 +122,7 @@ class Voucher extends Entity implements IAuthor, IModelResource, IGridCache {
 
 	use AuthorTrait;
 	use GridCacheTrait;
-	use ModelResourceTrait;
+	//use ModelResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -171,6 +171,8 @@ class Voucher extends Entity implements IAuthor, IModelResource, IGridCache {
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
+			//Boolean
+			[ 'active', 'boolean' ],
 			// Other
 			[ [ 'type', 'taxType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'freeShipping', 'gridCacheValid' ], 'boolean' ],
@@ -205,6 +207,7 @@ class Voucher extends Entity implements IAuthor, IModelResource, IGridCache {
 			'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
 			'code' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CODE ),
 			'amount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_AMOUNT ),
+			'active' =>  Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ACTIVE ),
 			'taxType' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX_TYPE ),
 			'freeShipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING_FREE ),
 			'minPurchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_MIN_PURCHASE ),
@@ -268,6 +271,11 @@ class Voucher extends Entity implements IAuthor, IModelResource, IGridCache {
 		return parent::queryWithAll( $config );
 	}
 
+	public static function getByCode( $code ) {
+		
+		return static::find()->where( 'code=:code', [ ':code' => $code ] )->one();
+	}
+	
 	// Read - Find ------------
 
 	// Create -----------------

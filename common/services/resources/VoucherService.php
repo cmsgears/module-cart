@@ -10,6 +10,7 @@
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
+use Yii;
 use yii\data\Sort;
 
 // CMG Imports
@@ -139,6 +140,13 @@ class VoucherService extends ModelResourceService implements IVoucherService {
 
 	// Read ---------------
 
+	public function getByCode( $code ) {
+		
+		$modelClass = self::$modelClass;
+		
+		return $modelClass::getByCode( $code );
+	}
+	
 	// Read - Models ---
 
 	// Read - Lists ----
@@ -151,6 +159,19 @@ class VoucherService extends ModelResourceService implements IVoucherService {
 
 	// Update -------------
 
-	// Delete -------------
+	public function update( $model, $config = [] ) {
 
+		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'name', 'code', 'amount', 'startTime', 'endTime', 'type', 'active' ];
+
+		$user = Yii::$app->core->getAppUser();
+
+		$model->modifiedBy = $user->id;
+
+		// Update Cart
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
+	}
+	
+	// Delete -------------
 }

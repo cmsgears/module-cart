@@ -35,6 +35,9 @@ class CartTables extends \cmsgears\core\common\models\base\DbTables {
 	// Voucher
 	const TABLE_VOUCHER			= 'cmg_cart_voucher';
 
+	//Referral
+	const TABLE_REFERRAL			= 'cmg_cart_referral';
+	
 	// Mappers --------------
 
 }

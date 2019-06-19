@@ -138,7 +138,8 @@ class CartGlobal {
 	const FIELD_RADIUS					= 'radiusField';
 
 	// Totals
-	const FIELD_PRICE					= 'priceField';
+	const FIELD_PRICE						= 'priceField';
+	const FIELD_AMOUNT					= 'amountField';
 	const FIELD_PRICE_UNIT				= 'priceUnitField';
 	const FIELD_TOTAL_SUB				= 'subTotalField';
 	const FIELD_TAX						= 'taxField';
