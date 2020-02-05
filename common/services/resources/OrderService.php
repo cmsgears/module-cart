@@ -19,13 +19,7 @@ use cmsgears\cart\common\config\CartGlobal;
 use cmsgears\core\common\models\resources\Address;
 use cmsgears\cart\common\models\resources\Order;
 
-use cmsgears\core\common\services\interfaces\mappers\IModelAddressService;
-use cmsgears\cart\common\services\interfaces\resources\ICartService;
-use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 use cmsgears\cart\common\services\interfaces\resources\IOrderService;
-use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
-
-use cmsgears\core\common\services\base\ModelResourceService;
 
 use cmsgears\core\common\utilities\DateUtil;
 
@@ -34,7 +28,7 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class OrderService extends ModelResourceService implements IOrderService {
+class OrderService extends \cmsgears\core\common\services\base\ModelResourceService implements IOrderService {
 
 	// Variables ---------------------------------------------------
 
@@ -44,9 +38,9 @@ class OrderService extends ModelResourceService implements IOrderService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\resources\Order';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\Order';
 
-	public static $parentType	= CartGlobal::TYPE_ORDER;
+	public static $parentType = CartGlobal::TYPE_ORDER;
 
 	// Protected --------------
 
@@ -69,19 +63,19 @@ class OrderService extends ModelResourceService implements IOrderService {
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
-/*
-	public function __construct( ICartService $cartService, ICartItemService $cartItemService, IOrderItemService $orderItemService, IModelAddressService $modelAddressService, $config = [] ) {
 
-		$this->cartService			= $cartService;
-		$this->cartItemService		= $cartItemService;
+	public function init() {
 
-		$this->orderItemService		= $orderItemService;
+		parent::init();
 
-		$this->modelAddressService	= $modelAddressService;
+		$this->cartService		= Yii::$app->factory->get( 'cartService' );
+		$this->cartItemService	= Yii::$app->factory->get( 'cartItemService' );
 
-		parent::__construct( $config );
+		$this->orderItemService = Yii::$app->factory->get( 'orderItemService' );
+
+		$this->modelAddressService = Yii::$app->factory->get( 'modelAddressService' );
 	}
-*/
+
 	// Instance methods --------------------------------------------
 
 	// Yii parent classes --------------------
@@ -97,6 +91,11 @@ class OrderService extends ModelResourceService implements IOrderService {
 	// Data Provider ------
 
 	public function getPage( $config = [] ) {
+
+		$searchParam	= $config[ 'search-param' ] ?? 'keywords';
+		$searchColParam	= $config[ 'search-col-param' ] ?? 'search';
+
+		$defaultSort = isset( $config[ 'defaultSort' ] ) ? $config[ 'defaultSort' ] : [ 'id' => SORT_DESC ];
 
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
@@ -148,7 +147,7 @@ class OrderService extends ModelResourceService implements IOrderService {
 					'label' => 'Updated At'
 				]
 			],
-			'defaultOrder' => [ 'cdate' => 'SORT_ASC' ]
+			'defaultOrder' => $defaultSort
 		]);
 
 		if( !isset( $config[ 'sort' ] ) ) {
@@ -166,52 +165,78 @@ class OrderService extends ModelResourceService implements IOrderService {
 		// Filters ----------
 
 		// Filter - Status
+		$type	= Yii::$app->request->getQueryParam( 'type' );
 		$status	= Yii::$app->request->getQueryParam( 'status' );
 
-		if( isset( $status ) ) {
+		// Filter - Type
+		if( isset( $type ) ) {
 
-			if( isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+			$config[ 'conditions' ][ "$modelTable.type" ] = $type;
+		}
 
-				$config[ 'conditions' ][ "$modelTable.status" ] = $modelClass::$urlRevStatusMap[ $status ];
-			}
+		// Filter - Status
+		if( isset( $status ) && empty( $config[ 'conditions' ][ "$modelTable.status" ] ) && isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+
+			$config[ 'conditions' ][ "$modelTable.status" ]	= $modelClass::$urlRevStatusMap[ $status ];
 		}
 
 		// Searching --------
 
-		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+		$searchCol		= Yii::$app->request->getQueryParam( $searchColParam );
+		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
+
+		$search = [
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content"
+		];
 
 		if( isset( $searchCol ) ) {
 
-			$search = [ 'title' => "$modelTable.title", 'description' => "$modelTable.description" ];
-
 			$config[ 'search-col' ] = $search[ $searchCol ];
+		}
+		else if( isset( $keywordsCol ) ) {
+
+			$config[ 'search-col' ] = $search;
 		}
 
 		// Reporting --------
 
-		$config[ 'report-col' ]	= [
-			'title' => "$modelTable.title", 'description' => "$modelTable.description", 'content' => "$modelTable.content"
-		];
+		if( empty( $config[ 'report-col' ] ) ) {
+
+			$config[ 'report-col' ]	= [
+				'title' => "$modelTable.title",
+				'desc' => "$modelTable.description",
+				'content' => "$modelTable.content"
+			];
+		}
 
 		// Result -----------
 
 		return parent::getPage( $config );
 	}
 
-	public function getPageByUserId( $userId ) {
+	public function getPageByUserId( $userId, $config = [] ) {
 
 		$modelTable	= $this->getModelTable();
 
 		return $this->getPage( [ 'conditions' => [ "$modelTable.createdBy" => $userId ] ] );
 	}
 
-	public function getPageByUserIdParentType( $userId, $parentType ) {
+	public function getPageByUserIdType( $userId, $type, $config = [] ) {
 
 		$modelTable	= $this->getModelTable();
 
-		$paid = Order::STATUS_PAID;
+		$config = [ 'conditions' => [ "$modelTable.createdBy" => $userId, "$modelTable.type" => $type ] ];
 
-		$config = [ 'conditions' => [ "$modelTable.status >= $paid", "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
+		return $this->getPage( $config );
+	}
+
+	public function getPageByUserIdParentType( $userId, $parentType, $config = [] ) {
+
+		$modelTable	= $this->getModelTable();
+
+		$config = [ 'conditions' => [ "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
 
 		return $this->getPage( $config );
 	}
@@ -342,9 +367,9 @@ class OrderService extends ModelResourceService implements IOrderService {
 		// Cancel all child orders
 		if( $checkChildren ) {
 
-			$children	= $order->children;
+			$children = $order->children;
 
-			foreach ( $children as $child ) {
+			foreach( $children as $child ) {
 
 				$this->updateStatus( $child, Order::STATUS_CANCELLED );
 			}
@@ -445,7 +470,7 @@ class OrderService extends ModelResourceService implements IOrderService {
 		$children	= $order->children;
 		$completed	= true;
 
-		foreach ( $children as $child ) {
+		foreach( $children as $child ) {
 
 			if( !$child->isCompleted() ) {
 
@@ -485,7 +510,7 @@ class OrderService extends ModelResourceService implements IOrderService {
 
 						break;
 					}
-					case 'cancelled': {
+					case 'cancel': {
 
 						$this->cancelled( $model );
 
