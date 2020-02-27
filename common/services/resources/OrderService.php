@@ -362,7 +362,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		]);
 	}
 
-	public function cancel( $order, $checkChildren = true, $checkBase = true ) {
+	public function processCancel( $order, $checkChildren = true, $checkBase = true ) {
 
 		// Cancel all child orders
 		if( $checkChildren ) {
@@ -402,16 +402,23 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 			}
 		}
 	}
+
 	public function hold( $order ) {
 
 		$this->updateStatus( $order, Order::STATUS_HOLD );
 	}
 
-	public function cancelled( $order ) {
+	public function cancel( $order ) {
 
 		$this->updateStatus( $order, Order::STATUS_CANCELLED );
 	}
+
 	public function approve( $order ) {
+
+		$this->updateStatus( $order, Order::STATUS_APPROVED );
+	}
+
+	public function reject( $order ) {
 
 		$this->updateStatus( $order, Order::STATUS_APPROVED );
 	}

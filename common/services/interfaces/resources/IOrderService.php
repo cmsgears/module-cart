@@ -51,9 +51,15 @@ interface IOrderService extends IModelResourceService {
 
 	public function updateStatus( $model, $status );
 
-	public function cancel( $order, $checkChildren = true, $checkBase = true );
+	public function processCancel( $order, $checkChildren = true, $checkBase = true );
+
+	public function hold( $order );
+
+	public function cancel( $order );
 
 	public function approve( $order );
+
+	public function reject( $order );
 
 	public function place( $order );
 

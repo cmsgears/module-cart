@@ -75,27 +75,93 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 
 	// Constants --------------
 
-	const STATUS_NEW		=	  0; // Order is created
-	const STATUS_APPROVED	=  1000; // Order need approval
-	const STATUS_PLACED		=  2000; // Order is placed
-    const STATUS_HOLD       =  2500; // Order on hold
-	const STATUS_CANCELLED	=  3000; // Order cancelled - no money return
-	const STATUS_FAILED		=  3500; // Payment is failed
-	const STATUS_PAID		=  4000; // Payment is done
-	const STATUS_REFUNDED	=  5000; // Order refunded - money returned
-	const STATUS_CONFIRMED	=  6000; // Confirmed by vendor
-	const STATUS_PROCESSED	=  7000; // Processed by vendor
-	const STATUS_SHIPPED	=  8000; // Shipped by vendor
-	const STATUS_DELIVERED	=  9000; // Delivered by vendor
-	const STATUS_RETURNED	= 10000; // Returned to vendor - no receiver
-	const STATUS_DISPUTE	= 11000; // Order dispute
-	const STATUS_COMPLETED	= 12000; // Order completed
+	/**
+	 * Order is created
+	 */
+	const STATUS_NEW		=	  0;
+
+	/**
+	 * Order need approval
+	 */
+	const STATUS_APPROVED	=  1000;
+
+	/**
+	 * Order is placed
+	 */
+	const STATUS_PLACED		=  2000;
+
+	/**
+	 * Order on hold
+	 */
+    const STATUS_HOLD       =  2500;
+
+	/**
+	 * Order rejected - most probably by the vendor or site admin
+	 */
+	const STATUS_REJECTED	=  2600;
+
+	/**
+	 * Order cancelled - most probably by the customer(no money return if paid) or vendor(money return if paid)
+	 */
+	const STATUS_CANCELLED	=  3000;
+
+	/**
+	 * Payment is failed
+	 */
+	const STATUS_FAILED		=  3500;
+
+	/**
+	 * Complete payment is done
+	 */
+	const STATUS_PAID		=  4000;
+
+	/**
+	 * Order refunded - money returned - mutually agreed by the customer and the vendor
+	 * Order might not be delivered by the vendor or returned by the customer(damaged or no satisfaction)
+	 */
+	const STATUS_REFUNDED	=  5000;
+
+	/**
+	 * Payment confirmed by the vendor
+	 */
+	const STATUS_CONFIRMED	=  6000;
+
+	/**
+	 * Order processed by the vendor and may be ready for the shipment if required
+	 */
+	const STATUS_PROCESSED	=  7000;
+
+	/**
+	 * Order shipped by the vendor after either paid or confirmed or processed
+	 */
+	const STATUS_SHIPPED	=  8000;
+
+	/**
+	 * Order delivered by the vendor
+	 */
+	const STATUS_DELIVERED	=  9000;
+
+	/**
+	 * Order returned to the vendor - damaged, no satisfaction, no receiver
+	 */
+	const STATUS_RETURNED	= 10000;
+
+	/**
+	 * Order in dispute - useful in case of multi-vendor systems - the system admin will resolve the dispute
+	 */
+	const STATUS_DISPUTE	= 11000;
+
+	/**
+	 * Order signed and received by the customer
+	 */
+	const STATUS_COMPLETED	= 12000;
 
 	// Public -----------------
 
 	public static $statusMap = array(
 		self::STATUS_NEW  => 'New',
 		self::STATUS_APPROVED => 'Approved',
+		self::STATUS_REJECTED => 'Rejected',
 		self::STATUS_PLACED => 'Placed',
         self::STATUS_HOLD => 'Hold',
 		self::STATUS_CANCELLED => 'Cancelled',
@@ -116,6 +182,7 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 		'New' => self::STATUS_NEW,
 		'Approved' => self::STATUS_APPROVED,
         'Hold' => self::STATUS_HOLD,
+		'Rejected' => self::STATUS_REJECTED,
 		'Placed' => self::STATUS_PLACED,
 		'Cancelled' => self::STATUS_CANCELLED,
 		'Failed' => self::STATUS_FAILED,
@@ -135,6 +202,7 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 		'new' => self::STATUS_NEW,
 		'approved' => self::STATUS_APPROVED,
         'hold' => self::STATUS_HOLD,
+		'rejected' => self::STATUS_REJECTED,
 		'placed' => self::STATUS_PLACED,
 		'cancelled' => self::STATUS_CANCELLED,
 		'paid' => self::STATUS_PAID,
@@ -394,6 +462,17 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 		}
 
 		return $this->status >= self::STATUS_APPROVED;
+	}
+
+	/**
+	 * Check whether order is rejected.
+	 *
+	 * $param boolean $strict
+	 * @return boolean
+	 */
+	public function isRejected() {
+
+		return $this->status == self::STATUS_REJECTED;
 	}
 
 	/**
