@@ -57,7 +57,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Voucher
 		$this->upVoucher();
-		
+
 		if( $this->fk ) {
 
 			$this->generateForeignKeys();
@@ -178,8 +178,9 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		$this->createTable( $this->prefix . 'cart_order', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'baseId' => $this->bigInteger( 20 ),
-			'voucherId' => $this->bigInteger( 20 ),
 			'cartId' => $this->bigInteger( 20 ),
+			'userId' => $this->bigInteger( 20 ),
+			'voucherId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 ),
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'parentId' => $this->bigInteger( 20 )->notNull(),
@@ -210,7 +211,8 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		// Index for columns creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order', 'baseId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'order_referralId', $this->prefix . 'cart_order', 'voucherId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'order_user', $this->prefix . 'cart_order', 'userId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'order_voucher', $this->prefix . 'cart_order', 'voucherId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order', 'modifiedBy' );
 	}
@@ -269,7 +271,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 	private function upTransaction() {
 
-		$this->addColumn( $this->prefix . 'payment_transaction', 'orderId', $this->bigInteger( 20 )->after( 'id' ) );
+		$this->addColumn( $this->prefix . 'payment_transaction', 'orderId', $this->bigInteger( 20 )->after( 'userId' ) );
 
 		// Index for order
 		$this->createIndex( 'idx_' . $this->prefix . 'transaction_order', $this->prefix . 'payment_transaction', 'orderId' );
@@ -337,6 +339,8 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		// Order
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order', 'baseId', $this->prefix . 'cart_order', 'id', 'CASCADE' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order', 'cartId', $this->prefix . 'cart', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'order_user', $this->prefix . 'cart_order', 'userId', $this->prefix . 'core_user', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'order_voucher', $this->prefix . 'cart_order', 'voucherId', $this->prefix . 'cart_voucher', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
@@ -402,6 +406,8 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		// Order
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_parent', $this->prefix . 'cart_order' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_cart', $this->prefix . 'cart_order' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_user', $this->prefix . 'cart_order' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_voucher', $this->prefix . 'cart_order' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_creator', $this->prefix . 'cart_order' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'order_modifier', $this->prefix . 'cart_order' );
 

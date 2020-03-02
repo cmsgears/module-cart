@@ -29,10 +29,6 @@ interface IOrderService extends IModelResourceService {
 
 	// Read ---------------
 
-	public function getCountByParent( $parentId, $parentType );
-
-	public function getCountByUserId( $userId );
-
 	// Read - Models ---
 
 	public function getByTitle( $title );
@@ -42,6 +38,10 @@ interface IOrderService extends IModelResourceService {
 	// Read - Maps -----
 
 	// Read - Others ---
+
+	public function getCountByParent( $parentId, $parentType );
+
+	public function getCountByUserId( $userId );
 
 	// Create -------------
 
@@ -53,33 +53,33 @@ interface IOrderService extends IModelResourceService {
 
 	public function processCancel( $order, $checkChildren = true, $checkBase = true );
 
-	public function hold( $order );
+	public function approve( $order, $config = [] );
 
-	public function cancel( $order );
+	public function place( $order, $config = [] );
 
-	public function approve( $order );
+	public function hold( $order, $config = [] );
 
-	public function reject( $order );
+	public function reject( $order, $config = [] );
 
-	public function place( $order );
+	public function cancel( $order, $config = [] );
 
-	public function paid( $order );
+	public function paid( $order, $config = [] );
 
-	public function confirm( $order );
+	public function confirm( $order, $config = [] );
 
-	public function process( $order );
+	public function process( $order, $config = [] );
 
-	public function ship( $order );
+	public function ship( $order, $config = [] );
 
-	public function deliver( $order );
+	public function deliver( $order, $config = [] );
 
-	public function back( $order );
+	public function back( $order, $config = [] );
 
-	public function dispute( $order );
+	public function dispute( $order, $config = [] );
 
-	public function complete( $order );
+	public function complete( $order, $config = [] );
 
-	public function updateBaseStatus( $order );
+	public function updateBaseStatus( $order, $config = [] );
 
 	// Delete -------------
 

@@ -10,7 +10,7 @@
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\payment\common\services\interfaces\entities\ITransactionService as IBaseTransactionService;
+use cmsgears\payment\common\services\interfaces\resources\ITransactionService as IBaseTransactionService;
 
 /**
  * ITransactionService declares methods specific to order transactions.

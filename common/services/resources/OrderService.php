@@ -220,14 +220,14 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 		$modelTable	= $this->getModelTable();
 
-		return $this->getPage( [ 'conditions' => [ "$modelTable.createdBy" => $userId ] ] );
+		return $this->getPage( [ 'conditions' => [ "$modelTable.userId" => $userId ] ] );
 	}
 
 	public function getPageByUserIdType( $userId, $type, $config = [] ) {
 
 		$modelTable	= $this->getModelTable();
 
-		$config = [ 'conditions' => [ "$modelTable.createdBy" => $userId, "$modelTable.type" => $type ] ];
+		$config = [ 'conditions' => [ "$modelTable.userId" => $userId, "$modelTable.type" => $type ] ];
 
 		return $this->getPage( $config );
 	}
@@ -236,26 +236,12 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 		$modelTable	= $this->getModelTable();
 
-		$config = [ 'conditions' => [ "$modelTable.createdBy" => $userId, "$modelTable.parentType" => $parentType ] ];
+		$config = [ 'conditions' => [ "$modelTable.userId" => $userId, "$modelTable.parentType" => $parentType ] ];
 
 		return $this->getPage( $config );
 	}
 
 	// Read ---------------
-
-	public function getCountByParent( $parentId, $parentType ) {
-
-		$modelClass	= static::$modelClass;
-
-		return $modelClass::queryByParent( $parentId, $parentType )->count();
-	}
-
-	public function getCountByUserId( $userId ) {
-
-		$modelClass	= static::$modelClass;
-
-		return $modelClass::queryByCreatorId( $userId )->count();
-	}
 
 	// Read - Models ---
 
@@ -277,6 +263,20 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 	// Read - Maps -----
 
 	// Read - Others ---
+
+	public function getCountByParent( $parentId, $parentType ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::queryByParent( $parentId, $parentType )->count();
+	}
+
+	public function getCountByUserId( $userId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::queryByUserId( $userId )->count();
+	}
 
 	// Create -------------
 
@@ -355,7 +355,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	public function updateStatus( $model, $status ) {
 
-		$model->status	= $status;
+		$model->status = $status;
 
 		return parent::update( $model, [
 			'attributes' => [ 'status' ]
@@ -403,52 +403,52 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		}
 	}
 
-	public function hold( $order ) {
-
-		$this->updateStatus( $order, Order::STATUS_HOLD );
-	}
-
-	public function cancel( $order ) {
-
-		$this->updateStatus( $order, Order::STATUS_CANCELLED );
-	}
-
-	public function approve( $order ) {
+	public function approve( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_APPROVED );
 	}
 
-	public function reject( $order ) {
-
-		$this->updateStatus( $order, Order::STATUS_APPROVED );
-	}
-
-	public function place( $order ) {
+	public function place( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_PLACED );
 	}
 
-	public function paid( $order ) {
+	public function hold( $order, $config = [] ) {
+
+		$this->updateStatus( $order, Order::STATUS_HOLD );
+	}
+
+	public function reject( $order, $config = [] ) {
+
+		$this->updateStatus( $order, Order::STATUS_APPROVED );
+	}
+
+	public function cancel( $order, $config = [] ) {
+
+		$this->updateStatus( $order, Order::STATUS_CANCELLED );
+	}
+
+	public function paid( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_PAID );
 	}
 
-	public function confirm( $order ) {
+	public function confirm( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_CONFIRMED );
 	}
 
-	public function process( $order ) {
+	public function process( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_PROCESSED );
 	}
 
-	public function ship( $order ) {
+	public function ship( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_SHIPPED );
 	}
 
-	public function deliver( $order ) {
+	public function deliver( $order, $config = [] ) {
 
 		$order->deliveredAt = DateUtil::getDateTime();
 
@@ -457,22 +457,22 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		$this->updateStatus( $order, Order::STATUS_DELIVERED );
 	}
 
-	public function back( $order ) {
+	public function back( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_RETURNED );
 	}
 
-	public function dispute( $order ) {
+	public function dispute( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_DISPUTE );
 	}
 
-	public function complete( $order ) {
+	public function complete( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_COMPLETED );
 	}
 
-	public function updateBaseStatus( $order ) {
+	public function updateBaseStatus( $order, $config = [] ) {
 
 		$children	= $order->children;
 		$completed	= true;
@@ -481,7 +481,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 			if( !$child->isCompleted() ) {
 
-				$completed	= false;
+				$completed = false;
 
 				break;
 			}

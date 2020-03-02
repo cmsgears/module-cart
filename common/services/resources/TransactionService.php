@@ -9,19 +9,19 @@
 
 namespace cmsgears\cart\common\services\resources;
 
+// Yii Imports
+use Yii;
+use yii\data\Sort;
+
 // CMG Imports
-use cmsgears\cart\common\config\CartGlobal;
-
 use cmsgears\cart\common\services\interfaces\resources\ITransactionService;
-
-use cmsgears\payment\common\services\resources\TransactionService as BaseTransactionService;
 
 /**
  * TransactionService provide service methods of transaction model.
  *
  * @since 1.0.0
  */
-class TransactionService extends BaseTransactionService implements ITransactionService {
+class TransactionService extends \cmsgears\payment\common\services\resources\TransactionService implements ITransactionService {
 
 	// Variables ---------------------------------------------------
 
@@ -62,6 +62,11 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 	// Data Provider ------
 
 	public function getPage( $config = [] ) {
+
+		$searchParam	= $config[ 'search-param' ] ?? 'keywords';
+		$searchColParam	= $config[ 'search-col-param' ] ?? 'search';
+
+		$defaultSort = isset( $config[ 'defaultSort' ] ) ? $config[ 'defaultSort' ] : [ 'id' => SORT_DESC ];
 
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
@@ -137,8 +142,10 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 					'label' => 'Processed At'
 				]
 			],
-			'defaultOrder' => [ 'cdate' => SORT_DESC ]
+			'defaultOrder' => $defaultSort
 		]);
+
+		// Sort -------------
 
 		if( !isset( $config[ 'sort' ] ) ) {
 
@@ -154,21 +161,60 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 		// Filters ----------
 
+		// Params
+		$status	= Yii::$app->request->getQueryParam( 'status' );
+		$filter	= Yii::$app->request->getQueryParam( 'model' );
+
+		// Filter - Status
+		if( isset( $status ) && isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+
+			$config[ 'conditions' ][ "$modelTable.status" ]	= $modelClass::$urlRevStatusMap[ $status ];
+		}
+
+		// Filter - Model
+		if( isset( $filter ) ) {
+
+			switch( $filter ) {
+
+				case 'credit': {
+
+					$config[ 'conditions' ][ "$modelTable.type" ] = $modelClass::TYPE_CREDIT;
+
+					break;
+				}
+				case 'debit': {
+
+					$config[ 'conditions' ][ "$modelTable.type" ] = $modelClass::TYPE_DEBIT;
+
+					break;
+				}
+			}
+		}
+
 		// Searching --------
 
-		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+		$searchCol		= Yii::$app->request->getQueryParam( $searchColParam );
+		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
+
+		$search = [
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description"
+		];
 
 		if( isset( $searchCol ) ) {
 
-			$search = [ 'title' => "$modelTable.title", 'desc' => "$modelTable.description" ];
-
 			$config[ 'search-col' ] = $search[ $searchCol ];
+		}
+		else if( isset( $keywordsCol ) ) {
+
+			$config[ 'search-col' ] = $search;
 		}
 
 		// Reporting --------
 
 		$config[ 'report-col' ]	= [
-			'title' => "$modelTable.title", 'desc' => "$modelTable.description"
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description"
 		];
 
 		// Result -----------
@@ -191,7 +237,7 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 		$modelClass	= static::$modelClass;
 
-		return $modelClass::findByParentIdParentType( $orderId, CartGlobal::TYPE_ORDER );
+		return $modelClass::findByOrderId( $orderId );
 	}
 
 	// Read - Lists ----

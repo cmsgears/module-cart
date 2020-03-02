@@ -22,7 +22,7 @@ use cmsgears\core\common\models\interfaces\base\IAuthor;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 use cmsgears\core\common\models\interfaces\mappers\IAddress;
 
-use cmsgears\core\common\models\base\ModelResource;
+use cmsgears\core\common\models\entities\User;
 use cmsgears\payment\common\models\base\PaymentTables;
 use cmsgears\payment\common\models\resources\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
@@ -40,6 +40,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $id
  * @property integer $baseId
  * @property integer $cartId
+ * @property integer $userId
+ * @property integer $voucherId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -67,7 +69,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
+class Order extends \cmsgears\core\common\models\base\ModelResource implements IAddress, IAuthor, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -283,7 +285,7 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ [ 'shipToBilling', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'baseId', 'cartId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'baseId', 'cartId', 'userId', 'voucherId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -297,6 +299,7 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 
 		return [
 			'baseId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
@@ -370,7 +373,17 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 
 	public function getCart() {
 
-		return $this->hasOne( Cart::class, [ 'id' => 'orderId' ] );
+		return $this->hasOne( Cart::class, [ 'id' => 'cartId' ] );
+	}
+
+	public function getUser() {
+
+		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
+	}
+
+	public function getVoucher() {
+
+		return $this->hasOne( Voucher::class, [ 'id' => 'voucherId' ] );
 	}
 
 	/**
@@ -692,10 +705,16 @@ class Order extends ModelResource implements IAddress, IAuthor, IGridCache {
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
+	}
+
+	public static function queryByUserId( $userId ) {
+
+		return static::find()->where( 'userId=:uid', [ ':uid' => $userId ] );
 	}
 
 	// Read - Find ------------

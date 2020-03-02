@@ -15,12 +15,12 @@ use Yii;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\payment\common\models\resources\Transaction as BaseTransaction;
-
 /**
  * Transaction represents a financial transaction.
  *
  * @property integer $id
+ * @property integer $siteId
+ * @property integer $userId
  * @property integer $orderId
  * @property integer $createdBy
  * @property integer $modifiedBy
@@ -45,8 +45,10 @@ use cmsgears\payment\common\models\resources\Transaction as BaseTransaction;
  * @property string $gridCache
  * @property boolean $gridCacheValid
  * @property datetime $gridCachedAt
+ *
+ * @since 1.0.0
  */
-class Transaction extends BaseTransaction {
+class Transaction extends \cmsgears\payment\common\models\resources\Transaction {
 
 	// Variables ---------------------------------------------------
 
@@ -139,13 +141,24 @@ class Transaction extends BaseTransaction {
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}
 
+	public static function queryByOrderId( $orderId ) {
+
+		return static::find()->where( 'orderId=:oid', [ ':oid' => $orderId ] );
+	}
+
 	// Read - Find ------------
+
+	public static function findByOrderId( $orderId ) {
+
+		return self::queryByOrderId( $orderId )->all();
+	}
 
 	// Create -----------------
 
