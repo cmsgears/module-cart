@@ -428,9 +428,19 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		$this->updateStatus( $order, Order::STATUS_CANCELLED );
 	}
 
+	public function fail( $order, $config = [] ) {
+
+		$this->updateStatus( $order, Order::STATUS_FAILED );
+	}
+
 	public function paid( $order, $config = [] ) {
 
 		$this->updateStatus( $order, Order::STATUS_PAID );
+	}
+
+	public function refund( $order, $config = [] ) {
+
+		$this->updateStatus( $order, Order::STATUS_REFUNDED );
 	}
 
 	public function confirm( $order, $config = [] ) {

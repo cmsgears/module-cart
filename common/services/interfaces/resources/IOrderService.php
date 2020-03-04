@@ -63,7 +63,11 @@ interface IOrderService extends IModelResourceService {
 
 	public function cancel( $order, $config = [] );
 
+	public function fail( $order, $config = [] );
+
 	public function paid( $order, $config = [] );
+
+	public function refund( $order, $config = [] );
 
 	public function confirm( $order, $config = [] );
 
