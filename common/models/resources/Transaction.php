@@ -160,6 +160,11 @@ class Transaction extends \cmsgears\payment\common\models\resources\Transaction 
 		return self::queryByOrderId( $orderId )->all();
 	}
 
+	public static function findFirstByOrderId( $orderId ) {
+
+		return self::queryByOrderId( $orderId )->one();
+	}
+
 	// Create -----------------
 
 	// Update -----------------

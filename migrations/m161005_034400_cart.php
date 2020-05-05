@@ -186,6 +186,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 			'parentId' => $this->bigInteger( 20 )->notNull(),
 			'parentType' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
+			'code' => $this->string( Yii::$app->core->xxLargeText ),
 			'title' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),

@@ -353,6 +353,15 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	// Update -------------
 
+	public function updateCode( $model, $code ) {
+
+		$model->code = $code;
+
+		return parent::update( $model, [
+			'attributes' => [ 'code' ]
+		]);
+	}
+
 	public function updateStatus( $model, $status ) {
 
 		$model->status = $status;

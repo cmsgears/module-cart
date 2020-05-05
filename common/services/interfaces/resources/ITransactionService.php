@@ -29,6 +29,8 @@ interface ITransactionService extends IBaseTransactionService {
 
 	public function getByOrderId( $orderId );
 
+	public function getFirstByOrderId( $orderId );
+
 	// Read - Lists ----
 
 	// Read - Maps -----

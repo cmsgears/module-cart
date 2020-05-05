@@ -47,6 +47,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $parentId
  * @property integer $parentType
  * @property string $type
+ * @property string $code
  * @property string $title
  * @property string $description
  * @property integer $status
@@ -279,7 +280,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'code', 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],

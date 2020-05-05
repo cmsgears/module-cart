@@ -240,6 +240,13 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 		return $modelClass::findByOrderId( $orderId );
 	}
 
+	public function getFirstByOrderId( $orderId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findFirstByOrderId( $orderId );
+	}
+
 	// Read - Lists ----
 
 	// Read - Maps -----
