@@ -10,17 +10,17 @@
 namespace cmsgears\cart\common\services\resources;
 
 // CMG Imports
-use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
+use cmsgears\cart\common\services\interfaces\resources\IInvoiceItemService;
 
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
 /**
- * OrderItemService provide service methods of order item model.
+ * InvoiceItemService provide service methods of order item model.
  *
  * @since 1.0.0
  */
-class OrderItemService extends \cmsgears\core\common\services\base\ModelResourceService implements IOrderItemService {
+class InvoiceItemService extends \cmsgears\core\common\services\base\ModelResourceService implements IInvoiceItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -30,9 +30,9 @@ class OrderItemService extends \cmsgears\core\common\services\base\ModelResource
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\resources\OrderItem';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\InvoiceItem';
 
-	public static $parentType = CartGlobal::TYPE_ORDER_ITEM;
+	public static $parentType = CartGlobal::TYPE_INVOICE_ITEM;
 
 	// Protected --------------
 
@@ -58,7 +58,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\ModelResource
 
 	// CMG parent classes --------------------
 
-	// OrderItemService ----------------------
+	// InvoiceItemService --------------------
 
 	// Data Provider ------
 
@@ -66,11 +66,11 @@ class OrderItemService extends \cmsgears\core\common\services\base\ModelResource
 
 	// Read - Models ---
 
-	public function getByOrderId( $oderId ) {
+	public function getByInvoiceId( $invoiceId ) {
 
 		$modelClass	= static::$modelClass;
 
-		return $modelClass::findByOrderId( $oderId );
+		return $modelClass::findByInvoiceId( $invoiceId );
 	}
 
 	// Read - Lists ----
@@ -81,16 +81,16 @@ class OrderItemService extends \cmsgears\core\common\services\base\ModelResource
 
 	// Create -------------
 
-	// Create Order Item from cart item
-	public function createFromCartItem( $order, $cartItem, $config = [] ) {
+	// Create Invoice Item from Order Item
+	public function createFromOrderItem( $invoice, $orderItem, $config = [] ) {
 
 		$model = $this->getModelObject();
 
 		// Set Attributes
-		$model->orderId = $order->id;
+		$model->invoiceId = $invoice->id;
 
 		// Copy from Cart Item
-		$model->copyForUpdateFrom( $cartItem, [
+		$model->copyForUpdateFrom( $orderItem, [
 			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
 			'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume',
 			'length', 'width', 'height', 'radius'
@@ -98,7 +98,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\ModelResource
 
 		$model->save();
 
-		// Return OrderItem
+		// Return InvoiceItem
 		return $model;
 	}
 
@@ -118,7 +118,7 @@ class OrderItemService extends \cmsgears\core\common\services\base\ModelResource
 
 	// CMG parent classes --------------------
 
-	// OrderItemService ----------------------
+	// InvoiceItemService --------------------
 
 	// Data Provider ------
 

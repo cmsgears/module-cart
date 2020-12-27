@@ -16,14 +16,12 @@ use Yii;
 use cmsgears\core\common\services\interfaces\entities\IUserService;
 use cmsgears\cart\common\services\interfaces\forms\IGuestService;
 
-use cmsgears\core\common\services\base\SystemService;
-
 /**
  * GuestService provide methods specific to guest checkout.
  *
  * @since 1.0.0
  */
-class GuestService extends SystemService implements IGuestService {
+class GuestService extends \cmsgears\core\common\services\base\SystemService implements IGuestService {
 
 	// Variables ---------------------------------------------------
 
@@ -43,7 +41,7 @@ class GuestService extends SystemService implements IGuestService {
 
 	public function __construct( IUserService $userService, $config = [] ) {
 
-		$this->userService	= $userService;
+		$this->userService = $userService;
 
 		parent::__construct( $config );
 	}

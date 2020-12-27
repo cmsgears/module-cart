@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\components;
 
 /**
@@ -12,7 +20,7 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Constants --------------
 
-	const MAIL_STATUS	= 'status';
+	const MAIL_STATUS = 'status';
 
 	// Public -----------------
 
@@ -22,8 +30,8 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Public -----------------
 
-	public $htmlLayout	= '@cmsgears/module-cart/common/mails/layouts/html';
-	public $textLayout	= '@cmsgears/module-cart/common/mails/layouts/text';
+	public $htmlLayout	= '@cmsgears/module-core/common/mails/layouts/html';
+	public $textLayout	= '@cmsgears/module-core/common/mails/layouts/text';
 	public $viewPath	= '@cmsgears/module-cart/common/mails/views';
 
 	// Protected --------------
@@ -60,4 +68,5 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 			->setSubject( "Order $status | " . $this->coreProperties->getSiteName() )
 			->send();
 	}
+
 }

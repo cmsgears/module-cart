@@ -17,8 +17,6 @@ use cmsgears\cart\common\models\entities\Order;
 
 use cmsgears\cart\common\services\interfaces\system\ISalesService;
 
-use cmsgears\core\common\services\base\SystemService;
-
 use cmsgears\core\common\utilities\DateUtil;
 
 /**
@@ -26,7 +24,7 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class SalesService extends SystemService implements ISalesService {
+class SalesService extends \cmsgears\core\common\services\base\SystemService implements ISalesService {
 
 	// Variables ---------------------------------------------------
 
@@ -56,6 +54,9 @@ class SalesService extends SystemService implements ISalesService {
 
 	public function getSalesData( $duration, $config = [] ) {
 
+		$ignoreSite = isset( $config[ 'ignoreSite' ] ) ? $config[ 'ignoreSite' ] : false;
+		$siteId		= isset( $config[ 'siteId' ] ) ? $config[ 'siteId' ] : Yii::$app->core->siteId;
+
 		$transactions	= [];
 		$transactionskv = [];
 
@@ -76,7 +77,15 @@ class SalesService extends SystemService implements ISalesService {
 		$query->from( $txnTable );
 
 		$query->join( 'LEFT JOIN', $orderTable, "orderId = `$orderTable`.`id`" );
-		$query->where( " $orderTable.status=$statusComplete" );
+
+		if( $ignoreSite ) {
+
+			$query->where( "$orderTable.status=$statusComplete" );
+		}
+		else {
+
+			$query->where( "$txnTable.siteId=$siteId AND $orderTable.status=$statusComplete" );
+		}
 
 		if( $base ) {
 

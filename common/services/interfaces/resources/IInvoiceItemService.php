@@ -10,14 +10,14 @@
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IResourceService;
+use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 
 /**
- * IUomService declares methods specific to UOM.
+ * IInvoiceItemService declares methods specific to invoice items.
  *
  * @since 1.0.0
  */
-interface IUomService extends IResourceService {
+interface IInvoiceItemService extends IModelResourceService {
 
 	// Data Provider ------
 
@@ -25,23 +25,19 @@ interface IUomService extends IResourceService {
 
 	// Read - Models ---
 
+	public function getByInvoiceId( $invoiceId );
+
 	// Read - Lists ----
 
 	// Read - Maps -----
-
-	public function getIdNameMapByGroup( $group, $config = [] );
-
-	public function getIdNameMapByGroups( $groups, $config = [] );
-
-	public function getMapForConversion();
 
 	// Read - Others ---
 
 	// Create -------------
 
-	// Update -------------
+	public function createFromOrderItem( $invoice, $orderItem, $config = [] );
 
-	public function updateBase( $model );
+	// Update -------------
 
 	// Delete -------------
 

@@ -24,6 +24,8 @@ class MessageSource extends \cmsgears\core\common\base\MessageSource {
 		// Generic Fields
 		CartGlobal::FIELD_SKU => 'Sku',
 		CartGlobal::FIELD_CART => 'Cart',
+		CartGlobal::FIELD_SCHEME => 'Scheme',
+		CartGlobal::FIELD_CURRENCY => 'Currency',
 
 		// Vouchers
 		CartGlobal::FIELD_TAX_TYPE => 'Tax Type',
@@ -73,7 +75,12 @@ class MessageSource extends \cmsgears\core\common\base\MessageSource {
 		CartGlobal::FIELD_PARENT_ORDER => 'Parent Order',
 		CartGlobal::FIELD_SHIP_TO_BILLING => 'Same as Billing Address',
 		CartGlobal::FIELD_ESTIMATED_DELIVERY => 'Estimated Delivery Date',
-		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date'
+		CartGlobal::FIELD_DELIVERY_DATE => 'Delivery Date',
+
+		// Invoices
+		CartGlobal::FIELD_INVOICE => 'Invoice',
+		CartGlobal::FIELD_DATE_ISSUED => 'Date Issued',
+		CartGlobal::FIELD_DATE_DUE => 'Due Date'
 	];
 
 	// Private ----------------

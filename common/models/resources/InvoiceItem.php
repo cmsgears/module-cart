@@ -35,10 +35,10 @@ use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
- * OrderItem stores the items associated with order.
+ * InvoiceItem stores the items associated with invoice.
  *
  * @property integer $id
- * @property integer $orderId
+ * @property integer $invoiceId
  * @property integer $primaryUnitId
  * @property integer $purchasingUnitId
  * @property integer $quantityUnitId
@@ -76,7 +76,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class OrderItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
+class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
 	IContent, IData, IGridCache {
 
 	// Variables ---------------------------------------------------
@@ -107,7 +107,7 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 
 	// Protected --------------
 
-	protected $modelType = CartGlobal::TYPE_ORDER_ITEM;
+	protected $modelType = CartGlobal::TYPE_INVOICE_ITEM;
 
 	// Private ----------------
 
@@ -156,10 +156,10 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 		// Model Rules
 		$rules = [
 			// Required, Safe
-			[ [ 'orderId', 'name', 'price', 'purchase' ], 'required' ],
+			[ [ 'invoiceId', 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content' ], 'safe' ],
 			// Unique
-			[ 'orderId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'orderId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
+			[ 'invoiceId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'invoiceId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'currency' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
@@ -167,7 +167,7 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
 			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'gridCacheValid', 'boolean' ],
-			[ [ 'orderId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'invoiceId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -180,7 +180,7 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 	public function attributeLabels() {
 
 		return [
-			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
+			'invoiceId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_INVOICE ),
 			'primaryUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PRIMARY ),
 			'purchasingUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PURCHASING ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
@@ -218,16 +218,16 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 
 	// Validators ----------------------------
 
-	// OrderItem -----------------------------
+	// InvoiceItem ---------------------------
 
 	/**
-	 * Returns the order associated with the item.
+	 * Returns the invoice associated with the item.
 	 *
 	 * @return Order
 	 */
-	public function getOrder() {
+	public function getInvoice() {
 
-		return $this->hasOne( Order::class, [ 'id' => 'orderId' ] );
+		return $this->hasOne( Invoice::class, [ 'id' => 'invoiceId' ] );
 	}
 
 	/**
@@ -316,12 +316,12 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 	 */
 	public static function tableName() {
 
-		return CartTables::getTableName( CartTables::TABLE_ORDER_ITEM );
+		return CartTables::getTableName( CartTables::TABLE_INVOICE_ITEM );
 	}
 
 	// CMG parent classes --------------------
 
-	// OrderItem -----------------------------
+	// InvoiceItem -----------------------------
 
 	// Read - Query -----------
 
@@ -330,7 +330,7 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order', 'purchasingUnit', 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'invoice', 'purchasingUnit', 'creator' ];
 
 		$config[ 'relations' ] = $relations;
 
@@ -339,7 +339,7 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 
 	public static function queryWithUoms( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'invoice', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
 
 		$config[ 'relations' ] = $relations;
 
@@ -347,27 +347,27 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 	}
 
 	/**
-	 * Return query to find the order item by order id.
+	 * Return query to find the invoice item by invoice id.
 	 *
-	 * @param integer $orderId
-	 * @return \yii\db\ActiveQuery to query by order id.
+	 * @param integer $invoiceId
+	 * @return \yii\db\ActiveQuery to query by invoice id.
 	 */
-	public static function queryByOrderId( $orderId ) {
+	public static function queryByInvoiceId( $invoiceId ) {
 
-		return self::find()->where( 'orderId=:oid', [ ':oid' => $orderId ] );
+		return self::find()->where( 'orderId=:oid', [ ':oid' => $invoiceId ] );
 	}
 
 	// Read - Find ------------
 
 	/**
-	 * Return the order items associated with given order id.
+	 * Return the order items associated with given invoice id.
 	 *
-	 * @param integer $orderId
-	 * @return OrderItem[]
+	 * @param integer $invoiceId
+	 * @return InvoiceItem[]
 	 */
-	public static function findByOrderId( $orderId ) {
+	public static function findByInvoiceId( $invoiceId ) {
 
-		return self::queryByOrderId( $orderId )->all();
+		return self::queryByInvoiceId( $invoiceId )->all();
 	}
 
 	/**
@@ -375,12 +375,12 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 	 *
 	 * @param integer $parentId
 	 * @param string $parentType
-	 * @param integer $orderId
-	 * @return OrderItem
+	 * @param integer $invoiceId
+	 * @return InvoiceItem
 	 */
-	public static function findByParentOrderId( $parentId, $parentType, $orderId ) {
+	public static function findByParentInvoiceId( $parentId, $parentType, $invoiceId ) {
 
-		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND orderId=:oid', [ ':pid' => $parentId, ':ptype' => $parentType, ':oid' => $orderId ] )->one();
+		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND invoiceId=:iid', [ ':pid' => $parentId, ':ptype' => $parentType, ':iid' => $invoiceId ] )->one();
 	}
 
 	// Create -----------------
@@ -392,12 +392,12 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 	/**
 	 * Delete order items associated with given order id.
 	 *
-	 * @param integer $orderId
+	 * @param integer $invoiceId
 	 * @return integer Number of rows.
 	 */
-	public static function deleteByOrderId( $orderId ) {
+	public static function deleteByInvoiceId( $invoiceId ) {
 
-		return self::deleteAll( 'orderId=:id', [ ':id' => $orderId ] );
+		return self::deleteAll( 'invoiceId=:id', [ ':id' => $invoiceId ] );
 	}
 
 }

@@ -15,7 +15,9 @@ $themeTemplates		= '@themes/admin/views/templates';
 <?= DataGrid::widget([
 	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => 'create', 'data' => [ ],
 	'title' => 'UOM Conversions', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
-	'searchColumns' => [ 'source' => 'Source', 'target' => 'Target' ],
+	'searchColumns' => [
+		'source' => 'Source', 'target' => 'Target'
+	],
 	'sortColumns' => [
 		'source' => 'Source', 'target' => 'Target'
 	],
@@ -24,7 +26,8 @@ $themeTemplates		= '@themes/admin/views/templates';
 		'source' => [ 'title' => 'Source', 'type' => 'text' ],
 		'target' => [ 'title' => 'Target', 'type' => 'text' ]
 	],
-	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
+	'bulkPopup' => 'popup-grid-bulk',
+	'bulkActions' => [
 		'model' => [ 'delete' => 'Delete' ]
 	],
 	'header' => false, 'footer' => true,
@@ -50,10 +53,10 @@ $themeTemplates		= '@themes/admin/views/templates';
 	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
 	'data' => [ 'model' => 'UOM Conversion', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
-]) ?>
+])?>
 
 <?= Popup::widget([
 	'title' => 'Delete UOM Conversion', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
 	'data' => [ 'model' => 'UOM Conversion', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
-]) ?>
+])?>

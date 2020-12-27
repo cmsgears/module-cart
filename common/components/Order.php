@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\components;
 
 // Yii Imports
@@ -30,73 +38,28 @@ class Order extends \yii\base\Component {
 
 	// Order ---------------------------------
 
-	public function setCartToken( $model, $type ) {
+	public function setCartToken() {
 
 		// Cookie not set or token is set for a different business
 		if( !isset( $_COOKIE[ self::COOKIE_CART ] ) ) {
 
-			$data = [ 'slug' => $model->slug, 'type' => $type, 'token' => Yii::$app->security->generateRandomString() ];
+			$data = [ 'token' => Yii::$app->security->generateRandomString() ];
 
 			$this->setCookie( self::COOKIE_CART, json_encode( $data ) );
-		}
-		else {
 
-			$data = json_decode( $_COOKIE[ self::COOKIE_CART ], true );
-
-			if( $type !== $data[ 'type' ] || $model->slug !== $data[ 'slug' ] ) {
-
-				$data = [ 'slug' => $model->slug, 'type' => $type, 'token' => Yii::$app->security->generateRandomString() ];
-
-				$this->setCookie( self::COOKIE_CART, json_encode( $data ) );
-			}
-		}
-	}
-
-	public function getCartToken( $model, $type ) {
-
-		if( isset( $_COOKIE[ self::COOKIE_CART ] ) ) {
-
-			$data	= json_decode( $_COOKIE[ self::COOKIE_CART ], true );
-
-			$token	= $data[ 'slug' ] == $model->slug && $type == $data[ 'type' ] ? $data : null;
-
-			if( isset( $token ) ) {
-
-				return $token;
-			}
-			else {
-
-				$this->setCartToken( $model, $type );
-
-				$data	= json_decode( $_COOKIE[ self::COOKIE_CART ], true );
-
-				return $data;
-			}
+			return $data;
 		}
 
 		return null;
 	}
 
-	public function getCartTokenValue( $model, $type ) {
+	public function getCartToken() {
 
 		if( isset( $_COOKIE[ self::COOKIE_CART ] ) ) {
 
-			$data	= json_decode( $_COOKIE[ self::COOKIE_CART ], true );
+			$data = json_decode( $_COOKIE[ self::COOKIE_CART ], true );
 
-			$token	= $data[ 'slug' ] == $model->slug && $type == $data[ 'type' ] ? $data[ 'token' ] : null;
-
-			if( isset( $token ) ) {
-
-				return $token;
-			}
-			else {
-
-				$this->setCartToken( $model, $type );
-
-				$data	= json_decode( $_COOKIE[ self::COOKIE_CART ], true );
-
-				return $data[ 'token' ];
-			}
+			return $data[ 'token' ];
 		}
 
 		return null;
@@ -115,10 +78,17 @@ class Order extends \yii\base\Component {
 		// Cookie not set or token is set for a different business
 		if( !isset( $_COOKIE[ self::COOKIE_GUEST ] ) ) {
 
-			$data = [ 'firstName' => $guest->firstName, 'lastName' => $guest->lastName, 'email' => $guest->email, 'phone' => $guest->phone ];
+			$data = [
+				'firstName' => $guest->firstName, 'lastName' => $guest->lastName,
+				'email' => $guest->email, 'mobile' => $guest->mobile
+			];
 
 			$this->setCookie( self::COOKIE_GUEST, json_encode( $data ) );
+
+			return $data;
 		}
+
+		return null;
 	}
 
 	public function getGuest() {
@@ -146,4 +116,5 @@ class Order extends \yii\base\Component {
 
 		return setcookie( $key, $value, time() + ( $mins * 60 ), "/", null );
 	}
+
 }

@@ -9,15 +9,12 @@
 
 namespace cmsgears\cart\common\components;
 
-// CMG Imports
-use cmsgears\core\common\base\Component;
-
 /**
- * Cart component initialise the Cart Module.
+ * Cart component initialize the Cart Module.
  *
  * @since 1.0.0
  */
-class Cart extends Component {
+class Cart extends \cmsgears\core\common\base\Component {
 
 	// Global -----------------
 

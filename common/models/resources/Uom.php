@@ -18,8 +18,6 @@ use cmsgears\core\common\config\CoreGlobal;
 
 use cmsgears\cart\common\models\base\CartTables;
 
-use cmsgears\core\common\models\base\Resource;
-
 /**
  * Uom represents Unit Of Measurement.
  *
@@ -32,7 +30,7 @@ use cmsgears\core\common\models\base\Resource;
  *
  * @since 1.0.0
  */
-class Uom extends Resource {
+class Uom extends \cmsgears\core\common\models\base\Resource {
 
 	// Variables ---------------------------------------------------
 
@@ -44,7 +42,7 @@ class Uom extends Resource {
 	// https://en.wikipedia.org/wiki/Imperial_units#Length
 	// https://en.wikipedia.org/wiki/United_States_customary_units#Units_of_length
 
-	const GROUP_QUANTITY		= 0;
+	const GROUP_QUANTITY = 0;
 
 	const GROUP_LENGTH_METRIC	= 20;
 	const GROUP_LENGTH_IMPERIAL	= 40;
@@ -61,7 +59,7 @@ class Uom extends Resource {
 	const GROUP_VOLUME_IMPERIAL	= 200;
 	const GROUP_VOLUME_US		= 220;
 
-	const GROUP_TIME			= 240;
+	const GROUP_TIME = 240;
 
 	public static $groupMap = [
 		self::GROUP_QUANTITY => 'Quantity',
@@ -239,8 +237,9 @@ class Uom extends Resource {
 	 */
 	public static function queryWithConversions( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'conversions' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'conversions' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}

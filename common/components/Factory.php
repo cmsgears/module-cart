@@ -12,15 +12,12 @@ namespace cmsgears\cart\common\components;
 // Yii Imports
 use Yii;
 
-// CMG Imports
-use cmsgears\core\common\base\Component;
-
 /**
- * The Cart Factory component initialise the services available in Cart Module.
+ * The Cart Factory component initialize the services available in Cart Module.
  *
  * @since 1.0.0
  */
-class Factory extends Component {
+class Factory extends \cmsgears\core\common\base\Component {
 
 	// Global -----------------
 
@@ -82,6 +79,9 @@ class Factory extends Component {
 
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IOrderItemService', 'cmsgears\cart\common\services\resources\OrderItemService' );
 		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IOrderService', 'cmsgears\cart\common\services\resources\OrderService' );
+
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IInvoiceItemService', 'cmsgears\cart\common\services\resources\InvoiceItemService' );
+		$factory->set( 'cmsgears\cart\common\services\interfaces\resources\IInvoiceService', 'cmsgears\cart\common\services\resources\InvoiceService' );
 	}
 
 	/**
@@ -115,6 +115,9 @@ class Factory extends Component {
 
 		$factory->set( 'orderItemService', 'cmsgears\cart\common\services\resources\OrderItemService' );
 		$factory->set( 'orderService', 'cmsgears\cart\common\services\resources\OrderService' );
+
+		$factory->set( 'invoiceItemService', 'cmsgears\cart\common\services\resources\InvoiceItemService' );
+		$factory->set( 'invoiceService', 'cmsgears\cart\common\services\resources\InvoiceService' );
 	}
 
 	/**

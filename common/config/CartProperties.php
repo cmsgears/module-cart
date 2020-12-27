@@ -28,12 +28,12 @@ class CartProperties extends Properties {
 	/**
 	 * The property to find whether cart is active for site.
 	 */
-	const PROP_ACTIVE		= 'active';
+	const PROP_ACTIVE = 'active';
 
 	/**
 	 * The property to check whether cart has to be deleted after converted to order.
 	 */
-	const PROP_CART_REMOVE	= 'remove-cart';
+	const PROP_CART_REMOVE = 'remove_cart';
 
 	// Public -----------------
 

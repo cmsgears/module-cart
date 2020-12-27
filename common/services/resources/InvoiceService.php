@@ -16,22 +16,19 @@ use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
-use cmsgears\cart\common\config\CartProperties;
 
-use cmsgears\cart\common\models\resources\Order;
+use cmsgears\cart\common\models\resources\Invoice;
 
-use cmsgears\cart\common\services\interfaces\resources\IOrderService;
+use cmsgears\cart\common\services\interfaces\resources\IInvoiceService;
 
 use cmsgears\core\common\services\traits\base\MultiSiteTrait;
 
-use cmsgears\core\common\utilities\DateUtil;
-
 /**
- * OrderService provide service methods of order model.
+ * InvoiceService provide service methods of order model.
  *
  * @since 1.0.0
  */
-class OrderService extends \cmsgears\core\common\services\base\ModelResourceService implements IOrderService {
+class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceService implements IInvoiceService {
 
 	// Variables ---------------------------------------------------
 
@@ -41,9 +38,9 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\resources\Order';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\Invoice';
 
-	public static $parentType = CartGlobal::TYPE_ORDER;
+	public static $parentType = CartGlobal::TYPE_INVOICE;
 
 	// Protected --------------
 
@@ -53,11 +50,11 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	// Protected --------------
 
-	protected $cartService;
-
-	protected $cartItemService;
+	protected $orderService;
 
 	protected $orderItemService;
+
+	protected $invoiceItemService;
 
 	protected $addressService;
 	protected $modelAddressService;
@@ -74,10 +71,10 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 		parent::init();
 
-		$this->cartService		= Yii::$app->factory->get( 'cartService' );
-		$this->cartItemService	= Yii::$app->factory->get( 'cartItemService' );
+		$this->orderService		= Yii::$app->factory->get( 'orderService' );
+		$this->orderItemService	= Yii::$app->factory->get( 'orderItemService' );
 
-		$this->orderItemService = Yii::$app->factory->get( 'orderItemService' );
+		$this->invoiceItemService = Yii::$app->factory->get( 'invoiceItemService' );
 
 		$this->addressService = Yii::$app->factory->get( 'addressService' );
 
@@ -94,7 +91,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	// CMG parent classes --------------------
 
-	// OrderService --------------------------
+	// InvoiceService ------------------------
 
 	// Data Provider ------
 
@@ -287,76 +284,64 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	// Create -------------
 
-	public function createFromCart( $order, $cart, $config = [] ) {
-
-		$cartProperties = CartProperties::getInstance();
+	public function createFromOrder( $invoice, $order, $config = [] ) {
 
 		$addressClass = $this->addressService->getModelClass();
 
 		// Set Attributes
-		$billingAddress		= isset( $config[ 'billingAddress' ] ) ? $config[ 'billingAddress' ] : null;
-		$shippingAddress	= isset( $config[ 'shippingAddress' ] ) ? $config[ 'shippingAddress' ] : null;
+		$billingAddress		= $order->billingAddress;
+		$shippingAddress	= $order->shippingAddress;
 
 		// Order
-		$order->parentId	= $cart->parentId;
-		$order->parentType	= $cart->parentType;
-		$order->type		= $cart->type;
-		$order->status		= $order->status ?? Order::STATUS_NEW;
+		$invoice->parentId		= $order->parentId;
+		$invoice->parentType	= $order->parentType;
+		$invoice->type			= $order->type;
+		$invoice->status		= $invoice->status ?? Order::STATUS_NEW;
 
 		// Generate UID if required
-		if( empty( $order->title ) ) {
+		if( empty( $invoice->title ) ) {
 
-			$order->generateTitle();
+			$invoice->generateTitle();
 		}
 
 		// Set Order Totals
-		$order->subTotal	= $cart->getCartTotal();
-		$order->discount	= 0;
-		$order->tax			= 0;
-		$order->shipping	= 0;
-		$order->total		= $order->subTotal + $order->tax + $order->shipping;
-		$order->grandTotal	= $order->total - $order->discount;
+		$invoice->subTotal		= $order->subTotal;
+		$invoice->discount		= $order->discount;
+		$invoice->tax			= $order->tax;
+		$invoice->shipping		= $order->shipping;
+		$invoice->total			= $order->total;
+		$invoice->grandTotal	= $order->grandTotal;
 
 		// Init Transaction
 		$transaction = Yii::$app->db->beginTransaction();
 
 		try {
 
-			// Create Order
-			$order->save();
+			// Create Invoice
+			$invoice->save();
 
 			// Create Billing Address
 			if( isset( $billingAddress ) ) {
 
 				$address = $this->addressService->create( $billingAddress );
 
-				$this->modelAddressService->activateByParentModelId( $order->id, static::$parentType, $address->id, $addressClass::TYPE_BILLING );
+				$this->modelAddressService->activateByParentModelId( $invoice->id, static::$parentType, $address->id, $addressClass::TYPE_BILLING );
 			}
 
 			// Create Shipping Address
-			if( !$order->shipToBilling && isset( $shippingAddress ) ) {
+			if( isset( $shippingAddress ) ) {
 
 				$address = $this->addressService->create( $shippingAddress );
 
-				$this->modelAddressService->activateByParentModelId( $order->id, static::$parentType, $address->id, $addressClass::TYPE_SHIPPING );
+				$this->modelAddressService->activateByParentModelId( $invoice->id, static::$parentType, $address->id, $addressClass::TYPE_SHIPPING );
 			}
 
-			// Create Order Items
-			$cartItems = $cart->activeItems;
+			// Create Invoice Items
+			$orderItems = $order->activeItems;
 
-			foreach( $cartItems as $item ) {
+			foreach( $orderItems as $item ) {
 
-				$this->orderItemService->createFromCartItem( $order, $item, $config );
-			}
-
-			// Delete Cart & Cart Items
-			if( $cartProperties->isRemoveCart() ) {
-
-				$this->cartService->delete( $cart );
-			}
-			else {
-
-				$this->cartService->setSuccess( $cart );
+				$this->invoiceItemService->createFromOrderItem( $invoice, $item, $config );
 			}
 
 			// Commit Order
@@ -370,7 +355,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		}
 
 		// Return Order
-		return $order;
+		return $invoice;
 	}
 
 	// Update -------------
@@ -381,7 +366,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
 			'code', 'service', 'title', 'description',
-			'shipToBilling', 'eta', 'deliveredAt', 'content'
+			'issueDate', 'dueDate', 'content'
 		];
 
 		if( $admin ) {
@@ -413,65 +398,14 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		]);
 	}
 
-	public function processCancel( $model, $checkChildren = true, $checkBase = true ) {
-
-		// Cancel all child orders
-		if( $checkChildren ) {
-
-			$children = $model->children;
-
-			foreach( $children as $child ) {
-
-				$this->updateStatus( $child, Order::STATUS_CANCELLED );
-			}
-		}
-
-		// Cancel order
-		$this->updateStatus( $model, Order::STATUS_CANCELLED );
-
-		// Cancel parent
-		if( $checkBase && $model->hasBase() ) {
-
-			$base		= $model->base;
-			$children	= $base->children;
-			$cancel		= true;
-
-			// No cancel if at least one child is not cancelled
-			foreach( $children as $child ) {
-
-				if( !$child->isCancelled( true ) ) {
-
-					$cancel = false;
-
-					break;
-				}
-			}
-
-			if( $cancel ) {
-
-				$this->updateStatus( $base, Order::STATUS_CANCELLED );
-			}
-		}
-	}
-
 	public function approve( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_APPROVED );
-	}
-
-	public function place( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_PLACED );
+		$this->updateStatus( $model, Invoice::STATUS_APPROVED );
 	}
 
 	public function hold( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_HOLD );
-	}
-
-	public function reject( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_APPROVED );
+		$this->updateStatus( $model, Invoice::STATUS_HOLD );
 	}
 
 	public function cancel( $model, $config = [] ) {
@@ -479,19 +413,9 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		$this->updateStatus( $model, Order::STATUS_CANCELLED );
 	}
 
-	public function fail( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_FAILED );
-	}
-
 	public function paid( $model, $config = [] ) {
 
 		$this->updateStatus( $model, Order::STATUS_PAID );
-	}
-
-	public function refund( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_REFUNDED );
 	}
 
 	public function confirm( $model, $config = [] ) {
@@ -499,62 +423,14 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		$this->updateStatus( $model, Order::STATUS_CONFIRMED );
 	}
 
-	public function process( $model, $config = [] ) {
+	public function refund( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_PROCESSED );
-	}
-
-	public function ship( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_SHIPPED );
-	}
-
-	public function deliver( $model, $config = [] ) {
-
-		if( !$model->isDelivered() ) {
-
-			$model->deliveredAt = DateUtil::getDateTime();
-
-			$model->update();
-		}
-
-		$this->updateStatus( $model, Order::STATUS_DELIVERED );
-	}
-
-	public function back( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_RETURNED );
-	}
-
-	public function dispute( $model, $config = [] ) {
-
-		$this->updateStatus( $model, Order::STATUS_DISPUTE );
+		$this->updateStatus( $model, Order::STATUS_REFUNDED );
 	}
 
 	public function complete( $model, $config = [] ) {
 
 		$this->updateStatus( $model, Order::STATUS_COMPLETED );
-	}
-
-	public function updateBaseStatus( $model, $config = [] ) {
-
-		$children	= $model->children;
-		$completed	= true;
-
-		foreach( $children as $child ) {
-
-			if( !$child->isCompleted() ) {
-
-				$completed = false;
-
-				break;
-			}
-		}
-
-		if( $completed ) {
-
-			$this->complete( $model );
-		}
 	}
 
 	// Delete -------------
@@ -569,9 +445,9 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 				switch( $action ) {
 
-					case 'place': {
+					case 'approve': {
 
-						$this->place( $model );
+						$this->approve( $model );
 
 						break;
 					}
@@ -587,12 +463,6 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 						break;
 					}
-					case 'approve': {
-
-						$this->approve( $model );
-
-						break;
-					}
 					case 'paid': {
 
 						$this->paid( $model );
@@ -605,33 +475,9 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 						break;
 					}
-					case 'process': {
+					case 'refund': {
 
-						$this->process( $model );
-
-						break;
-					}
-					case 'ship': {
-
-						$this->ship( $model );
-
-						break;
-					}
-					case 'deliver': {
-
-						$this->deliver( $model );
-
-						break;
-					}
-					case 'back': {
-
-						$this->back( $model );
-
-						break;
-					}
-					case 'dispute': {
-
-						$this->dispute( $model );
+						$this->refund( $model );
 
 						break;
 					}
@@ -672,7 +518,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	// CMG parent classes --------------------
 
-	// OrderService --------------------------
+	// InvoiceService ------------------------
 
 	// Data Provider ------
 

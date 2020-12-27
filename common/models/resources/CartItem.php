@@ -16,16 +16,20 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\payment\common\config\PaymentGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
-
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
 use cmsgears\cart\common\models\base\CartTables;
 use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
@@ -52,6 +56,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $price
  * @property float $discount
  * @property float $total
+ * @property string $currency
  * @property float $primary
  * @property float $purchase
  * @property float $quantity
@@ -72,7 +77,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class CartItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor, IGridCache {
+class CartItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
+	IContent, IData, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -97,6 +103,8 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	// Traits ------------------------------------------------------
 
 	use AuthorTrait;
+	use ContentTrait;
+	use DataTrait;
 	use GridCacheTrait;
 
 	// Constructor and Initialisation ------------------------------
@@ -138,11 +146,11 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 		$rules = [
 			// Required, Safe
 			[ [ 'name', 'price', 'purchase' ], 'required' ],
-			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			[ [ 'id', 'content' ], 'safe' ],
 			// Unique
-			[ [ 'parentId', 'parentType', 'cartId' ], 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'cartId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
+			[ 'cartId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'cartId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
-			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'parentType', 'type', 'currency' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ [ 'price', 'discount', 'total', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
@@ -176,6 +184,7 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
+			'currency' => Yii::$app->paymentMessage->getMessage( PaymentGlobal::FIELD_CURRENCY ),
 			'primary' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PRIMARY ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PURCHASE ),
 			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
@@ -278,7 +287,7 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	 */
 	public function getTotalPrice( $precision = 2 ) {
 
-		$price	= ( $this->price - $this->discount ) * $this->purchase;
+		$price = ( $this->price - $this->discount ) * $this->purchase;
 
 		return round( $price, $precision );
 	}
@@ -308,8 +317,18 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'purchasingUnit', 'creator' ];
+
+		$config[ 'relations' ] = $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryWithUoms( $config = [] ) {
+
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}

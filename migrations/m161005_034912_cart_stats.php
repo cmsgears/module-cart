@@ -59,6 +59,8 @@ class m161005_034912_cart_stats extends \cmsgears\core\common\base\Migration {
 			[ $this->prefix . 'cart_item', 'rows', 0 ],
 			[ $this->prefix . 'cart_order', 'rows', 0 ],
 			[ $this->prefix . 'cart_order_item', 'rows', 0 ],
+			[ $this->prefix . 'cart_invoice', 'rows', 0 ],
+			[ $this->prefix . 'cart_invoice_item', 'rows', 0 ],
 			[ $this->prefix . 'cart_voucher', 'rows', 0 ]
 		];
 
@@ -73,6 +75,8 @@ class m161005_034912_cart_stats extends \cmsgears\core\common\base\Migration {
 		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_CART_ITEM ) );
 		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_ORDER ) );
 		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_ORDER_ITEM ) );
+		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_INVOICE ) );
+		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_INVOICE_ITEM ) );
 		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_VOUCHER ) );
 	}
 

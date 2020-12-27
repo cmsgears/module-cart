@@ -11,6 +11,7 @@ namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
 use Yii;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -21,14 +22,14 @@ use cmsgears\cart\common\models\resources\Cart;
 use cmsgears\cart\common\services\interfaces\resources\ICartService;
 use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
 
-use cmsgears\core\common\services\base\ModelResourceService;
+use cmsgears\core\common\services\traits\base\MultiSiteTrait;
 
 /**
  * CartService provide service methods of cart model.
  *
  * @since 1.0.0
  */
-class CartService extends ModelResourceService implements ICartService {
+class CartService extends \cmsgears\core\common\services\base\ModelResourceService implements ICartService {
 
 	// Variables ---------------------------------------------------
 
@@ -38,9 +39,9 @@ class CartService extends ModelResourceService implements ICartService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\cart\common\models\resources\Cart';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\Cart';
 
-	public static $parentType	= CartGlobal::TYPE_CART;
+	public static $parentType = CartGlobal::TYPE_CART;
 
 	// Protected --------------
 
@@ -56,11 +57,13 @@ class CartService extends ModelResourceService implements ICartService {
 
 	// Traits ------------------------------------------------------
 
+	use MultiSiteTrait;
+
 	// Constructor and Initialisation ------------------------------
 
 	public function setCartItemService( ICartItemService $cartItemService ) {
 
-		$this->cartItemService	= $cartItemService;
+		$this->cartItemService = $cartItemService;
 	}
 
 	// Instance methods --------------------------------------------
@@ -81,81 +84,58 @@ class CartService extends ModelResourceService implements ICartService {
 
 	// Read - Models ---
 
+	/**
+	 * @inheritdoc
+	 */
 	public function getByToken( $token ) {
 
 		$modelClass	= self::$modelClass;
 
-		return $modelClass::findByToken( $token );
-	}
-
-	public function getByModelToken( $model, $type ) {
-
-		$modelClass	= self::$modelClass;
-
-		$data = Yii::$app->order->getCartToken( $model, $type );
-
-		if( isset( $data ) ) {
-
-			$cart = $modelClass::findByToken( $data[ 'token' ] );
-
-			if( empty( $cart ) ) {
-
-				$cart = $this->createByParams([
-					'parentId' => $model->id, 'parentType' => $type,
-					'title' => $model->name,
-					'token' => $data[ 'token' ]
-				]);
-			}
-
-			return $cart;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Find cart if exist for the given user. If does not exist create, it.
-	 */
-	public function getByUserId( $userId ) {
-
-		$modelClass	= self::$modelClass;
-
-		$cart = $modelClass::findByParentIdParentType( $userId, CoreGlobal::TYPE_USER );
+		$cart = $modelClass::findByToken( $token );
 
 		if( !isset( $cart ) ) {
 
-			$cart = $this->createByUserId( $userId );
+			$cart = $this->createByParams( [ 'token' => $token ] );
 		}
 
 		return $cart;
 	}
 
-	public function getByParent( $parentId, $parentType, $first = true ) {
+	/**
+	 * @inheritdoc
+	 */
+	public function getByUserId( $userId ) {
 
-		$modelClass	= static::$modelClass;
+		$modelClass	= self::$modelClass;
 
-		if( $first ) {
+		$cart = $modelClass::findActiveByUserId( $userId );
 
-			return $modelClass::find()->where( "parentId=:pId AND parentType=:pType", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
+		if( !isset( $cart ) ) {
+
+			$cart = $this->createByParams([
+				'userId' => $userId, 'title' => 'Generic Order',
+				'parentId' => $userId, 'parentType' => CoreGlobal::TYPE_USER
+			]);
 		}
 
-		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType", [ ':pId' => $parentId, ':pType' => $parentType ] )->all();
+		return $cart;
 	}
 
-	public function getActiveByParent( $parentId, $parentType ) {
+	public function getByUserIdParent( $userId, $parentId, $parentType ) {
 
-		$modelClass	= static::$modelClass;
+		$modelClass	= self::$modelClass;
 
-		$active = Cart::STATUS_ACTIVE;
+		$cart = $modelClass::findActiveByParentUserId( $parentId, $parentType, $userId );
 
-		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND status=$active", [ ':pId' => $parentId, ':pType' => $parentType ] )->one();
-	}
+		if( !isset( $cart ) ) {
 
-	public function getByType( $parentId, $parentType, $type ) {
+			$cart = $this->createByParams([
+				'userId' => $userId, 'title' => 'Generic Order',
+				'parentId' => $parentId, 'parentType' => $parentType
+			]);
+		}
 
-		$modelClass	= static::$modelClass;
-
-		return $modelClass::find()->where( "parentId=:pId AND parentType=:pType AND type=:type", [ ':pId' => $parentId, ':pType' => $parentType, ':type' => $type ] )->one();
+		return $cart;
 	}
 
 	// Read - Lists ----
@@ -175,7 +155,7 @@ class CartService extends ModelResourceService implements ICartService {
 		$token	= isset( $params[ 'token' ] ) ? $params[ 'token' ] : Yii::$app->security->generateRandomString();
 		$type	= isset( $params[ 'type' ] ) ? $params[ 'type' ] : null;
 
-		$user = Yii::$app->user->getIdentity();
+		$user = Yii::$app->core->getUser();
 
 		$cart = $this->getModelObject();
 
@@ -198,33 +178,21 @@ class CartService extends ModelResourceService implements ICartService {
 		return $cart;
 	}
 
-	public function createByUserId( $userId, $config = [] ) {
-
-		// Set Attributes
-		$user	= Yii::$app->core->getAppUser();
-		$cart	= $this->getModelObject();
-
-		$cart->createdBy	= $user->id;
-		$cart->parentId		= $userId;
-		$cart->parentType	= CoreGlobal::TYPE_USER;
-
-		$cart->title = isset( $config[ 'title' ] ) ? $config[ 'title' ] : "Generic Order";
-
-		$cart->save();
-
-		// Return Cart
-		return $cart;
-	}
-
 	// Update -------------
 
 	public function update( $model, $config = [] ) {
 
-		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'type', 'title', 'token', 'status' ];
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 
-		$user = Yii::$app->core->getAppUser();
+		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'title', 'guest', 'firstName', 'lastName',
+			'email', 'mobile', 'content'
+		];
 
-		$model->modifiedBy = $user->id;
+		if( $admin ) {
+
+			$attributes	= ArrayHelper::merge( $attributes, [ 'status' ] );
+		}
 
 		// Update Cart
 		return parent::update( $model, [
@@ -232,21 +200,24 @@ class CartService extends ModelResourceService implements ICartService {
 		]);
 	}
 
-	public function updateStatus( $model, $status, $config = [] ) {
-
-		$attributes = isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'status' ];
+	public function updateStatus( $model, $status ) {
 
 		$model->status = $status;
 
 		// Update Cart
 		return parent::update( $model, [
-			'attributes' => $attributes
+			'attributes' => [ 'status' ]
 		]);
 	}
 
-	public function setAbandoned( $model, $config = [] ) {
+	public function setAbandoned( $model ) {
 
 		return $this->updateStatus( $model, Cart::STATUS_ABANDONED );
+	}
+
+	public function setSuccess( $model ) {
+
+		return $this->updateStatus( $model, Cart::STATUS_SUCCESS );
 	}
 
 	// Delete -------------
@@ -280,7 +251,7 @@ class CartService extends ModelResourceService implements ICartService {
 
 				return $cartItemService->create( $item );
 			}
-			// update
+			// Update
 			else {
 
 				return $cartItemService->update( $item, $config );

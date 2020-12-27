@@ -19,12 +19,18 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
+use cmsgears\core\common\models\interfaces\base\IMultiSite;
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
+use cmsgears\core\common\models\entities\User;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
-use cmsgears\core\common\models\traits\base\ModelResourceTrait;
+use cmsgears\core\common\models\traits\base\MultiSiteTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
@@ -34,6 +40,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * after successful checkout.
  *
  * @property integer $id
+ * @property integer $siteId
+ * @property integer $userId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -43,7 +51,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $token
  * @property integer $status
  * @property boolean $guest
- * @property string $name
+ * @property string $firstName
+ * @property string $lastName
  * @property string $email
  * @property string $mobile
  * @property datetime $createdAt
@@ -56,7 +65,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Cart extends \cmsgears\core\common\models\base\ModelResource implements IAuthor, IGridCache {
+class Cart extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
+	IContent, IData, IGridCache, IMultiSite {
 
 	// Variables ---------------------------------------------------
 
@@ -65,39 +75,27 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	// Constants --------------
 
 	const STATUS_ACTIVE		= 1000;
-	const STATUS_CHECKOUT	= 2000;
-	const STATUS_PAYMENT	= 3000;
+	const STATUS_ABANDONED	= 2000;
 	const STATUS_SUCCESS	= 4000;
-	const STATUS_FAILED		= 5000;
-	const STATUS_ABANDONED	= 6000;
 
 	// Public -----------------
 
 	public static $statusMap = [
 		self::STATUS_ACTIVE => 'Active',
-		self::STATUS_CHECKOUT => 'Checkout',
-		self::STATUS_PAYMENT => 'Payment',
-		self::STATUS_SUCCESS => 'Success',
-		self::STATUS_FAILED => 'Failed',
-		self::STATUS_ABANDONED => 'Abandoned'
+		self::STATUS_ABANDONED => 'Abandoned',
+		self::STATUS_SUCCESS => 'Success'
 	];
 
 	public static $revStatusMap = [
 		'Active' => self::STATUS_ACTIVE,
-		'Checkout' => self::STATUS_CHECKOUT,
-		'Payment' => self::STATUS_PAYMENT,
-		'Success' => self::STATUS_SUCCESS,
-		'Failed' => self::STATUS_FAILED,
-		'Abandoned' => self::STATUS_ABANDONED
+		'Abandoned' => self::STATUS_ABANDONED,
+		'Success' => self::STATUS_SUCCESS
 	];
 
 	public static $urlRevStatusMap = [
 		'active' => self::STATUS_ACTIVE,
-		'checkout' => self::STATUS_CHECKOUT,
-		'payment' => self::STATUS_PAYMENT,
-		'success' => self::STATUS_SUCCESS,
-		'failed' => self::STATUS_FAILED,
-		'abandoned' => self::STATUS_ABANDONED
+		'abandoned' => self::STATUS_ABANDONED,
+		'success' => self::STATUS_SUCCESS
 	];
 
 	// Protected --------------
@@ -115,7 +113,10 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	// Traits ------------------------------------------------------
 
 	use AuthorTrait;
+	use ContentTrait;
+	use DataTrait;
 	use GridCacheTrait;
+	use MultiSiteTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -156,17 +157,17 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 		$rules = [
 			// Required, Safe
 			[ 'token', 'required', 'on' => 'guest' ],
-			[ 'createdBy', 'required', 'on' => 'user' ],
-			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			[ [ 'id', 'content' ], 'safe' ],
 			// Unique
 			[ 'token', 'unique' ],
 			// Text Limit
 			[ [ 'parentType', 'type', 'token', 'mobile' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ [ 'title', 'name', 'email' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'firstName', 'lastName' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'title', 'email' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'guest', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'siteId', 'userId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
@@ -179,6 +180,8 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	public function attributeLabels() {
 
 		return [
+			'siteId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SITE ),
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
@@ -187,13 +190,38 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 			'token' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TOKEN ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'guest' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GUEST ),
-			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+			'firstName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FIRSTNAME ),
+			'lastName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_LASTNAME ),
 			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL ),
 			'mobile' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_MOBILE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
 			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
 		];
+	}
+
+	// yii\db\BaseActiveRecord
+
+    /**
+     * @inheritdoc
+     */
+	public function beforeSave( $insert ) {
+
+	    if( parent::beforeSave( $insert ) ) {
+
+			// Default Site
+			if( empty( $this->siteId ) || $this->siteId <= 0 ) {
+
+				$this->siteId = Yii::$app->core->siteId;
+			}
+
+			// Default Type
+			$this->type = $this->type ?? CoreGlobal::TYPE_DEFAULT;
+
+	        return true;
+	    }
+
+		return false;
 	}
 
 	// CMG interfaces ------------------------
@@ -203,6 +231,11 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	// Validators ----------------------------
 
 	// Cart ----------------------------------
+
+	public function getUser() {
+
+		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
+	}
 
 	/**
 	 * Returns the items available in cart.
@@ -231,7 +264,12 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	 */
 	public function generateTitle() {
 
-		$this->title = Yii::$app->security->generateRandomString( 16 );
+		$this->title = Yii::$app->security->generateRandomString();
+	}
+
+	public function generateToken() {
+
+		$this->token = Yii::$app->security->generateRandomString();
 	}
 
 	/**
@@ -242,15 +280,15 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	 */
 	public function getCartTotal( $precision = 2 ) {
 
-		$items	= $this->activeItems;
+		$items = $this->activeItems;
 
-		$total	= 0;
+		$total = 0;
 
 		foreach( $items as $item ) {
 
 			if( $item->keep ) {
 
-				$total	+= $item->getTotalPrice();
+				$total += $item->getTotalPrice( $precision );
 			}
 		}
 
@@ -272,18 +310,34 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 			return 0;
 		}
 
-		$cartItems	= $this->activeItems;
-		$count		= 0;
+		$items = $this->activeItems;
 
-		foreach ( $cartItems as $cartItem ) {
+		$count = 0;
 
-			if( $cartItem->keep ) {
+		foreach( $items as $item ) {
 
-				$count += $cartItem->$type;
+			if( $item->keep ) {
+
+				$count += $item->$type;
 			}
 		}
 
 		return $count;
+	}
+
+	public function isActive() {
+
+		return $this->status == self::STATUS_ACTIVE;
+	}
+
+	public function isAbandoned() {
+
+		return $this->status == self::STATUS_ABANDONED;
+	}
+
+	public function isSuccess() {
+
+		return $this->status == self::STATUS_SUCCESS;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -311,13 +365,29 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}
 
+	public static function queryByUserId( $userId ) {
+
+		return static::find()->where( 'userId=:uid', [ ':uid' => $userId ] );
+	}
+
 	// Read - Find ------------
+
+	public static function findActiveByUserId( $userId ) {
+
+		return static::queryByUserId( $userId )->andWhere( 'status=:status', [ ':status' => self::STATUS_ACTIVE ] )->one();
+	}
+
+	public static function findActiveByParentUserId( $parentId, $parentType, $userId ) {
+
+		return static::queryByParent( $parentId, $parentType )->andWhere( 'userId=":uid AND status=:status', [ ':uid' => $userId, ':status' => self::STATUS_ACTIVE ] )->one();
+	}
 
 	/**
 	 * Find and return the cart associated with given token.

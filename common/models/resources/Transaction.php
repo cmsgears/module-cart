@@ -141,7 +141,7 @@ class Transaction extends \cmsgears\payment\common\models\resources\Transaction 
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'order' ];
 
 		$config[ 'relations' ] = $relations;
 
