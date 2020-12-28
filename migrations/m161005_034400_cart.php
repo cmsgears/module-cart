@@ -485,7 +485,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Invoice
 		$this->addForeignKey( 'fk_' . $this->prefix . 'invoice_site', $this->prefix . 'cart_invoice', 'siteId', $this->prefix . 'core_site', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'invoice_order', $this->prefix . 'cart_invoice', 'baseId', $this->prefix . 'cart_order', 'id', 'RESTRICT' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'invoice_order', $this->prefix . 'cart_invoice', 'orderId', $this->prefix . 'cart_order', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'invoice_user', $this->prefix . 'cart_invoice', 'userId', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'invoice_creator', $this->prefix . 'cart_invoice', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'invoice_modifier', $this->prefix . 'cart_invoice', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
@@ -598,6 +598,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Transaction
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'transaction_order', $this->prefix . 'payment_transaction' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'transaction_invoice', $this->prefix . 'payment_transaction' );
 
 		// Voucher
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_site', $this->prefix . 'cart_voucher' );

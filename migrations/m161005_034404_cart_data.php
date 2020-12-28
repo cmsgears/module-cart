@@ -131,8 +131,7 @@ class m161005_034404_cart_data extends \cmsgears\core\common\base\Migration {
 		$columns = [ 'roleId', 'permissionId' ];
 
 		$mappings = [
-			[ $superAdminRole->id, $cartAdminPerm->id ], [ $superAdminRole->id, $cartAdminPerm->id ],
-			[ $adminRole->id, $cartAdminPerm->id ], [ $adminRole->id, $cartAdminPerm->id ],
+			[ $superAdminRole->id, $cartAdminPerm->id ], [ $adminRole->id, $cartAdminPerm->id ],
 			[ $cartAdminRole->id, $adminPerm->id ], [ $cartAdminRole->id, $userPerm->id ], [ $cartAdminRole->id, $cartAdminPerm->id ]
 		];
 
