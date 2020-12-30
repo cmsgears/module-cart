@@ -53,10 +53,14 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $name
  * @property string $sku
  * @property integer $status
- * @property integer $price
- * @property integer $discount
- * @property integer $total
- * @property string $currency
+ * @property float $price
+ * @property float $discount
+ * @property float $tax1
+ * @property float $tax2
+ * @property float $tax3
+ * @property float $tax4
+ * @property float $tax5
+ * @property float $total
  * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
@@ -161,10 +165,11 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 			// Unique
 			[ 'invoiceId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'invoiceId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
-			[ [ 'parentType', 'type', 'currency' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
 			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'gridCacheValid', 'boolean' ],
 			[ [ 'invoiceId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -196,8 +201,12 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'tax1' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax2' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax3' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax4' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax5' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
-			'currency' => Yii::$app->paymentMessage->getMessage( PaymentGlobal::FIELD_CURRENCY ),
 			'primary' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PRIMARY ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PURCHASE ),
 			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),

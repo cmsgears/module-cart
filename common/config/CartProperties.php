@@ -12,14 +12,12 @@ namespace cmsgears\cart\common\config;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\config\Properties;
-
 /**
  * CartProperties provide methods to access the properties specific to cart and orders.
  *
  * @since 1.0.0
  */
-class CartProperties extends Properties {
+class CartProperties extends \cmsgears\core\common\config\Properties {
 
 	// Variables ---------------------------------------------------
 

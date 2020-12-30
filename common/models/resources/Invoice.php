@@ -58,7 +58,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $description
  * @property integer $status
  * @property float $subTotal
- * @property float $tax
+ * @property float $tax1
+ * @property float $tax2
+ * @property float $tax3
+ * @property float $tax4
+ * @property float $tax5
  * @property float $shipping
  * @property float $total
  * @property float $discount
@@ -230,7 +234,8 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'subTotal', 'tax', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+			[ [ 'subTotal', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
 			[ [ 'gridCacheValid' ], 'boolean' ],
 			[ [ 'siteId', 'orderId', 'userId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
@@ -258,7 +263,11 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'subTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_SUB ),
-			'tax' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax1' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax2' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax3' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax4' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax5' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
 			'shipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),

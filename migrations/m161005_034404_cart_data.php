@@ -188,8 +188,8 @@ class m161005_034404_cart_data extends \cmsgears\core\common\base\Migration {
 		$columns = [ 'formId', 'name', 'label', 'type', 'compress', 'meta', 'active', 'validators', 'order', 'icon', 'htmlOptions' ];
 
 		$fields	= [
-			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Enable/disable cart."}' ],
-			[ $config->id, 'remove_cart','Remove Cart', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Remove cart after converted to order."}' ]
+			[ $config->id, 'active','Active', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Enable/disable Cart"}' ],
+			[ $config->id, 'remove_cart', 'Remove Cart', FormField::TYPE_TOGGLE, false, true, true, 'required', 0, NULL, '{"title":"Remove cart after converted to order."}' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_form_field', $columns, $fields );
