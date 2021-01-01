@@ -122,6 +122,12 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 		'blocked' => self::STATUS_BLOCKED
 	];
 
+	public $filterStatusMap = [
+		'new' => 'New',
+		'active' => 'Active',
+		'blocked' => 'Blocked'
+	];
+
 	public static $taxTypeMap = [
 		self::TAX_BEFORE_DISCOUNT  => 'Before discount',
 		self::TAX_AFTER_DISCOUNT => 'After discount'

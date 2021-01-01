@@ -16,7 +16,6 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\payment\common\config\PaymentGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
@@ -91,16 +90,34 @@ class OrderItem extends \cmsgears\core\common\models\base\ModelResource implemen
 
 	const STATUS_NEW		=   0;
 	const STATUS_CANCELLED	= 100;
-	const STATUS_RETURNED	= 200;
-	const STATUS_RECEIVED	= 500;
+	const STATUS_DELIVERED	= 200;
+	const STATUS_RETURNED	= 300;
+	const STATUS_RECEIVED	= 400;
 
 	// Public -----------------
 
 	public static $statusMap = [
 		self::STATUS_NEW => 'New',
 		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_DELIVERED => 'Delivered',
 		self::STATUS_RETURNED => 'Returned',
 		self::STATUS_RECEIVED => 'Received'
+	];
+
+	public static $urlRevStatusMap = [
+		'new' => self::STATUS_NEW,
+		'cancelled' => self::STATUS_CANCELLED,
+		'delivered' => self::STATUS_DELIVERED,
+		'returned' => self::STATUS_RETURNED,
+		'received' => self::STATUS_RECEIVED
+	];
+
+	public static $filterStatusMap = [
+		'new' => 'New',
+		'cancelled' => 'Cancelled',
+		'delivered' => 'Delivered',
+		'returned' => 'Returned',
+		'received' => 'Received'
 	];
 
 	// Protected --------------

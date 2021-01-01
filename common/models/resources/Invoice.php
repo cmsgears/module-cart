@@ -58,6 +58,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $description
  * @property integer $status
  * @property float $subTotal
+ * @property float $itemDiscount
  * @property float $tax1
  * @property float $tax2
  * @property float $tax3
@@ -111,6 +112,11 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	const STATUS_CANCELLED	=  3000;
 
 	/**
+	 * Invoice sent to customer
+	 */
+	const STATUS_SENT		=  3500;
+
+	/**
 	 * Complete payment is done
 	 */
 	const STATUS_PAID		=  4000;
@@ -137,6 +143,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 		self::STATUS_APPROVED => 'Approved',
         self::STATUS_HOLD => 'Hold',
 		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_SENT => 'Sent',
 		self::STATUS_PAID => 'Paid',
 		self::STATUS_CONFIRMED => 'Confirmed',
 		self::STATUS_REFUNDED => 'Refunded',
@@ -149,6 +156,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 		'Approved' => self::STATUS_APPROVED,
         'Hold' => self::STATUS_HOLD,
 		'Cancelled' => self::STATUS_CANCELLED,
+		'Sent' => self::STATUS_SENT,
 		'Paid' => self::STATUS_PAID,
 		'Confirmed' => self::STATUS_CONFIRMED,
 		'Refunded' => self::STATUS_REFUNDED,
@@ -161,10 +169,23 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 		'approved' => self::STATUS_APPROVED,
         'hold' => self::STATUS_HOLD,
 		'cancelled' => self::STATUS_CANCELLED,
+		'sent' => self::STATUS_SENT,
 		'paid' => self::STATUS_PAID,
 		'confirmed' => self::STATUS_CONFIRMED,
 		'refunded' => self::STATUS_REFUNDED,
 		'completed' => self::STATUS_COMPLETED
+	];
+
+	public static $filterStatusMap = [
+		'new' => 'New',
+		'approved' => 'Approved',
+        'hold' => 'Hold',
+		'cancelled' => 'Cancelled',
+		'sent' => 'Sent',
+		'paid' => 'Paid',
+		'confirmed' => 'Confirmed',
+		'refunded' => 'Refunded',
+		'completed' => 'Completed'
 	];
 
 	// Protected --------------
@@ -234,7 +255,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'subTotal', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+			[ [ 'subTotal', 'itemDiscount', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
 			[ [ 'gridCacheValid' ], 'boolean' ],
 			[ [ 'siteId', 'orderId', 'userId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -434,6 +455,22 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	}
 
 	/**
+	 * Check whether invoice is sent.
+	 *
+	 * $param boolean $strict
+	 * @return boolean
+	 */
+	public function isSent( $strict = true ) {
+
+		if( $strict ) {
+
+			return $this->status == self::STATUS_SENT;
+		}
+
+		return $this->status >= self::STATUS_SENT;
+	}
+
+	/**
 	 * Check whether invoice is paid.
 	 *
 	 * $param boolean $strict
@@ -495,6 +532,58 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 		}
 
 		return $this->status >= self::STATUS_COMPLETED;
+	}
+
+	public function refreshTotal() {
+
+		$items = $this->items;
+
+		if( count( $items ) > 0 ) {
+
+			$subTotal		= 0;
+			$itemDiscount	= 0;
+			$tax1			= 0;
+			$tax2			= 0;
+			$tax3			= 0;
+			$tax4			= 0;
+			$tax5			= 0;
+
+			foreach( $items as $item ) {
+
+				$subTotal += $item->price;
+
+				$itemDiscount += $item->discount;
+
+				$tax1 += $item->tax1;
+				$tax2 += $item->tax2;
+				$tax3 += $item->tax3;
+				$tax4 += $item->tax4;
+				$tax5 += $item->tax5;
+			}
+
+			$this->subTotal		= $subTotal;
+			$this->itemDiscount	= $itemDiscount;
+
+			$this->tax1	= $tax1;
+			$this->tax2	= $tax2;
+			$this->tax3	= $tax3;
+			$this->tax4	= $tax4;
+			$this->tax5	= $tax5;
+
+			$tax = $tax1 + $tax2 + $tax3 + $tax4 + $tax5;
+
+			$this->total = $this->subTotal - $this->itemDiscount - $tax - $this->shipping;
+
+			$this->grandTotal = $this->total - $this->discount;
+		}
+		else {
+
+			$tax = $this->tax1 + $this->tax2 + $this->tax3 + $this->tax4 + $this->tax5;
+
+			$this->total = $this->subTotal - $this->itemDiscount - $tax - $this->shipping;
+
+			$this->grandTotal = $this->total - $this->discount;
+		}
 	}
 
 	// Static Methods ----------------------------------------------

@@ -179,9 +179,9 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	public static $statusMap = [
 		self::STATUS_NEW  => 'New',
 		self::STATUS_APPROVED => 'Approved',
-		self::STATUS_REJECTED => 'Rejected',
 		self::STATUS_PLACED => 'Placed',
         self::STATUS_HOLD => 'Hold',
+		self::STATUS_REJECTED => 'Rejected',
 		self::STATUS_CANCELLED => 'Cancelled',
 		self::STATUS_FAILED => 'Failed',
 		self::STATUS_PAID => 'Paid',
@@ -199,9 +199,9 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	public static $revStatusMap = [
 		'New' => self::STATUS_NEW,
 		'Approved' => self::STATUS_APPROVED,
+		'Placed' => self::STATUS_PLACED,
         'Hold' => self::STATUS_HOLD,
 		'Rejected' => self::STATUS_REJECTED,
-		'Placed' => self::STATUS_PLACED,
 		'Cancelled' => self::STATUS_CANCELLED,
 		'Failed' => self::STATUS_FAILED,
 		'Paid' => self::STATUS_PAID,
@@ -219,10 +219,11 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	public static $urlRevStatusMap = [
 		'new' => self::STATUS_NEW,
 		'approved' => self::STATUS_APPROVED,
+		'placed' => self::STATUS_PLACED,
         'hold' => self::STATUS_HOLD,
 		'rejected' => self::STATUS_REJECTED,
-		'placed' => self::STATUS_PLACED,
 		'cancelled' => self::STATUS_CANCELLED,
+		'failed' => self::STATUS_FAILED,
 		'paid' => self::STATUS_PAID,
 		'confirmed' => self::STATUS_CONFIRMED,
 		'refunded' => self::STATUS_REFUNDED,
@@ -232,6 +233,25 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 		'returned' => self::STATUS_RETURNED,
 		'dispute' => self::STATUS_DISPUTE,
 		'completed' => self::STATUS_COMPLETED
+	];
+
+	public static $filterStatusMap = [
+		'new' => 'New',
+		'approved' => 'Approved',
+		'placed' => 'Placed',
+        'hold' => 'Hold',
+		'rejected' => 'Rejected',
+		'cancelled' => 'Cancelled',
+		'failed' => 'Failed',
+		'paid' => 'Paid',
+		'confirmed' => 'Confirmed',
+		'refunded' => 'Refunded',
+		'processed' => 'Processed',
+		'shipped' => 'Shipped',
+		'delivered' => 'Delivered',
+		'returned' => 'Returned',
+		'dispute' => 'Dispute',
+		'completed' => 'Completed'
 	];
 
 	// Protected --------------

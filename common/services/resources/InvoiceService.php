@@ -133,11 +133,47 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 					'default' => SORT_DESC,
 					'label' => 'Status'
 				],
+				'code' => [
+					'asc' => [ "$modelTable.code" => SORT_ASC ],
+					'desc' => [ "$modelTable.code" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Code'
+				],
 				'total' => [
+					'asc' => [ "$modelTable.total" => SORT_ASC ],
+					'desc' => [ "$modelTable.total" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Total'
+				],
+				'discount' => [
+					'asc' => [ "$modelTable.discount" => SORT_ASC ],
+					'desc' => [ "$modelTable.discount" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Discount'
+				],
+				'grandTotal' => [
 					'asc' => [ "$modelTable.grandTotal" => SORT_ASC ],
 					'desc' => [ "$modelTable.grandTotal" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Total'
+					'label' => 'Grand Total'
+				],
+				'currency' => [
+					'asc' => [ "$modelTable.currency" => SORT_ASC ],
+					'desc' => [ "$modelTable.currency" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Currency'
+				],
+				'issueDate' => [
+					'asc' => [ "$modelTable.issueDate" => SORT_ASC ],
+					'desc' => [ "$modelTable.issueDate" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Date Issued'
+				],
+				'dueDate' => [
+					'asc' => [ "$modelTable.dueDate" => SORT_ASC ],
+					'desc' => [ "$modelTable.dueDate" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Due Date'
 				],
 				'cdate' => [
 					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
@@ -185,29 +221,28 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		$search = [
 			'title' => "$modelTable.title",
+			'code' => "$modelTable.code",
 			'desc' => "$modelTable.description",
 			'content' => "$modelTable.content"
 		];
 
 		if( isset( $searchCol ) ) {
 
-			$config[ 'search-col' ] = $search[ $searchCol ];
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search[ $searchCol ];
 		}
 		else if( isset( $keywordsCol ) ) {
 
-			$config[ 'search-col' ] = $search;
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search;
 		}
 
 		// Reporting --------
 
-		if( empty( $config[ 'report-col' ] ) ) {
-
-			$config[ 'report-col' ]	= [
-				'title' => "$modelTable.title",
-				'desc' => "$modelTable.description",
-				'content' => "$modelTable.content"
-			];
-		}
+		$config[ 'report-col' ]	= $config[ 'report-col' ] ?? [
+			'title' => "$modelTable.title",
+			'code' => "$modelTable.code",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content"
+		];
 
 		// Result -----------
 
@@ -362,7 +397,8 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	public function update( $model, $config = [] ) {
 
-		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+		$admin		= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+		$refresh	= isset( $config[ 'refreshTotal' ] ) ? $config[ 'refreshTotal' ] : false;
 
 		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
 			'code', 'service', 'title', 'description',
@@ -371,10 +407,37 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		if( $admin ) {
 
-			$attributes	= ArrayHelper::merge( $attributes, [ 'status' ] );
+			$attributes	= ArrayHelper::merge( $attributes, [
+				'status', 'currency'
+			]);
 		}
 
-		// Update Cart
+		if( $refresh ) {
+
+			$attributes	= ArrayHelper::merge( $attributes, [
+				'subTotal', 'itemDiscount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5',
+				'shipping', 'total', 'discount', 'grandTotal'
+			]);
+
+			$model->refreshTotal();
+		}
+
+		// Update Invoice
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
+	}
+
+	public function refreshTotal( $model ) {
+
+		$model->refreshTotal();
+
+		$attributes	= ArrayHelper::merge( $attributes, [
+			'subTotal', 'itemDiscount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5',
+			'shipping', 'total', 'discount', 'grandTotal'
+		]);
+
+		// Update Invoice
 		return parent::update( $model, [
 			'attributes' => $attributes
 		]);
@@ -400,37 +463,66 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	public function approve( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Invoice::STATUS_APPROVED );
+		if( $model->status != Invoice::STATUS_APPROVED ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_APPROVED );
+		}
 	}
 
 	public function hold( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Invoice::STATUS_HOLD );
+		if( $model->status != Invoice::STATUS_APPROVED ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_HOLD );
+		}
 	}
 
 	public function cancel( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_CANCELLED );
+		if( $model->status != Invoice::STATUS_APPROVED ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_CANCELLED );
+		}
+	}
+
+	public function send( $model, $config = [] ) {
+
+		if( $model->status != Invoice::STATUS_SENT ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_SENT );
+		}
 	}
 
 	public function paid( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_PAID );
+		if( $model->status != Order::STATUS_PAID ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_PAID );
+		}
 	}
 
 	public function confirm( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_CONFIRMED );
+		if( $model->status != Invoice::STATUS_CONFIRMED ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_CONFIRMED );
+		}
 	}
 
 	public function refund( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_REFUNDED );
+		if( $model->status != Invoice::STATUS_REFUNDED ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_REFUNDED );
+		}
 	}
 
 	public function complete( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_COMPLETED );
+		if( $model->status != Invoice::STATUS_COMPLETED ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_COMPLETED );
+		}
 	}
 
 	// Delete -------------
@@ -459,7 +551,13 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 					}
 					case 'cancel': {
 
-						$this->cancelled( $model );
+						$this->cancel( $model );
+
+						break;
+					}
+					case 'send': {
+
+						$this->send( $model );
 
 						break;
 					}

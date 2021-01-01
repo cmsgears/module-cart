@@ -16,7 +16,6 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\payment\common\config\PaymentGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
@@ -91,16 +90,34 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 
 	const STATUS_NEW		=   0;
 	const STATUS_CANCELLED	= 100;
-	const STATUS_RETURNED	= 200;
-	const STATUS_RECEIVED	= 500;
+	const STATUS_DELIVERED	= 200;
+	const STATUS_RETURNED	= 300;
+	const STATUS_RECEIVED	= 400;
 
 	// Public -----------------
 
 	public static $statusMap = [
 		self::STATUS_NEW => 'New',
 		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_DELIVERED => 'Delivered',
 		self::STATUS_RETURNED => 'Returned',
 		self::STATUS_RECEIVED => 'Received'
+	];
+
+	public static $urlRevStatusMap = [
+		'new' => self::STATUS_NEW,
+		'cancelled' => self::STATUS_CANCELLED,
+		'delivered' => self::STATUS_DELIVERED,
+		'returned' => self::STATUS_RETURNED,
+		'received' => self::STATUS_RECEIVED
+	];
+
+	public static $filterStatusMap = [
+		'new' => 'New',
+		'cancelled' => 'Cancelled',
+		'delivered' => 'Delivered',
+		'returned' => 'Returned',
+		'received' => 'Received'
 	];
 
 	// Protected --------------
@@ -299,17 +316,26 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
+	public function refreshTotal() {
+
+		$tax = $this->tax1 - $this->tax2 - $this->tax3 - $this->tax4 - $this->tax5;
+
+		$this->total = $this->price - $this->discount - $tax;
+	}
+
 	/**
 	 * Returns the total price of the item.
 	 *
-	 * Total Price = ( Unit Price - Unit Discount ) * Purchasing Quantity
+	 * Total Price = Unit Total * Purchasing Quantity
 	 *
 	 * @param type $precision
 	 * @return type
 	 */
 	public function getTotalPrice( $precision = 2 ) {
 
-		$price = ( $this->price - $this->discount ) * $this->purchase;
+		$this->refreshTotal();
+
+		$price = $this->total * $this->purchase;
 
 		return round( $price, $precision );
 	}

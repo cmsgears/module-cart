@@ -50,6 +50,8 @@ interface IInvoiceService extends IModelResourceService, IMultiSite {
 
 	// Update -------------
 
+	public function refreshTotal( $model );
+
 	public function updateCode( $model, $code );
 
 	public function updateStatus( $model, $status );
