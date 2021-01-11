@@ -117,9 +117,14 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	const STATUS_SENT		=  3500;
 
 	/**
+	 * Overdue
+	 */
+	const STATUS_OVERDUE	=  4000;
+
+	/**
 	 * Complete payment is done
 	 */
-	const STATUS_PAID		=  4000;
+	const STATUS_PAID		=  5000;
 
 	/**
 	 * Payment confirmed by the vendor
@@ -144,6 +149,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
         self::STATUS_HOLD => 'Hold',
 		self::STATUS_CANCELLED => 'Cancelled',
 		self::STATUS_SENT => 'Sent',
+		self::STATUS_OVERDUE => 'Overdue',
 		self::STATUS_PAID => 'Paid',
 		self::STATUS_CONFIRMED => 'Confirmed',
 		self::STATUS_REFUNDED => 'Refunded',
@@ -157,6 +163,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
         'Hold' => self::STATUS_HOLD,
 		'Cancelled' => self::STATUS_CANCELLED,
 		'Sent' => self::STATUS_SENT,
+		'Overdue' => self::STATUS_OVERDUE,
 		'Paid' => self::STATUS_PAID,
 		'Confirmed' => self::STATUS_CONFIRMED,
 		'Refunded' => self::STATUS_REFUNDED,
@@ -170,6 +177,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
         'hold' => self::STATUS_HOLD,
 		'cancelled' => self::STATUS_CANCELLED,
 		'sent' => self::STATUS_SENT,
+		'overdue' => self::STATUS_OVERDUE,
 		'paid' => self::STATUS_PAID,
 		'confirmed' => self::STATUS_CONFIRMED,
 		'refunded' => self::STATUS_REFUNDED,
@@ -182,6 +190,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
         'hold' => 'Hold',
 		'cancelled' => 'Cancelled',
 		'sent' => 'Sent',
+		'overdue' => 'Overdue',
 		'paid' => 'Paid',
 		'confirmed' => 'Confirmed',
 		'refunded' => 'Refunded',
@@ -369,7 +378,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	 */
 	public function getTransactions() {
 
-		return $this->hasMany( Transaction::class, [ 'orderId' => 'id' ] );
+		return $this->hasMany( Transaction::class, [ 'invoiceId' => 'id' ] );
 	}
 
 	/**
@@ -441,17 +450,11 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	/**
 	 * Check whether invoice is cancelled.
 	 *
-	 * $param boolean $strict
 	 * @return boolean
 	 */
-	public function isCancelled( $strict = true ) {
+	public function isCancelled() {
 
-		if( $strict ) {
-
-			return $this->status == self::STATUS_CANCELLED;
-		}
-
-		return $this->status >= self::STATUS_CANCELLED;
+		return $this->status == self::STATUS_CANCELLED;
 	}
 
 	/**
@@ -468,6 +471,16 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 		}
 
 		return $this->status >= self::STATUS_SENT;
+	}
+
+	/**
+	 * Check whether invoice is overdue.
+	 *
+	 * @return boolean
+	 */
+	public function isOverdue() {
+
+		return $this->status == self::STATUS_OVERDUE;
 	}
 
 	/**
@@ -550,15 +563,18 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 
 			foreach( $items as $item ) {
 
-				$subTotal += $item->price;
+				if( !$item->isCancelled() ) {
 
-				$itemDiscount += $item->discount;
+					$subTotal += $item->price;
 
-				$tax1 += $item->tax1;
-				$tax2 += $item->tax2;
-				$tax3 += $item->tax3;
-				$tax4 += $item->tax4;
-				$tax5 += $item->tax5;
+					$itemDiscount += $item->discount;
+
+					$tax1 += $item->tax1;
+					$tax2 += $item->tax2;
+					$tax3 += $item->tax3;
+					$tax4 += $item->tax4;
+					$tax5 += $item->tax5;
+				}
 			}
 
 			$this->subTotal		= $subTotal;

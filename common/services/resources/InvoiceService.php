@@ -23,6 +23,8 @@ use cmsgears\cart\common\services\interfaces\resources\IInvoiceService;
 
 use cmsgears\core\common\services\traits\base\MultiSiteTrait;
 
+use cmsgears\core\common\utilities\DateUtil;
+
 /**
  * InvoiceService provide service methods of order model.
  *
@@ -412,6 +414,15 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 			]);
 		}
 
+		$date = DateUtil::getDate();
+
+		if( !empty( $model->dueDate ) && DateUtil::greaterThan( $model->dueDate, $date ) ) {
+
+			$model->status = Invoice::STATUS_OVERDUE;
+
+			$attributes	= ArrayHelper::merge( $attributes, [ 'status' ] );
+		}
+
 		if( $refresh ) {
 
 			$attributes	= ArrayHelper::merge( $attributes, [
@@ -432,10 +443,10 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		$model->refreshTotal();
 
-		$attributes	= ArrayHelper::merge( $attributes, [
+		$attributes	= [
 			'subTotal', 'itemDiscount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5',
 			'shipping', 'total', 'discount', 'grandTotal'
-		]);
+		];
 
 		// Update Invoice
 		return parent::update( $model, [
@@ -471,7 +482,7 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	public function hold( $model, $config = [] ) {
 
-		if( $model->status != Invoice::STATUS_APPROVED ) {
+		if( $model->status != Invoice::STATUS_HOLD ) {
 
 			$this->updateStatus( $model, Invoice::STATUS_HOLD );
 		}
@@ -479,9 +490,18 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	public function cancel( $model, $config = [] ) {
 
-		if( $model->status != Invoice::STATUS_APPROVED ) {
+		if( $model->status != Invoice::STATUS_CANCELLED ) {
 
 			$this->updateStatus( $model, Invoice::STATUS_CANCELLED );
+
+			$transactionService = Yii::$app->factory->get( 'transactionService' );
+
+			$transactions = $model->transactions;
+
+			foreach( $transactions as $transaction ) {
+
+				$transactionService->cancel( $transaction );
+			}
 		}
 	}
 
@@ -490,6 +510,17 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 		if( $model->status != Invoice::STATUS_SENT ) {
 
 			$this->updateStatus( $model, Invoice::STATUS_SENT );
+		}
+	}
+
+	public function overdue( $model, $config = [] ) {
+
+		$date = DateUtil::getDate();
+
+		if( $model->status != Invoice::STATUS_OVERDUE &&
+			( empty( $model->dueDate ) || DateUtil::greaterThan( $model->dueDate, $date ) ) ) {
+
+			$this->updateStatus( $model, Invoice::STATUS_OVERDUE );
 		}
 	}
 

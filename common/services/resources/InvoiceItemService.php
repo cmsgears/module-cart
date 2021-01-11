@@ -15,6 +15,8 @@ use yii\data\Sort;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
+use cmsgears\cart\common\models\resources\InvoiceItem;
+
 use cmsgears\cart\common\services\interfaces\resources\IInvoiceItemService;
 
 // CMG Imports
@@ -238,6 +240,18 @@ class InvoiceItemService extends \cmsgears\core\common\services\base\ModelResour
 
 	// Create -------------
 
+	public function create( $model, $config = [] ) {
+
+		// Update Item Total
+		$model->refreshTotal();
+
+		$model = parent::create( $model, $config );
+
+		Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+		return $model;
+	}
+
 	// Create Invoice Item from Order Item
 	public function createFromOrderItem( $invoice, $orderItem, $config = [] ) {
 
@@ -249,21 +263,146 @@ class InvoiceItemService extends \cmsgears\core\common\services\base\ModelResour
 		// Copy from Cart Item
 		$model->copyForUpdateFrom( $orderItem, [
 			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
-			'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume',
-			'length', 'width', 'height', 'radius'
+			'parentId', 'parentType', 'type', 'name', 'sku', 'status', 'price', 'discount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5', 'total',
+			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius'
 		]);
 
 		$model->save();
 
-		// Return InvoiceItem
 		return $model;
 	}
 
 	// Update -------------
 
+	public function update( $model, $config = [] ) {
+
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+
+		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
+			'name', 'sku', 'price', 'discount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5', 'total',
+			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius',
+			'content'
+		];
+
+		if( $admin ) {
+
+			$attributes	= ArrayHelper::merge( $attributes, [ 'invoiceId', 'status' ] );
+		}
+
+		// Update Item Total
+		$model->refreshTotal();
+
+		$model = parent::update( $model, [
+			'attributes' => $attributes
+		]);
+
+		// Update Invoice Total
+		Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+		return $model;
+	}
+
+	public function updateStatus( $model, $status ) {
+
+		$model->status = $status;
+
+		$model->update();
+
+		Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+		return $model;
+	}
+
+	public function cancel( $model, $config = [] ) {
+
+		if( !$model->isCancelled() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_CANCELLED );
+		}
+	}
+
+	public function deliver( $model, $config = [] ) {
+
+		if( !$model->isDelivered() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_DELIVERED );
+		}
+	}
+
+	public function back( $model, $config = [] ) {
+
+		if( !$model->isReturned() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_RETURNED );
+		}
+	}
+
+	public function receive( $model, $config = [] ) {
+
+		if( !$model->isReceived() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_RECEIVED );
+		}
+	}
+
 	// Delete -------------
 
 	// Bulk ---------------
+
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'status': {
+
+				switch( $action ) {
+
+					case 'cancel': {
+
+						$this->cancel( $model );
+
+						break;
+					}
+					case 'deliver': {
+
+						$this->deliver( $model );
+
+						break;
+					}
+
+					case 'back': {
+
+						$this->back( $model );
+
+						break;
+					}
+					case 'receive': {
+
+						$this->receive( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
 
 	// Notifications ------
 

@@ -62,6 +62,10 @@ interface IInvoiceService extends IModelResourceService, IMultiSite {
 
 	public function cancel( $model, $config = [] );
 
+	public function send( $model, $config = [] );
+
+	public function overdue( $model, $config = [] );
+
 	public function paid( $model, $config = [] );
 
 	public function confirm( $model, $config = [] );

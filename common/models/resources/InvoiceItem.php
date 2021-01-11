@@ -141,6 +141,33 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 
 	// Constructor and Initialisation ------------------------------
 
+    public function init() {
+
+        parent::init();
+
+        if( $this->isNewRecord ) {
+
+            $this->price = 0;
+			$this->discount = 0;
+			$this->total = 0;
+			$this->primary = 0;
+			$this->purchase = 0;
+			$this->quantity = 0;
+			$this->weight = 0;
+			$this->volume = 0;
+			$this->length = 0;
+			$this->width = 0;
+			$this->height = 0;
+			$this->radius = 0;
+
+			$this->tax1 = 0;
+			$this->tax2 = 0;
+			$this->tax3 = 0;
+			$this->tax4 = 0;
+			$this->tax5 = 0;
+        }
+    }
+
 	// Instance methods --------------------------------------------
 
 	// Yii interfaces ------------------------
@@ -180,7 +207,7 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 			[ [ 'invoiceId', 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content' ], 'safe' ],
 			// Unique
-			[ 'invoiceId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'invoiceId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
+			//[ 'invoiceId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'invoiceId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
@@ -316,9 +343,39 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
+	public function isNew() {
+
+		return $this->status == self::STATUS_NEW;
+	}
+
+	public function isCancelled() {
+
+		return $this->status == self::STATUS_CANCELLED;
+	}
+
+	public function isDelivered() {
+
+		return $this->status == self::STATUS_DELIVERED;
+	}
+
+	public function isReturned() {
+
+		return $this->status == self::STATUS_RETURNED;
+	}
+
+	public function isReceived() {
+
+		return $this->status == self::STATUS_RECEIVED;
+	}
+
+	public function getStatusStr() {
+
+		return static::$statusMap[ $this->status ];
+	}
+
 	public function refreshTotal() {
 
-		$tax = $this->tax1 - $this->tax2 - $this->tax3 - $this->tax4 - $this->tax5;
+		$tax = $this->tax1 + $this->tax2 + $this->tax3 + $this->tax4 + $this->tax5;
 
 		$this->total = $this->price - $this->discount - $tax;
 	}

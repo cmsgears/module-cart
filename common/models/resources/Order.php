@@ -581,17 +581,11 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	/**
 	 * Check whether order is cancelled.
 	 *
-	 * $param boolean $strict
 	 * @return boolean
 	 */
-	public function isCancelled( $strict = true ) {
+	public function isCancelled() {
 
-		if( $strict ) {
-
-			return $this->status == self::STATUS_CANCELLED;
-		}
-
-		return $this->status >= self::STATUS_CANCELLED;
+		return $this->status == self::STATUS_CANCELLED;
 	}
 
 	/**

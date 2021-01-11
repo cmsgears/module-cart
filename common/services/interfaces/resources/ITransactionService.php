@@ -21,7 +21,9 @@ interface ITransactionService extends IBaseTransactionService {
 
 	// Data Provider ------
 
-	public function getPageByOrderId( $orderId );
+	public function getPageByOrderId( $orderId, $config = [] );
+
+	public function getPageByInvoiceId( $invoiceId, $config = [] );
 
 	// Read ---------------
 
@@ -30,6 +32,10 @@ interface ITransactionService extends IBaseTransactionService {
 	public function getByOrderId( $orderId );
 
 	public function getFirstByOrderId( $orderId );
+
+	public function getByInvoiceId( $invoiceId );
+
+	public function getFirstByInvoiceId( $invoiceId );
 
 	// Read - Lists ----
 

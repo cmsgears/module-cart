@@ -10,7 +10,9 @@
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
+use Yii;
 use yii\data\Sort;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\cart\common\services\interfaces\resources\ITransactionService;
@@ -62,6 +64,9 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 
 	public function getPage( $config = [] ) {
 
+		$searchParam	= $config[ 'search-param' ] ?? 'keywords';
+		$searchColParam	= $config[ 'search-col-param' ] ?? 'search';
+
 		$defaultSort = isset( $config[ 'defaultSort' ] ) ? $config[ 'defaultSort' ] : [ 'id' => SORT_DESC ];
 
 		$modelClass	= static::$modelClass;
@@ -77,11 +82,23 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 					'default' => SORT_DESC,
 					'label' => 'Id'
 				],
+				'user' => [
+					'asc' => [ "user.name" => SORT_ASC ],
+					'desc' => [ "user.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'User'
+				],
 				'order' => [
 					'asc' => [ "$modelTable.orderId" => SORT_ASC ],
 					'desc' => [ "$modelTable.orderId" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Order'
+				],
+				'invoice' => [
+					'asc' => [ "$modelTable.invoiceId" => SORT_ASC ],
+					'desc' => [ "$modelTable.invoiceId" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Invoice'
 				],
 				'title' => [
 					'asc' => [ "$modelTable.title" => SORT_ASC ],
@@ -94,6 +111,12 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 					'desc' => [ "$modelTable.type" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Type'
+				],
+				'code' => [
+					'asc' => [ "$modelTable.code" => SORT_ASC ],
+					'desc' => [ "$modelTable.code" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Code'
 				],
 				'mode' => [
 					'asc' => [ "$modelTable.mode" => SORT_ASC ],
@@ -118,6 +141,12 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 					'desc' => [ "$modelTable.currency" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Currency'
+				],
+				'status' => [
+					'asc' => [ "$modelTable.status" => SORT_ASC ],
+					'desc' => [ "$modelTable.status" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Status'
 				],
 				'cdate' => [
 					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
@@ -154,18 +183,63 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 
 		// Searching --------
 
+		$searchCol		= Yii::$app->request->getQueryParam( $searchColParam );
+		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
+
+		$search = [
+			'user' => "user.name",
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content",
+			'code' => "$modelTable.code",
+			'mode' => "$modelTable.mode",
+			'service' => "$modelTable.service"
+		];
+
+		if( isset( $searchCol ) ) {
+
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search[ $searchCol ];
+		}
+		else if( isset( $keywordsCol ) ) {
+
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search;
+		}
+
 		// Reporting --------
+
+		$config[ 'report-col' ]	= $config[ 'report-col' ] ?? [
+			'user' => "user.name",
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content",
+			'status' => "$modelTable.status",
+			'type' => "$modelTable.type",
+			'code' => "$modelTable.code",
+			'mode' => "$modelTable.mode",
+			'service' => "$modelTable.service"
+		];
 
 		// Result -----------
 
 		return parent::getPage( $config );
 	}
 
-	public function getPageByOrderId( $orderId ) {
+	public function getPageByOrderId( $orderId, $config = [] ) {
 
 		$modelTable	= $this->getModelTable();
 
-		return $this->getPage( [ 'conditions' => [ "$modelTable.orderId" => $orderId ] ] );
+		$config[ 'conditions' ][ "$modelTable.orderId" ] = $orderId;
+
+		return $this->getPage( $config );
+	}
+
+	public function getPageByInvoiceId( $invoiceId, $config = [] ) {
+
+		$modelTable	= $this->getModelTable();
+
+		$config[ 'conditions' ][ "$modelTable.invoiceId" ] = $invoiceId;
+
+		return $this->getPage( $config );
 	}
 
 	// Read ---------------
@@ -184,6 +258,20 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 		$modelClass	= static::$modelClass;
 
 		return $modelClass::findFirstByOrderId( $orderId );
+	}
+
+	public function getByInvoiceId( $invoiceId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByInvoiceId( $invoiceId );
+	}
+
+	public function getFirstByInvoiceId( $invoiceId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findFirstByInvoiceId( $invoiceId );
 	}
 
 	// Read - Lists ----
@@ -208,6 +296,25 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 	}
 
 	// Update -------------
+
+	public function update( $model, $config = [] ) {
+
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+
+		$config[ 'attributes' ]	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'title', 'description', 'mode', 'code',
+			'amount', 'currency', 'service', 'link'
+		];
+
+		if( $admin ) {
+
+			$attributes	= ArrayHelper::merge( $attributes, [
+				'orderId', 'invoiceId'
+			]);
+		}
+
+		return parent::update( $model, $config );
+	}
 
 	// Delete -------------
 
