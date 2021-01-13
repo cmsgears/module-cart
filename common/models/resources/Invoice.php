@@ -134,7 +134,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	/**
 	 * Invoice refunded - money returned - mutually agreed by the customer and the vendor
 	 */
-	const STATUS_REFUNDED	=  5000;
+	const STATUS_REFUNDED	=  7000;
 
 	/**
 	 * Invoice signed and received by the customer, fulfilled by the vendor and customer

@@ -71,6 +71,7 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
+		$userTable	= Yii::$app->factory->get( 'userService' )->getModelTable();
 
 		// Sorting ----------
 
@@ -83,8 +84,8 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 					'label' => 'Id'
 				],
 				'user' => [
-					'asc' => [ "user.name" => SORT_ASC ],
-					'desc' => [ "user.name" => SORT_DESC ],
+					'asc' => [ "$userTable.name" => SORT_ASC ],
+					'desc' => [ "$userTable.name" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'User'
 				],
@@ -187,7 +188,7 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
 
 		$search = [
-			'user' => "user.name",
+			'user' => "$userTable.name",
 			'title' => "$modelTable.title",
 			'desc' => "$modelTable.description",
 			'content' => "$modelTable.content",
@@ -208,7 +209,7 @@ class TransactionService extends \cmsgears\payment\common\services\resources\Tra
 		// Reporting --------
 
 		$config[ 'report-col' ]	= $config[ 'report-col' ] ?? [
-			'user' => "user.name",
+			'user' => "$userTable.name",
 			'title' => "$modelTable.title",
 			'desc' => "$modelTable.description",
 			'content' => "$modelTable.content",

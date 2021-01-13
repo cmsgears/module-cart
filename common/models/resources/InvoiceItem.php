@@ -89,15 +89,17 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 	// Constants --------------
 
 	const STATUS_NEW		=   0;
-	const STATUS_CANCELLED	= 100;
-	const STATUS_DELIVERED	= 200;
-	const STATUS_RETURNED	= 300;
-	const STATUS_RECEIVED	= 400;
+	const STATUS_PAID		= 100;
+	const STATUS_CANCELLED	= 200;
+	const STATUS_DELIVERED	= 300;
+	const STATUS_RETURNED	= 400;
+	const STATUS_RECEIVED	= 500;
 
 	// Public -----------------
 
 	public static $statusMap = [
 		self::STATUS_NEW => 'New',
+		self::STATUS_PAID => 'Paid',
 		self::STATUS_CANCELLED => 'Cancelled',
 		self::STATUS_DELIVERED => 'Delivered',
 		self::STATUS_RETURNED => 'Returned',
@@ -106,6 +108,7 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 
 	public static $urlRevStatusMap = [
 		'new' => self::STATUS_NEW,
+		'paid' => self::STATUS_PAID,
 		'cancelled' => self::STATUS_CANCELLED,
 		'delivered' => self::STATUS_DELIVERED,
 		'returned' => self::STATUS_RETURNED,
@@ -114,6 +117,7 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 
 	public static $filterStatusMap = [
 		'new' => 'New',
+		'paid' => 'Paid',
 		'cancelled' => 'Cancelled',
 		'delivered' => 'Delivered',
 		'returned' => 'Returned',
