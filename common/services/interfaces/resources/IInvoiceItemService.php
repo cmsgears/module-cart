@@ -39,6 +39,18 @@ interface IInvoiceItemService extends IModelResourceService {
 
 	// Update -------------
 
+	public function updateStatus( $model, $status );
+
+	public function paid( $model, $config = [] );
+
+	public function cancel( $model, $config = [] );
+
+	public function deliver( $model, $config = [] );
+
+	public function back( $model, $config = [] );
+
+	public function receive( $model, $config = [] );
+
 	// Delete -------------
 
 	// Bulk ---------------

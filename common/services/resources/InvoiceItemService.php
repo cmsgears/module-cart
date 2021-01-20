@@ -314,6 +314,14 @@ class InvoiceItemService extends \cmsgears\core\common\services\base\ModelResour
 		return $model;
 	}
 
+	public function paid( $model, $config = [] ) {
+
+		if( !$model->isPaid() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_PAID );
+		}
+	}
+
 	public function cancel( $model, $config = [] ) {
 
 		if( !$model->isCancelled() ) {

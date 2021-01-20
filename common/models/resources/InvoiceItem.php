@@ -352,6 +352,11 @@ class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implem
 		return $this->status == self::STATUS_NEW;
 	}
 
+	public function isPaid() {
+
+		return $this->status == self::STATUS_PAID;
+	}
+
 	public function isCancelled() {
 
 		return $this->status == self::STATUS_CANCELLED;

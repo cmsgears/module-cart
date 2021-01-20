@@ -526,7 +526,7 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	public function paid( $model, $config = [] ) {
 
-		if( $model->status != Order::STATUS_PAID ) {
+		if( $model->status != Invoice::STATUS_PAID ) {
 
 			$this->updateStatus( $model, Invoice::STATUS_PAID );
 		}
