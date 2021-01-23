@@ -22,6 +22,7 @@ use cmsgears\cart\common\models\resources\Invoice;
 use cmsgears\cart\common\services\interfaces\resources\IInvoiceService;
 
 use cmsgears\core\common\services\traits\base\MultiSiteTrait;
+use cmsgears\core\common\services\traits\base\StatusTrait;
 
 use cmsgears\core\common\utilities\DateUtil;
 
@@ -66,6 +67,7 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 	// Traits ------------------------------------------------------
 
 	use MultiSiteTrait;
+	use StatusTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -433,10 +435,24 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 			$model->refreshTotal();
 		}
 
-		// Update Invoice
-		return parent::update( $model, [
+		// Model Checks
+		$oldStatus = $model->getOldAttribute( 'status' );
+
+		$model = parent::update( $model, [
 			'attributes' => $attributes
 		]);
+
+		// Check status change and notify User
+		if( isset( $model->userId ) && $oldStatus != $model->status ) {
+
+			$config[ 'users' ] = [ $model->userId ];
+
+			$config[ 'data' ][ 'message' ] = 'Invoice status changed.';
+
+			$this->checkStatusChange( $model, $oldStatus, $config );
+		}
+
+		return $model;
 	}
 
 	public function refreshTotal( $model ) {
@@ -467,9 +483,24 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		$model->status = $status;
 
-		return parent::update( $model, [
+		// Model Checks
+		$oldStatus = $model->getOldAttribute( 'status' );
+
+		$model = parent::update( $model, [
 			'attributes' => [ 'status' ]
 		]);
+
+		// Check status change and notify User
+		if( isset( $model->userId ) && $oldStatus != $model->status ) {
+
+			$config[ 'users' ] = [ $model->userId ];
+
+			$config[ 'data' ][ 'message' ] = 'Invoice status changed.';
+
+			$this->checkStatusChange( $model, $oldStatus, $config );
+		}
+
+		return $model;
 	}
 
 	public function approve( $model, $config = [] ) {

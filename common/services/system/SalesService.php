@@ -62,6 +62,7 @@ class SalesService extends \cmsgears\core\common\services\base\SystemService imp
 		$children	= isset( $config[ 'children' ] ) ? $config[ 'children' ] : false;
 		$status		= isset( $config[ 'status' ] ) ? $config[ 'status' ] : 'completed';
 		$status		= Order::$urlRevStatusMap[ $status ];
+		$currency	= isset( $config[ 'currency' ] ) ? $config[ 'currency' ] : 'USD';
 
 		$transactions	= [];
 		$transactionskv = [];
@@ -81,20 +82,24 @@ class SalesService extends \cmsgears\core\common\services\base\SystemService imp
 
 		if( $ignoreSite ) {
 
-			$query->where( "$orderTable.status=$status" );
+			$query->where( "$txnTable.currency=:currency AND $orderTable.status=:status", [
+				':currency' => $currency, ':status' => $status
+			]);
 		}
 		else {
 
-			$query->where( "$txnTable.siteId=$siteId AND $orderTable.status=$status" );
+			$query->where( "$txnTable.siteId=:sid AND $txnTable.currency=:currency AND $orderTable.status=:status", [
+				':sid' => $siteId, ':currency' => $currency, ':status' => $status
+			]);
 		}
 
 		if( $base ) {
 
-			$query->andWhere( " $orderTable.baseId IS NULL" );
+			$query->andWhere( "$orderTable.baseId IS NULL" );
 		}
 		else if( $children ) {
 
-			$query->andWhere( " $orderTable.baseId IS NOT NULL" );
+			$query->andWhere( "$orderTable.baseId IS NOT NULL" );
 		}
 
 		switch( $duration ) {
@@ -171,6 +176,7 @@ class SalesService extends \cmsgears\core\common\services\base\SystemService imp
 		$siteId		= isset( $config[ 'siteId' ] ) ? $config[ 'siteId' ] : Yii::$app->core->siteId;
 		$status		= isset( $config[ 'status' ] ) ? $config[ 'status' ] : 'completed';
 		$status		= Invoice::$urlRevStatusMap[ $status ];
+		$currency	= isset( $config[ 'currency' ] ) ? $config[ 'currency' ] : 'USD';
 
 		$transactions	= [];
 		$transactionskv = [];
@@ -190,11 +196,15 @@ class SalesService extends \cmsgears\core\common\services\base\SystemService imp
 
 		if( $ignoreSite ) {
 
-			$query->where( "$invoiceTable.status=$status" );
+			$query->where( "$txnTable.currency=:currency AND $invoiceTable.status=:status", [
+				':currency' => $currency, ':status' => $status
+			]);
 		}
 		else {
 
-			$query->where( "$txnTable.siteId=$siteId AND $invoiceTable.status=$status" );
+			$query->where( "$txnTable.siteId=:sid AND $txnTable.currency=:currency AND $invoiceTable.status=:status", [
+				':sid' => $siteId, ':currency' => $currency, ':status' => $status
+			]);
 		}
 
 		switch( $duration ) {

@@ -20,6 +20,7 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
 use cmsgears\core\common\models\interfaces\base\IMultiSite;
+use cmsgears\core\common\models\interfaces\base\IOwner;
 use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
@@ -29,6 +30,7 @@ use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
 use cmsgears\core\common\models\traits\base\MultiSiteTrait;
+use cmsgears\core\common\models\traits\base\OwnerTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
@@ -66,7 +68,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @since 1.0.0
  */
 class Cart extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
-	IContent, IData, IGridCache, IMultiSite {
+	IContent, IData, IGridCache, IMultiSite, IOwner {
 
 	// Variables ---------------------------------------------------
 
@@ -117,6 +119,7 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	use DataTrait;
 	use GridCacheTrait;
 	use MultiSiteTrait;
+	use OwnerTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -215,6 +218,12 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 				$this->siteId = Yii::$app->core->siteId;
 			}
 
+			// Default User
+			if( empty( $this->userId ) || $this->userId <= 0 ) {
+
+				$this->userId = null;
+			}
+
 			// Default Type
 			$this->type = $this->type ?? CoreGlobal::TYPE_DEFAULT;
 
@@ -232,6 +241,11 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 
 	// Cart ----------------------------------
 
+	/**
+	 * Returns the corresponding user.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
+	 */
 	public function getUser() {
 
 		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
@@ -365,7 +379,7 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user' ];
 
 		$config[ 'relations' ] = $relations;
 

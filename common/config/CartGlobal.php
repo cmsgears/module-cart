@@ -68,6 +68,9 @@ class CartGlobal {
 	const TEMPLATE_VIEW_PAYMENT_SUCCESS	= 'payment/success';
 	const TEMPLATE_VIEW_PAYMENT_FAILED	= 'payment/failed';
 
+	const TPL_NOTIFY_ORDER_STATUS_CHANGE = 'order-status-change';
+	const TPL_NOTIFY_INVOICE_STATUS_CHANGE = 'invoice-status-change';
+
 	// Config ----------------------------------------------------------
 
 	const CONFIG_CART = 'cart';

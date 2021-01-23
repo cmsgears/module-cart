@@ -12,13 +12,14 @@ namespace cmsgears\cart\common\services\interfaces\resources;
 // CMG Imports
 use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 use cmsgears\core\common\services\interfaces\base\IMultiSite;
+use cmsgears\core\common\services\interfaces\base\IStatus;
 
 /**
  * IOrderService declares methods specific to orders.
  *
  * @since 1.0.0
  */
-interface IOrderService extends IModelResourceService, IMultiSite {
+interface IOrderService extends IModelResourceService, IMultiSite, IStatus {
 
 	// Data Provider ------
 

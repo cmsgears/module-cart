@@ -64,6 +64,9 @@ class m161005_034404_cart_data extends \cmsgears\core\common\base\Migration {
 		// UOMs
 		$this->insertUom();
 		$this->insertUomConversions();
+
+		// Notification Templates
+		$this->insertNotificationTemplates();
 	}
 
 	private function insertRolePermission() {
@@ -364,6 +367,23 @@ class m161005_034404_cart_data extends \cmsgears\core\common\base\Migration {
 		];
 
 		$this->batchInsert( $this->prefix . 'cart_uom_conversion', $columns, $conversions );
+	}
+
+	public function insertNotificationTemplates() {
+
+		$site	= $this->site;
+		$master	= $this->master;
+
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'icon', 'type', 'active', 'description', 'classPath', 'dataForm', 'renderer', 'fileRender', 'layout', 'layoutGroup', 'viewPath', 'view', 'createdAt', 'modifiedAt', 'htmlOptions', 'message', 'content', 'data' ];
+
+		$templates = [
+			// Order
+			[ $master->id, $master->id, 'Order Status Changed', CartGlobal::TPL_NOTIFY_ORDER_STATUS_CHANGE, null, NotifyGlobal::TYPE_NOTIFICATION, true, 'Notification triggered on status change of order.', null, null, 'twig', false, null, false, null, null, DateUtil::getDateTime(), DateUtil::getDateTime(), null, 'Order status changed from <b>{{oldStatus}}</b> to <b>{{newStatus}}</b>', 'Status of the Order <b>{{model.code}}</b> has been changed from <b>{{oldStatus}}</b> to <b>{{newStatus}}</b>. {% if message|length %}{{message}}{% endif %} {% if config.link %}Please follow this <a href="{{config.link}}">link</a>.{% endif %}{% if config.adminLink %}Please follow this <a href="{{config.adminLink}}">link</a>.{% endif %}', '{"config":{"admin":"0","user":"1","direct":"1","adminEmail":"0","userEmail":"0","directEmail":"0"}}' ],
+			// Invoice
+			[ $master->id, $master->id, 'Invoice Status Changed', CartGlobal::TPL_NOTIFY_INVOICE_STATUS_CHANGE, null, NotifyGlobal::TYPE_NOTIFICATION, true, 'Notification triggered on status change of invoice.', null, null, 'twig', false, null, false, null, null, DateUtil::getDateTime(), DateUtil::getDateTime(), null, 'Invoice status changed from <b>{{oldStatus}}</b> to <b>{{newStatus}}</b>', 'Status of the Invoice <b>{{model.code}}</b> has been changed from <b>{{oldStatus}}</b> to <b>{{newStatus}}</b>. {% if message|length %}{{message}}{% endif %} {% if config.link %}Please follow this <a href="{{config.link}}">link</a>.{% endif %}{% if config.adminLink %}Please follow this <a href="{{config.adminLink}}">link</a>.{% endif %}', '{"config":{"admin":"0","user":"1","direct":"1","adminEmail":"0","userEmail":"0","directEmail":"0"}}' ]
+		];
+
+		$this->batchInsert( $this->prefix . 'core_template', $columns, $templates );
 	}
 
 	public function down() {

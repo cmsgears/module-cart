@@ -12,13 +12,14 @@ namespace cmsgears\cart\common\services\interfaces\resources;
 // CMG Imports
 use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 use cmsgears\core\common\services\interfaces\base\IMultiSite;
+use cmsgears\core\common\services\interfaces\base\IStatus;
 
 /**
  * IInvoiceService declares methods specific to invoices.
  *
  * @since 1.0.0
  */
-interface IInvoiceService extends IModelResourceService, IMultiSite {
+interface IInvoiceService extends IModelResourceService, IMultiSite, IStatus {
 
 	// Data Provider ------
 

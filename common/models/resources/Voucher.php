@@ -21,15 +21,18 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
 use cmsgears\core\common\models\interfaces\base\IMultiSite;
+use cmsgears\core\common\models\interfaces\base\IOwner;
 use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 use cmsgears\core\common\models\interfaces\resources\IVisual;
 
+use cmsgears\core\common\models\entities\User;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
 use cmsgears\core\common\models\traits\base\MultiSiteTrait;
+use cmsgears\core\common\models\traits\base\OwnerTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
@@ -42,6 +45,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @property integer $id
  * @property integer $siteId
+ * @property integer $userId
  * @property integer $bannerId
  * @property integer $mbannerId
  * @property integer $createdBy
@@ -74,7 +78,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @since 1.0.0
  */
 class Voucher extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
-	IContent, IData, IGridCache, IMultiSite, IVisual {
+	IContent, IData, IGridCache, IMultiSite, IOwner, IVisual {
 
 	// Variables ---------------------------------------------------
 
@@ -157,6 +161,7 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 	use DataTrait;
 	use GridCacheTrait;
 	use MultiSiteTrait;
+	use OwnerTrait;
 	use VisualTrait;
 
 	// Constructor and Initialisation ------------------------------
@@ -210,7 +215,7 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 			[ [ 'scheme', 'status', 'taxType', 'usageLimit', 'usageCount' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'freeShipping', 'gridCacheValid' ], 'boolean' ],
 			[ [ 'amount', 'minPurchase', 'maxDiscount' ], 'number', 'min' => 0 ],
-			[ [ 'siteId', 'bannerId', 'mbannerId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'siteId', 'userId', 'bannerId', 'mbannerId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ [ 'startsAt', 'endsAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ 'endsAt', 'compareDate', 'compareAttribute' => 'startsAt', 'operator' => '>=', 'type' => 'datetime', 'message' => 'End date and time must be greater than or equal to Start date and time.' ]
@@ -233,7 +238,7 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 	public function attributeLabels() {
 
 		return [
-			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
 			'parentType' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT_TYPE ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
@@ -273,6 +278,12 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 				$this->siteId = Yii::$app->core->siteId;
 			}
 
+			// Default User
+			if( empty( $this->userId ) || $this->userId <= 0 ) {
+
+				$this->userId = null;
+			}
+
 			// Default Type
 			$this->type = $this->type ?? CoreGlobal::TYPE_DEFAULT;
 
@@ -289,6 +300,16 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 	// Validators ----------------------------
 
 	// Voucher -------------------------------
+
+	/**
+	 * Returns the corresponding user.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
+	 */
+	public function getUser() {
+
+		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
+	}
 
 	/**
 	 * Generate and set the code of voucher.
@@ -350,7 +371,7 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user' ];
 
 		$config[ 'relations' ] = $relations;
 

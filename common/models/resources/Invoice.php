@@ -21,6 +21,7 @@ use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
 use cmsgears\core\common\models\interfaces\base\IMultiSite;
+use cmsgears\core\common\models\interfaces\base\IOwner;
 use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
@@ -33,6 +34,7 @@ use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
 use cmsgears\core\common\models\traits\base\MultiSiteTrait;
+use cmsgears\core\common\models\traits\base\OwnerTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
@@ -83,7 +85,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @since 1.0.0
  */
 class Invoice extends \cmsgears\core\common\models\base\ModelResource implements IAddress, IAuthor,
-	IContent, IData, IGridCache, IMultiSite {
+	IContent, IData, IGridCache, IMultiSite, IOwner {
 
 	// Variables ---------------------------------------------------
 
@@ -217,6 +219,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	use DataTrait;
 	use GridCacheTrait;
 	use MultiSiteTrait;
+	use OwnerTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -326,6 +329,12 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 				$this->siteId = Yii::$app->core->siteId;
 			}
 
+			// Default User
+			if( empty( $this->userId ) || $this->userId <= 0 ) {
+
+				$this->userId = null;
+			}
+
 			// Default Type
 			$this->type = $this->type ?? CoreGlobal::TYPE_DEFAULT;
 
@@ -343,11 +352,21 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 
 	// Invoice -------------------------------
 
+	/**
+	 * Returns the corresponding order.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Order
+	 */
 	public function getOrder() {
 
 		return $this->hasOne( Order::class, [ 'id' => 'orderId' ] );
 	}
 
+	/**
+	 * Returns the corresponding user.
+	 *
+	 * @return \cmsgears\core\common\models\entities\User
+	 */
 	public function getUser() {
 
 		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
@@ -627,7 +646,7 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user' ];
 
 		$config[ 'relations' ] = $relations;
 

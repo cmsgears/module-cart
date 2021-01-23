@@ -417,6 +417,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 		$this->createTable( $this->prefix . 'cart_voucher', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'siteId' => $this->bigInteger( 20 )->notNull(),
+			'userId' => $this->bigInteger( 20 ),
 			'bannerId' => $this->bigInteger( 20 ),
 			'mbannerId' => $this->bigInteger( 20 ),
 			'createdBy' => $this->bigInteger( 20 )->notNull(),
@@ -451,6 +452,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Index for columns creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_site', $this->prefix . 'cart_voucher', 'siteId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'voucher_user', $this->prefix . 'cart_voucher', 'userId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_banner', $this->prefix . 'cart_voucher', 'bannerId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_mbanner', $this->prefix . 'cart_voucher', 'mbannerId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_creator', $this->prefix . 'cart_voucher', 'createdBy' );
@@ -524,6 +526,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Voucher
 		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_site', $this->prefix . 'cart_voucher', 'siteId', $this->prefix . 'core_site', 'id', 'RESTRICT' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_user', $this->prefix . 'cart_voucher', 'userId', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_banner', $this->prefix . 'cart_voucher', 'bannerId', $this->prefix . 'core_file', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_mbanner', $this->prefix . 'cart_voucher', 'mbannerId', $this->prefix . 'core_file', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'voucher_creator', $this->prefix . 'cart_voucher', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
@@ -619,6 +622,7 @@ class m161005_034400_cart extends \cmsgears\core\common\base\Migration {
 
 		// Voucher
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_site', $this->prefix . 'cart_voucher' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_user', $this->prefix . 'cart_voucher' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_banner', $this->prefix . 'cart_voucher' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_mbanner', $this->prefix . 'cart_voucher' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'voucher_creator', $this->prefix . 'cart_voucher' );

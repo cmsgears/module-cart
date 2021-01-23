@@ -23,6 +23,7 @@ use cmsgears\cart\common\models\resources\Order;
 use cmsgears\cart\common\services\interfaces\resources\IOrderService;
 
 use cmsgears\core\common\services\traits\base\MultiSiteTrait;
+use cmsgears\core\common\services\traits\base\StatusTrait;
 
 use cmsgears\core\common\utilities\DateUtil;
 
@@ -67,6 +68,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 	// Traits ------------------------------------------------------
 
 	use MultiSiteTrait;
+	use StatusTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -386,10 +388,24 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 			$attributes	= ArrayHelper::merge( $attributes, [ 'status' ] );
 		}
 
-		// Update Cart
-		return parent::update( $model, [
+		// Model Checks
+		$oldStatus = $model->getOldAttribute( 'status' );
+
+		$model = parent::update( $model, [
 			'attributes' => $attributes
 		]);
+
+		// Check status change and notify User
+		if( isset( $model->userId ) && $oldStatus != $model->status ) {
+
+			$config[ 'users' ] = [ $model->userId ];
+
+			$config[ 'data' ][ 'message' ] = 'Order status changed.';
+
+			$this->checkStatusChange( $model, $oldStatus, $config );
+		}
+
+		return $model;
 	}
 
 	public function updateCode( $model, $code ) {
@@ -405,9 +421,24 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 		$model->status = $status;
 
-		return parent::update( $model, [
+		// Model Checks
+		$oldStatus = $model->getOldAttribute( 'status' );
+
+		$model = parent::update( $model, [
 			'attributes' => [ 'status' ]
 		]);
+
+		// Check status change and notify User
+		if( isset( $model->userId ) && $oldStatus != $model->status ) {
+
+			$config[ 'users' ] = [ $model->userId ];
+
+			$config[ 'data' ][ 'message' ] = 'Order status changed.';
+
+			$this->checkStatusChange( $model, $oldStatus, $config );
+		}
+
+		return $model;
 	}
 
 	public function processCancel( $model, $checkChildren = true, $checkBase = true ) {
