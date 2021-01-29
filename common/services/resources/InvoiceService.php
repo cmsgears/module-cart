@@ -447,6 +447,8 @@ class InvoiceService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 			$config[ 'users' ] = [ $model->userId ];
 
+			$config[ 'template' ] = CartGlobal::TPL_NOTIFY_INVOICE_STATUS_CHANGE;
+
 			$config[ 'data' ][ 'message' ] = 'Invoice status changed.';
 
 			$this->checkStatusChange( $model, $oldStatus, $config );
