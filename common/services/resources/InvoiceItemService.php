@@ -15,21 +15,19 @@ use yii\data\Sort;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
+use cmsgears\cart\common\models\resources\InvoiceItem;
+
+use cmsgears\cart\common\services\interfaces\resources\IInvoiceItemService;
+
+// CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\cart\common\models\resources\Voucher;
-
-use cmsgears\core\common\services\interfaces\resources\IFileService;
-use cmsgears\cart\common\services\interfaces\resources\IVoucherService;
-
-use cmsgears\core\common\services\traits\base\MultiSiteTrait;
-
 /**
- * VoucherService provide service methods of voucher model.
+ * InvoiceItemService provide service methods of order item model.
  *
  * @since 1.0.0
  */
-class VoucherService extends \cmsgears\core\common\services\base\ModelResourceService implements IVoucherService {
+class InvoiceItemService extends \cmsgears\core\common\services\base\ModelResourceService implements IInvoiceItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -39,9 +37,9 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\resources\Voucher';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\InvoiceItem';
 
-	public static $parentType = CartGlobal::TYPE_VOUCHER;
+	public static $parentType = CartGlobal::TYPE_INVOICE_ITEM;
 
 	// Protected --------------
 
@@ -55,16 +53,7 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	// Traits ------------------------------------------------------
 
-	use MultiSiteTrait;
-
 	// Constructor and Initialisation ------------------------------
-
-	public function __construct( IFileService $fileService, $config = [] ) {
-
-		$this->fileService = $fileService;
-
-		parent::__construct( $config );
-	}
 
 	// Instance methods --------------------------------------------
 
@@ -76,7 +65,7 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	// CMG parent classes --------------------
 
-	// VoucherService ------------------------
+	// InvoiceItemService --------------------
 
 	// Data Provider ------
 
@@ -100,23 +89,11 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 					'default' => SORT_DESC,
 					'label' => 'Id'
 				],
-				'name' => [
-					'asc' => [ "$modelTable.name" => SORT_ASC ],
-					'desc' => [ "$modelTable.name" => SORT_DESC ],
+				'invoice' => [
+					'asc' => [ "$modelTable.invoiceId" => SORT_ASC ],
+					'desc' => [ "$modelTable.invoiceId" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Name'
-				],
-				'title' => [
-					'asc' => [ "$modelTable.title" => SORT_ASC ],
-					'desc' => [ "$modelTable.title" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Title'
-				],
-				'status' => [
-					'asc' => [ "$modelTable.status" => SORT_ASC ],
-					'desc' => [ "$modelTable.status" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Status'
+					'label' => 'Invoice'
 				],
 				'type' => [
 					'asc' => [ "$modelTable.type" => SORT_ASC ],
@@ -124,17 +101,41 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 					'default' => SORT_DESC,
 					'label' => 'Type'
 				],
-				'scheme' => [
-					'asc' => [ "$modelTable.scheme" => SORT_ASC ],
-					'desc' => [ "$modelTable.scheme" => SORT_DESC ],
+				'name' => [
+					'asc' => [ "$modelTable.name" => SORT_ASC ],
+					'desc' => [ "$modelTable.name" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Scheme'
+					'label' => 'Name'
 				],
-				'amount' => [
-					'asc' => [ "$modelTable.amount" => SORT_ASC ],
-					'desc' => [ "$modelTable.amount" => SORT_DESC ],
+				'sku' => [
+					'asc' => [ "$modelTable.sku" => SORT_ASC ],
+					'desc' => [ "$modelTable.sku" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Amount'
+					'label' => 'SKU'
+				],
+				'status' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Status'
+				],
+				'price' => [
+					'asc' => [ "$modelTable.price" => SORT_ASC ],
+					'desc' => [ "$modelTable.price" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Price'
+				],
+				'discount' => [
+					'asc' => [ "$modelTable.discount" => SORT_ASC ],
+					'desc' => [ "$modelTable.discount" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Discount'
+				],
+				'total' => [
+					'asc' => [ "$modelTable.total" => SORT_ASC ],
+					'desc' => [ "$modelTable.total" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Total'
 				],
 				'cdate' => [
 					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
@@ -166,15 +167,8 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		// Filters ----------
 
-		// Params
-		$scheme	= Yii::$app->request->getQueryParam( 'scheme' );
+		// Filter - Status
 		$status	= Yii::$app->request->getQueryParam( 'status' );
-
-		// Filter - Scheme
-		if( isset( $scheme ) && empty( $config[ 'conditions' ][ "$modelTable.scheme" ] ) ) {
-
-			$config[ 'conditions' ][ "$modelTable.scheme" ] = $scheme;
-		}
 
 		// Filter - Status
 		if( isset( $status ) && empty( $config[ 'conditions' ][ "$modelTable.status" ] ) && isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
@@ -189,8 +183,7 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		$search = [
 			'name' => "$modelTable.name",
-			'title' => "$modelTable.title",
-			'desc' => "$modelTable.description",
+			'sku' => "$modelTable.sku",
 			'content' => "$modelTable.content"
 		];
 
@@ -207,12 +200,11 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 		$config[ 'report-col' ]	= $config[ 'report-col' ] ?? [
 			'name' => "$modelTable.name",
-			'title' => "$modelTable.title",
-			'desc' => "$modelTable.description",
+			'sku' => "$modelTable.sku",
 			'content' => "$modelTable.content",
-			'scheme' => "$modelTable.scheme",
-			'status' => "$modelTable.status",
-			'amount' => "$modelTable.amount"
+			'status' => 'Price',
+			'price' => 'Discount',
+			'discount' => 'Total'
 		];
 
 		// Result -----------
@@ -220,15 +212,24 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 		return parent::getPage( $config );
 	}
 
+	public function getPageByInvoiceId( $invoiceId, $config = [] ) {
+
+		$modelTable	= $this->getModelTable();
+
+		$config[ 'conditions' ][ "$modelTable.invoiceId" ] = $invoiceId;
+
+		return $this->getPage( $config );
+	}
+
 	// Read ---------------
 
 	// Read - Models ---
 
-	public function getByCode( $code ) {
+	public function getByInvoiceId( $invoiceId ) {
 
-		$modelClass = self::$modelClass;
+		$modelClass	= static::$modelClass;
 
-		return $modelClass::getByCode( $code );
+		return $modelClass::findByInvoiceId( $invoiceId );
 	}
 
 	// Read - Lists ----
@@ -239,6 +240,38 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	// Create -------------
 
+	public function create( $model, $config = [] ) {
+
+		// Update Item Total
+		$model->refreshTotal();
+
+		$model = parent::create( $model, $config );
+
+		Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+		return $model;
+	}
+
+	// Create Invoice Item from Order Item
+	public function createFromOrderItem( $invoice, $orderItem, $config = [] ) {
+
+		$model = $this->getModelObject();
+
+		// Set Attributes
+		$model->invoiceId = $invoice->id;
+
+		// Copy from Cart Item
+		$model->copyForUpdateFrom( $orderItem, [
+			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
+			'parentId', 'parentType', 'type', 'name', 'sku', 'status', 'price', 'discount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5', 'total',
+			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius'
+		]);
+
+		$model->save();
+
+		return $model;
+	}
+
 	// Update -------------
 
 	public function update( $model, $config = [] ) {
@@ -246,60 +279,82 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 
 		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
-			'name', 'code', 'amount', 'startTime', 'endTime', 'scheme'
+			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
+			'name', 'sku', 'price', 'discount', 'tax1', 'tax2', 'tax3', 'tax4', 'tax5', 'total',
+			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius',
+			'content'
 		];
 
 		if( $admin ) {
 
-			$attributes	= ArrayHelper::merge( $attributes, [ 'status' ] );
+			$attributes	= ArrayHelper::merge( $attributes, [ 'invoiceId', 'status' ] );
 		}
 
-		return parent::update( $model, [
+		// Update Item Total
+		$model->refreshTotal();
+
+		$model = parent::update( $model, [
 			'attributes' => $attributes
 		]);
+
+		// Update Invoice Total
+		Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+		return $model;
 	}
 
 	public function updateStatus( $model, $status ) {
 
-		return parent::update( $model, [
-			'status' => $status
-		]);
+		$model->status = $status;
+
+		$model->update();
+
+		Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+		return $model;
 	}
 
-	public function activate( $model ) {
+	public function paid( $model, $config = [] ) {
 
-		return $this->updateStatus( $model, Voucher::STATUS_ACTIVE );
+		if( !$model->isPaid() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_PAID );
+		}
 	}
 
-	public function block( $model ) {
+	public function cancel( $model, $config = [] ) {
 
-		return $this->updateStatus( $model, Voucher::STATUS_BLOCKED );
+		if( !$model->isCancelled() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_CANCELLED );
+		}
+	}
+
+	public function deliver( $model, $config = [] ) {
+
+		if( !$model->isDelivered() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_DELIVERED );
+		}
+	}
+
+	public function back( $model, $config = [] ) {
+
+		if( !$model->isReturned() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_RETURNED );
+		}
+	}
+
+	public function receive( $model, $config = [] ) {
+
+		if( !$model->isReceived() ) {
+
+			$this->updateStatus( $model, InvoiceItem::STATUS_RECEIVED );
+		}
 	}
 
 	// Delete -------------
-
-	public function delete( $model, $config = [] ) {
-
-		$transaction = Yii::$app->db->beginTransaction();
-
-		try {
-
-			// Delete files
-			$this->fileService->deleteMultiple( [ $model->banner, $model->mbanner ] );
-
-			// Commit
-			$transaction->commit();
-		}
-		catch( Exception $e ) {
-
-			$transaction->rollBack();
-
-			throw new Exception( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_DEPENDENCY )  );
-		}
-
-		// Delete model
-		return parent::delete( $model, $config );
-	}
 
 	// Bulk ---------------
 
@@ -311,15 +366,28 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 				switch( $action ) {
 
-					case 'activate': {
+					case 'cancel': {
 
-						$this->activate( $model );
+						$this->cancel( $model );
 
 						break;
 					}
-					case 'block': {
+					case 'deliver': {
 
-						$this->block( $model );
+						$this->deliver( $model );
+
+						break;
+					}
+
+					case 'back': {
+
+						$this->back( $model );
+
+						break;
+					}
+					case 'receive': {
+
+						$this->receive( $model );
 
 						break;
 					}
@@ -354,7 +422,7 @@ class VoucherService extends \cmsgears\core\common\services\base\ModelResourceSe
 
 	// CMG parent classes --------------------
 
-	// VoucherService ------------------------
+	// InvoiceItemService --------------------
 
 	// Data Provider ------
 

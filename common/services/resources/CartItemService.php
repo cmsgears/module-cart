@@ -10,20 +10,17 @@
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
-use Yii;
 use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\cart\common\services\interfaces\resources\ICartItemService;
-
-use cmsgears\core\common\services\base\ModelResourceService;
 
 /**
  * CartItemService provide service methods of cart item model.
  *
  * @since 1.0.0
  */
-class CartItemService extends ModelResourceService implements ICartItemService {
+class CartItemService extends \cmsgears\core\common\services\base\ModelResourceService implements ICartItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -33,7 +30,7 @@ class CartItemService extends ModelResourceService implements ICartItemService {
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\entities\CartItem';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\CartItem';
 
 	// Protected --------------
 
@@ -106,12 +103,18 @@ class CartItemService extends ModelResourceService implements ICartItemService {
 
 	public function update( $model, $config = [] ) {
 
-		$attributes		= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'type', 'price', 'discount', 'total', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'keep' ];
-		$addAttributes	= isset( $config[ 'addAttributes' ] ) ? $config[ 'addAttributes' ] : [ ];
-		$attributes		= ArrayHelper::merge( $attributes, $addAttributes );
+		$attributes = isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
+			'type', 'price', 'discount', 'total', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length',
+			'width', 'height', 'radius', 'keep'
+		];
 
-		$user				= Yii::$app->user->getIdentity();
-		$model->modifiedBy	= isset( $user ) ? $user->id : null;
+		$addAttributes = isset( $config[ 'addAttributes' ] ) ? $config[ 'addAttributes' ] : [];
+
+		if( count( $addAttributes ) > 0 ) {
+
+			$attributes = ArrayHelper::merge( $attributes, $addAttributes );
+		}
 
 		// Update Cart Item
 		return parent::update( $model, [

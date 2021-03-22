@@ -12,8 +12,6 @@ namespace cmsgears\cart\common\models\resources;
 // CMG Imports
 use cmsgears\cart\common\models\base\CartTables;
 
-use cmsgears\core\common\models\base\Resource;
-
 /**
  * UomConversion represent conversion factor from one unit to other. It must use the convertible
  * units as source and target.
@@ -28,7 +26,7 @@ use cmsgears\core\common\models\base\Resource;
  *
  * @since 1.0.0
  */
-class UomConversion extends Resource {
+class UomConversion extends \cmsgears\core\common\models\base\Resource {
 
 	// Variables ---------------------------------------------------
 
@@ -149,8 +147,9 @@ class UomConversion extends Resource {
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'source', 'target' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'source', 'target' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}

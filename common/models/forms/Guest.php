@@ -27,7 +27,7 @@ class Guest extends \yii\base\Model {
 	public $firstName;
 	public $lastName;
 	public $email;
-	public $phone;
+	public $mobile;
 
 	public $captcha;
 	public $captchaAction;	// Captcha url
@@ -55,23 +55,24 @@ class Guest extends \yii\base\Model {
 		$rules = [
 			// Required, Safe
 			[ [ 'firstName', 'lastName', 'email' ], 'required' ],
-			[ 'phone', 'required', 'on' => [ 'phone', 'phone-captcha' ] ],
+			[ 'mobile', 'required', 'on' => [ 'mobile', 'mobile-captcha' ] ],
+			[ 'email', 'email' ],
 			// Text Limit
-			[ [ 'email', 'phone' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-			// Other
-			[ 'email', 'email' ]
+			[ 'mobile', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'firstName', 'lastName' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ 'email', 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ]
 		];
 
 		if( empty( $this->captchaAction ) ) {
 
-			$this->captchaAction	= '/cart/cart/captcha';
+			$this->captchaAction = '/cart/cart/captcha';
 		}
 
-		$rules[] = [ 'captcha', 'captcha', 'captchaAction' => $this->captchaAction, 'on' => [ 'captcha', 'phone-captcha' ] ];
+		$rules[] = [ 'captcha', 'captcha', 'captchaAction' => $this->captchaAction, 'on' => [ 'captcha', 'mobile-captcha' ] ];
 
 		if( Yii::$app->core->trimFieldValue ) {
 
-			$trim[] = [ [ 'firstName', 'lastName', 'email', 'phone' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+			$trim[] = [ [ 'firstName', 'lastName', 'email', 'mobile' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
 			return ArrayHelper::merge( $trim, $rules );
 		}
@@ -85,7 +86,7 @@ class Guest extends \yii\base\Model {
 			'firstName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FIRSTNAME ),
 			'lastName' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_LASTNAME ),
 			'email' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_EMAIL ),
-			'phone' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PHONE )
+			'mobile' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_MOBILE )
 		];
 	}
 

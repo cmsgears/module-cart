@@ -29,9 +29,9 @@ interface IUomService extends IResourceService {
 
 	// Read - Maps -----
 
-	public function getIdNameMapByGroup( $group, $default = true );
+	public function getIdNameMapByGroup( $group, $config = [] );
 
-	public function getIdNameMapByGroups( $groups, $default = true );
+	public function getIdNameMapByGroups( $groups, $config = [] );
 
 	public function getMapForConversion();
 

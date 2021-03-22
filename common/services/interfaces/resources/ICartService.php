@@ -11,13 +11,14 @@ namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
 use cmsgears\core\common\services\interfaces\base\IModelResourceService;
+use cmsgears\core\common\services\interfaces\base\IMultiSite;
 
 /**
  * IOrderItemService declares methods specific to order items.
  *
  * @since 1.0.0
  */
-interface ICartService extends IModelResourceService {
+interface ICartService extends IModelResourceService, IMultiSite {
 
 	public function setCartItemService( ICartItemService $cartItemService );
 
@@ -27,17 +28,28 @@ interface ICartService extends IModelResourceService {
 
 	// Read - Models ---
 
+	/**
+	 * Find and return the cart using the given token. It creates the cart in case cart not found.
+	 *
+	 * @param string $token
+	 */
 	public function getByToken( $token );
 
-	public function getByModelToken( $model, $type );
-
+	/**
+	 * Find and return the cart using the given user id. It creates the cart in case cart not found.
+	 *
+	 * @param string $userId
+	 */
 	public function getByUserId( $userId );
 
-	public function getByParent( $parentId, $parentType, $first = true );
 
-	public function getByType( $parentId, $parentType, $type );
-
-	public function getActiveByParent( $parentId, $parentType );
+	/**
+	 * Find and return the cart using the given user id, parent id, and parent type. It creates
+	 * the cart in case cart not found.
+	 *
+	 * @param string $userId
+	 */
+	public function getByUserIdParent( $userId, $parentId, $parentType );
 
 	// Read - Lists ----
 
@@ -47,13 +59,13 @@ interface ICartService extends IModelResourceService {
 
 	// Create -------------
 
-	public function createByUserId( $userId );
-
 	// Update -------------
 
-	public function updateStatus( $model, $status, $config = [] );
+	public function updateStatus( $model, $status );
 
-	public function setAbandoned( $model, $config = [] );
+	public function setAbandoned( $model );
+
+	public function setSuccess( $model );
 
 	// Delete -------------
 

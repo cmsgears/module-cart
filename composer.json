@@ -1,6 +1,6 @@
 {
 	"name": "cmsgears/module-cart",
-	"description": "The Cart Module for CMSGears based projects. It's required for all the projects requiring cart and order system.",
+	"description": "The Cart Module provides the base options to manage cart and orders.",
 	"homepage": "http://www.cmsgears.com",
 	"type": "package",
 	"keywords": [ "yii2", "cmsgears", "module", "cart" ],

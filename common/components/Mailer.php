@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\cart\common\components;
 
 /**
@@ -12,7 +20,8 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Constants --------------
 
-	const MAIL_STATUS	= 'status';
+	const MAIL_ORDER_STATUS		= 'order/status';
+	const MAIL_INVOICE_STATUS	= 'invoice/status';
 
 	// Public -----------------
 
@@ -22,8 +31,8 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Public -----------------
 
-	public $htmlLayout	= '@cmsgears/module-cart/common/mails/layouts/html';
-	public $textLayout	= '@cmsgears/module-cart/common/mails/layouts/text';
+	public $htmlLayout	= '@cmsgears/module-core/common/mails/layouts/html';
+	public $textLayout	= '@cmsgears/module-core/common/mails/layouts/text';
 	public $viewPath	= '@cmsgears/module-cart/common/mails/views';
 
 	// Protected --------------
@@ -46,18 +55,56 @@ class Mailer extends \cmsgears\core\common\base\Mailer {
 
 	// Mailer --------------------------------
 
-	public function sendStatusMail( $order, $user = null ) {
+	public function sendOrderStatusMail( $order, $pdf ) {
 
-		$fromEmail 	= $this->mailProperties->getSenderEmail();
-		$fromName 	= $this->mailProperties->getSenderName();
-		$status		= $order->getStatusStr();
-		$user		= isset( $user ) ? $user : $order->creator;
-		$toEmail	= $user->email;
+		$user		= $order->user;
+		$email		= $user->email;
+		$fromEmail  = $this->mailProperties->getSenderEmail();
+		$fromName   = $this->mailProperties->getSenderName();
 
-		$this->getMailer()->compose( self::MAIL_STATUS, [ 'coreProperties' => $this->coreProperties, 'order' => $order, 'user' => $user ] )
-			->setTo( $toEmail )
+		if( empty( $email ) ) {
+
+			return;
+		}
+
+		// Send Mail
+		$mail = $this->getMailer()->compose( self::MAIL_ORDER_STATUS, [ 'coreProperties' => $this->coreProperties, 'order' => $order, 'user' => $user ] )
+			->setTo( $email )
 			->setFrom( [ $fromEmail => $fromName ] )
-			->setSubject( "Order $status | " . $this->coreProperties->getSiteName() )
-			->send();
+			->setSubject( "Order Status | " . $this->coreProperties->getSiteName() );
+
+		if( $pdf ) {
+
+			$mail->attachContent( $pdf, [ 'fileName' => "Order-{$order->code}.pdf", 'contentType' => 'application/pdf' ] );
+		}
+
+		$mail->send();
 	}
+
+	public function sendInvoiceStatusMail( $invoice, $pdf ) {
+
+		$user		= $invoice->user;
+		$email		= $user->email;
+		$fromEmail  = $this->mailProperties->getSenderEmail();
+		$fromName   = $this->mailProperties->getSenderName();
+
+		if( empty( $email ) ) {
+
+			return;
+		}
+
+		// Send Mail
+		$mail = $this->getMailer()->compose( self::MAIL_ORDER_STATUS, [ 'coreProperties' => $this->coreProperties, 'invoice' => $invoice, 'user' => $user ] )
+			->setTo( $email )
+			->setFrom( [ $fromEmail => $fromName ] )
+			->setSubject( "Invoice Status | " . $this->coreProperties->getSiteName() );
+
+		if( $pdf ) {
+
+			$mail->attachContent( $pdf, [ 'fileName' => "Invoice-{$invoice->code}.pdf", 'contentType' => 'application/pdf' ] );
+		}
+
+		$mail->send();
+	}
+
 }

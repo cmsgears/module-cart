@@ -10,32 +10,22 @@
 namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
-use cmsgears\payment\common\services\interfaces\resources\ITransactionService as IBaseTransactionService;
+use cmsgears\core\common\services\interfaces\base\IModelResourceService;
 
 /**
- * ITransactionService declares methods specific to order transactions.
+ * IInvoiceItemService declares methods specific to invoice items.
  *
  * @since 1.0.0
  */
-interface ITransactionService extends IBaseTransactionService {
+interface IInvoiceItemService extends IModelResourceService {
 
 	// Data Provider ------
-
-	public function getPageByOrderId( $orderId, $config = [] );
-
-	public function getPageByInvoiceId( $invoiceId, $config = [] );
 
 	// Read ---------------
 
 	// Read - Models ---
 
-	public function getByOrderId( $orderId );
-
-	public function getFirstByOrderId( $orderId );
-
 	public function getByInvoiceId( $invoiceId );
-
-	public function getFirstByInvoiceId( $invoiceId );
 
 	// Read - Lists ----
 
@@ -45,7 +35,21 @@ interface ITransactionService extends IBaseTransactionService {
 
 	// Create -------------
 
+	public function createFromOrderItem( $invoice, $orderItem, $config = [] );
+
 	// Update -------------
+
+	public function updateStatus( $model, $status );
+
+	public function paid( $model, $config = [] );
+
+	public function cancel( $model, $config = [] );
+
+	public function deliver( $model, $config = [] );
+
+	public function back( $model, $config = [] );
+
+	public function receive( $model, $config = [] );
 
 	// Delete -------------
 

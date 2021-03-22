@@ -15,13 +15,14 @@ use Yii;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\payment\common\models\resources\Transaction as BaseTransaction;
-
 /**
  * Transaction represents a financial transaction.
  *
  * @property integer $id
+ * @property integer $siteId
+ * @property integer $userId
  * @property integer $orderId
+ * @property integer $invoiceId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -45,8 +46,10 @@ use cmsgears\payment\common\models\resources\Transaction as BaseTransaction;
  * @property string $gridCache
  * @property boolean $gridCacheValid
  * @property datetime $gridCachedAt
+ *
+ * @since 1.0.0
  */
-class Transaction extends BaseTransaction {
+class Transaction extends \cmsgears\payment\common\models\resources\Transaction {
 
 	// Variables ---------------------------------------------------
 
@@ -87,7 +90,7 @@ class Transaction extends BaseTransaction {
 
 		$rules = parent::rules();
 
-		$rules[] = [ 'orderId', 'number', 'integerOnly' => true, 'min' => 1 ];
+		$rules[] = [ [ 'orderId', 'invoiceId' ], 'number', 'integerOnly' => true, 'min' => 1 ];
 
 		return $rules;
 	}
@@ -100,6 +103,7 @@ class Transaction extends BaseTransaction {
 		$labels	= parent::attributeLabels();
 
 		$labels[ 'orderId' ] = Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER );
+		$labels[ 'invoiceId' ] = Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_INVOICE );
 
 		return $labels;
 	}
@@ -122,6 +126,16 @@ class Transaction extends BaseTransaction {
 		return $this->hasOne( Order::class, [ 'id' => 'orderId' ] );
 	}
 
+	/**
+	 * Return the corresponding invoice.
+	 *
+	 * @return \cmsgears\cart\common\models\entities\Invoice
+	 */
+	public function getInvoice() {
+
+		return $this->hasOne( Invoice::class, [ 'id' => 'invoiceId' ] );
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------
@@ -139,13 +153,44 @@ class Transaction extends BaseTransaction {
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'user', 'order', 'invoice' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}
 
+	public static function queryByOrderId( $orderId ) {
+
+		return static::find()->where( 'orderId=:oid', [ ':oid' => $orderId ] );
+	}
+
+	public static function queryByInvoiceId( $invoiceId ) {
+
+		return static::find()->where( 'invoiceId=:iid', [ ':iid' => $invoiceId ] );
+	}
+
 	// Read - Find ------------
+
+	public static function findByOrderId( $orderId ) {
+
+		return self::queryByOrderId( $orderId )->all();
+	}
+
+	public static function findFirstByOrderId( $orderId ) {
+
+		return self::queryByOrderId( $orderId )->one();
+	}
+
+	public static function findByInvoiceId( $invoiceId ) {
+
+		return self::queryByInvoiceId( $invoiceId )->all();
+	}
+
+	public static function findFirstInvoiceId( $invoiceId ) {
+
+		return self::queryByInvoiceId( $invoiceId )->one();
+	}
 
 	// Create -----------------
 

@@ -16,6 +16,8 @@ namespace cmsgears\cart\common\services\interfaces\system;
  */
 interface ISalesService {
 
-	public function getSalesData( $duration );
+	public function getOrderSalesData( $duration );
+
+	public function getInvoiceSalesData( $duration );
 
 }

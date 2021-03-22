@@ -11,19 +11,22 @@ namespace cmsgears\cart\common\services\interfaces\resources;
 
 // CMG Imports
 use cmsgears\core\common\services\interfaces\base\IModelResourceService;
+use cmsgears\core\common\services\interfaces\base\IMultiSite;
 
 /**
  * IVoucherService declares methods specific to discount vouchers.
  *
  * @since 1.0.0
  */
-interface IVoucherService extends IModelResourceService {
+interface IVoucherService extends IModelResourceService, IMultiSite {
 
 	// Data Provider ------
 
 	// Read ---------------
 
 	// Read - Models ---
+
+	public function getByCode( $code );
 
 	// Read - Lists ----
 
@@ -34,6 +37,12 @@ interface IVoucherService extends IModelResourceService {
 	// Create -------------
 
 	// Update -------------
+
+	public function updateStatus( $model, $status );
+
+	public function activate( $model );
+
+	public function block( $model );
 
 	// Delete -------------
 

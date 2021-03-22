@@ -10,19 +10,18 @@
 namespace cmsgears\cart\common\services\resources;
 
 // Yii Imports
+use Yii;
 use yii\data\Sort;
 
 // CMG Imports
 use cmsgears\cart\common\services\interfaces\resources\IUomConversionService;
-
-use cmsgears\core\common\services\base\ResourceService;
 
 /**
  * UomConversionService provide service methods of uom conversion model.
  *
  * @since 1.0.0
  */
-class UomConversionService extends ResourceService implements IUomConversionService {
+class UomConversionService extends \cmsgears\core\common\services\base\ResourceService implements IUomConversionService {
 
 	// Variables ---------------------------------------------------
 
@@ -64,8 +63,15 @@ class UomConversionService extends ResourceService implements IUomConversionServ
 
 	public function getPage( $config = [] ) {
 
+		$searchParam	= $config[ 'search-param' ] ?? 'keywords';
+		$searchColParam	= $config[ 'search-col-param' ] ?? 'search';
+
+		$defaultSort = isset( $config[ 'defaultSort' ] ) ? $config[ 'defaultSort' ] : [ 'id' => SORT_DESC ];
+
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
+
+		$uomTable = Yii::$app->factory->get( 'uomService' )->getModelTable();
 
 		$sort = new Sort([
 			'attributes' => [
@@ -76,24 +82,66 @@ class UomConversionService extends ResourceService implements IUomConversionServ
 					'label' => 'Id'
 				],
 				'source' => [
-					'asc' => [ "$modelTable.uomId" => SORT_ASC ],
-					'desc' => [ "$modelTable.uomId" => SORT_DESC ],
+					'asc' => [ "sourceUom.name" => SORT_ASC ],
+					'desc' => [ "sourceUom.name" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Source'
 				],
 				'target' => [
-					'asc' => [ "$modelTable.targetId" => SORT_ASC ],
-					'desc' => [ "$modelTable.targetId" => SORT_DESC ],
+					'asc' => [ "targetUom.name" => SORT_ASC ],
+					'desc' => [ "targetUom.name" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Target'
 				]
 			],
-			'defaultOrder' => [ 'source' => SORT_ASC ]
+			'defaultOrder' => $defaultSort
 		]);
 
-		$config[ 'sort' ] = $sort;
+		// Sort -------------
 
-		return parent::findPage( $config );
+		if( !isset( $config[ 'sort' ] ) ) {
+
+			$config[ 'sort' ] = $sort;
+		}
+
+		// Query ------------
+
+		if( !isset( $config[ 'query' ] ) ) {
+
+			$config[ 'hasOne' ] = true;
+		}
+
+		// Filters ----------
+
+		// Searching --------
+
+		$searchCol		= Yii::$app->request->getQueryParam( $searchColParam );
+		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
+
+		$search = [
+			'source' => "sourceUom.name",
+			'target' => "targetUom.name"
+		];
+
+		if( isset( $searchCol ) ) {
+
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search[ $searchCol ];
+		}
+		else if( isset( $keywordsCol ) ) {
+
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search;
+		}
+
+		// Reporting --------
+
+		$config[ 'report-col' ]	= $config[ 'report-col' ] ?? [
+			'source' => "sourceUom.name",
+			'target' => "targetUom.name"
+		];
+
+		// Result -----------
+
+		return parent::getPage( $config );
 	}
 
 	// Read ---------------
@@ -112,7 +160,9 @@ class UomConversionService extends ResourceService implements IUomConversionServ
 
 	public function update( $model, $config = [] ) {
 
-		$attributes = isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [ 'uomId', 'targetId', 'quantity' ];
+		$attributes = isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'uomId', 'targetId', 'quantity'
+		];
 
 		return parent::update( $model, [
 			'attributes' => $attributes
@@ -122,6 +172,27 @@ class UomConversionService extends ResourceService implements IUomConversionServ
 	// Delete -------------
 
 	// Bulk ---------------
+
+	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+
+		switch( $column ) {
+
+			case 'model': {
+
+				switch( $action ) {
+
+					case 'delete': {
+
+						$this->delete( $model );
+
+						break;
+					}
+				}
+
+				break;
+			}
+		}
+	}
 
 	// Notifications ------
 

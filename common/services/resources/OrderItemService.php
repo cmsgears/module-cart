@@ -12,14 +12,15 @@ namespace cmsgears\cart\common\services\resources;
 // CMG Imports
 use cmsgears\cart\common\services\interfaces\resources\IOrderItemService;
 
-use cmsgears\core\common\services\base\ResourceService;
+// CMG Imports
+use cmsgears\cart\common\config\CartGlobal;
 
 /**
  * OrderItemService provide service methods of order item model.
  *
  * @since 1.0.0
  */
-class OrderItemService extends ResourceService implements IOrderItemService {
+class OrderItemService extends \cmsgears\core\common\services\base\ModelResourceService implements IOrderItemService {
 
 	// Variables ---------------------------------------------------
 
@@ -29,7 +30,9 @@ class OrderItemService extends ResourceService implements IOrderItemService {
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\entities\OrderItem';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\OrderItem';
+
+	public static $parentType = CartGlobal::TYPE_ORDER_ITEM;
 
 	// Protected --------------
 
@@ -81,14 +84,17 @@ class OrderItemService extends ResourceService implements IOrderItemService {
 	// Create Order Item from cart item
 	public function createFromCartItem( $order, $cartItem, $config = [] ) {
 
-		$model	= $this->getModelObject();
+		$model = $this->getModelObject();
 
 		// Set Attributes
-		$model->orderId		= $order->id;
-		$model->createdBy	= $order->creator->id;
+		$model->orderId = $order->id;
 
 		// Copy from Cart Item
-		$model->copyForUpdateFrom( $cartItem, [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ] );
+		$model->copyForUpdateFrom( $cartItem, [
+			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
+			'parentId', 'parentType', 'name', 'price', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume',
+			'length', 'width', 'height', 'radius'
+		]);
 
 		$model->save();
 

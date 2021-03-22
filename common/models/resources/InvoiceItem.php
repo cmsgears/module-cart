@@ -16,7 +16,6 @@ use yii\behaviors\TimestampBehavior;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
-use cmsgears\payment\common\config\PaymentGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
@@ -35,11 +34,10 @@ use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
- * CartItem stores the items added to the cart. These can be either active or deselected
- * by the user.
+ * InvoiceItem stores the items associated with invoice.
  *
  * @property integer $id
- * @property integer $cartId
+ * @property integer $invoiceId
  * @property integer $primaryUnitId
  * @property integer $purchasingUnitId
  * @property integer $quantityUnitId
@@ -52,20 +50,25 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $parentType
  * @property string $type
  * @property integer $name
- * @property integer $sku
+ * @property string $sku
+ * @property integer $status
  * @property float $price
  * @property float $discount
+ * @property float $tax1
+ * @property float $tax2
+ * @property float $tax3
+ * @property float $tax4
+ * @property float $tax5
  * @property float $total
- * @property float $primary
- * @property float $purchase
- * @property float $quantity
- * @property float $weight
- * @property float $volume
- * @property float $length
- * @property float $width
- * @property float $height
- * @property float $radius
- * @property boolean $keep
+ * @property integer $primary
+ * @property integer $purchase
+ * @property integer $quantity
+ * @property integer $weight
+ * @property integer $volume
+ * @property integer $length
+ * @property integer $width
+ * @property integer $height
+ * @property integer $radius
  * @property datetime $createdAt
  * @property datetime $modifiedAt
  * @property string $content
@@ -76,7 +79,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class CartItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
+class InvoiceItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
 	IContent, IData, IGridCache {
 
 	// Variables ---------------------------------------------------
@@ -85,7 +88,41 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 
 	// Constants --------------
 
+	const STATUS_NEW		=   0;
+	const STATUS_PAID		= 100;
+	const STATUS_CANCELLED	= 200;
+	const STATUS_DELIVERED	= 300;
+	const STATUS_RETURNED	= 400;
+	const STATUS_RECEIVED	= 500;
+
 	// Public -----------------
+
+	public static $statusMap = [
+		self::STATUS_NEW => 'New',
+		self::STATUS_PAID => 'Paid',
+		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_DELIVERED => 'Delivered',
+		self::STATUS_RETURNED => 'Returned',
+		self::STATUS_RECEIVED => 'Received'
+	];
+
+	public static $urlRevStatusMap = [
+		'new' => self::STATUS_NEW,
+		'paid' => self::STATUS_PAID,
+		'cancelled' => self::STATUS_CANCELLED,
+		'delivered' => self::STATUS_DELIVERED,
+		'returned' => self::STATUS_RETURNED,
+		'received' => self::STATUS_RECEIVED
+	];
+
+	public static $filterStatusMap = [
+		'new' => 'New',
+		'paid' => 'Paid',
+		'cancelled' => 'Cancelled',
+		'delivered' => 'Delivered',
+		'returned' => 'Returned',
+		'received' => 'Received'
+	];
 
 	// Protected --------------
 
@@ -95,7 +132,7 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 
 	// Protected --------------
 
-	protected $modelType = CartGlobal::TYPE_CART_ITEM;
+	protected $modelType = CartGlobal::TYPE_INVOICE_ITEM;
 
 	// Private ----------------
 
@@ -107,6 +144,33 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	use GridCacheTrait;
 
 	// Constructor and Initialisation ------------------------------
+
+    public function init() {
+
+        parent::init();
+
+        if( $this->isNewRecord ) {
+
+            $this->price = 0;
+			$this->discount = 0;
+			$this->total = 0;
+			$this->primary = 0;
+			$this->purchase = 0;
+			$this->quantity = 0;
+			$this->weight = 0;
+			$this->volume = 0;
+			$this->length = 0;
+			$this->width = 0;
+			$this->height = 0;
+			$this->radius = 0;
+
+			$this->tax1 = 0;
+			$this->tax2 = 0;
+			$this->tax3 = 0;
+			$this->tax4 = 0;
+			$this->tax5 = 0;
+        }
+    }
 
 	// Instance methods --------------------------------------------
 
@@ -144,18 +208,20 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 		// Model Rules
 		$rules = [
 			// Required, Safe
-			[ [ 'name', 'price', 'purchase' ], 'required' ],
+			[ [ 'invoiceId', 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content' ], 'safe' ],
 			// Unique
-			[ 'cartId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'cartId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
+			//[ 'invoiceId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'invoiceId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
-			[ [ 'price', 'discount', 'total', 'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
-			[ [ 'keep', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'cartId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
+			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ 'gridCacheValid', 'boolean' ],
+			[ [ 'invoiceId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
 		];
 
 		return $rules;
@@ -167,7 +233,7 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	public function attributeLabels() {
 
 		return [
-			'cartId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CART ),
+			'invoiceId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_INVOICE ),
 			'primaryUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PRIMARY ),
 			'purchasingUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PURCHASING ),
 			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
@@ -180,8 +246,14 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 			'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
 			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
 			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
+			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'tax1' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax2' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax3' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax4' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax5' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'primary' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PRIMARY ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PURCHASE ),
@@ -203,16 +275,16 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 
 	// Validators ----------------------------
 
-	// CartItem ------------------------------
+	// InvoiceItem ---------------------------
 
 	/**
-	 * Returns the cart associated with the item.
+	 * Returns the invoice associated with the item.
 	 *
-	 * @return Cart
+	 * @return Order
 	 */
-	public function getCart() {
+	public function getInvoice() {
 
-		return $this->hasOne( Cart::class, [ 'id' => 'cartId' ] );
+		return $this->hasOne( Invoice::class, [ 'id' => 'invoiceId' ] );
 	}
 
 	/**
@@ -275,17 +347,61 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
+	public function isNew() {
+
+		return $this->status == self::STATUS_NEW;
+	}
+
+	public function isPaid() {
+
+		return $this->status == self::STATUS_PAID;
+	}
+
+	public function isCancelled() {
+
+		return $this->status == self::STATUS_CANCELLED;
+	}
+
+	public function isDelivered() {
+
+		return $this->status == self::STATUS_DELIVERED;
+	}
+
+	public function isReturned() {
+
+		return $this->status == self::STATUS_RETURNED;
+	}
+
+	public function isReceived() {
+
+		return $this->status == self::STATUS_RECEIVED;
+	}
+
+	public function getStatusStr() {
+
+		return static::$statusMap[ $this->status ];
+	}
+
+	public function refreshTotal() {
+
+		$tax = $this->tax1 + $this->tax2 + $this->tax3 + $this->tax4 + $this->tax5;
+
+		$this->total = $this->price - $this->discount - $tax;
+	}
+
 	/**
 	 * Returns the total price of the item.
 	 *
-	 * Total Price = ( Unit Price - Unit Discount ) * Purchasing Quantity
+	 * Total Price = Unit Total * Purchasing Quantity
 	 *
 	 * @param type $precision
 	 * @return type
 	 */
 	public function getTotalPrice( $precision = 2 ) {
 
-		$price = ( $this->price - $this->discount ) * $this->purchase;
+		$this->refreshTotal();
+
+		$price = $this->total * $this->purchase;
 
 		return round( $price, $precision );
 	}
@@ -301,12 +417,12 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	 */
 	public static function tableName() {
 
-		return CartTables::getTableName( CartTables::TABLE_CART_ITEM );
+		return CartTables::getTableName( CartTables::TABLE_INVOICE_ITEM );
 	}
 
 	// CMG parent classes --------------------
 
-	// CartItem ------------------------------
+	// InvoiceItem -----------------------------
 
 	// Read - Query -----------
 
@@ -315,7 +431,7 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'purchasingUnit', 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'invoice', 'purchasingUnit', 'creator' ];
 
 		$config[ 'relations' ] = $relations;
 
@@ -324,7 +440,7 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 
 	public static function queryWithUoms( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'cart', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'invoice', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
 
 		$config[ 'relations' ] = $relations;
 
@@ -332,40 +448,40 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	}
 
 	/**
-	 * Return query to find the cart item by cart id.
+	 * Return query to find the invoice item by invoice id.
 	 *
-	 * @param integer $cartId
-	 * @return \yii\db\ActiveQuery to query by cart id.
+	 * @param integer $invoiceId
+	 * @return \yii\db\ActiveQuery to query by invoice id.
 	 */
-	public static function queryByCartId( $cartId ) {
+	public static function queryByInvoiceId( $invoiceId ) {
 
-		return self::find()->where( 'cartId=:cid', [ ':cid' => $cartId ] );
+		return self::find()->where( 'orderId=:oid', [ ':oid' => $invoiceId ] );
 	}
 
 	// Read - Find ------------
 
 	/**
-	 * Return the cart items associated with given cart id.
+	 * Return the order items associated with given invoice id.
 	 *
-	 * @param integer $cartId
-	 * @return CartItem[]
+	 * @param integer $invoiceId
+	 * @return InvoiceItem[]
 	 */
-	public static function findByCartId( $cartId ) {
+	public static function findByInvoiceId( $invoiceId ) {
 
-		return self::queryByCartId( $cartId )->all();
+		return self::queryByInvoiceId( $invoiceId )->all();
 	}
 
 	/**
-	 * Return the cart item associated with given parent id, parent type and cart id.
+	 * Return the order item associated with given parent id, parent type and order id.
 	 *
 	 * @param integer $parentId
 	 * @param string $parentType
-	 * @param integer $cartId
-	 * @return CartItem
+	 * @param integer $invoiceId
+	 * @return InvoiceItem
 	 */
-	public static function findByParentCartId( $parentId, $parentType, $cartId ) {
+	public static function findByParentInvoiceId( $parentId, $parentType, $invoiceId ) {
 
-		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND cartId=:cid', [ ':pid' => $parentId, ':ptype' => $parentType, ':cid' => $cartId ] )->one();
+		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND invoiceId=:iid', [ ':pid' => $parentId, ':ptype' => $parentType, ':iid' => $invoiceId ] )->one();
 	}
 
 	// Create -----------------
@@ -375,14 +491,14 @@ class CartItem extends \cmsgears\core\common\models\base\ModelResource implement
 	// Delete -----------------
 
 	/**
-	 * Delete cart items associated with given cart id.
+	 * Delete order items associated with given order id.
 	 *
-	 * @param integer $cartId
+	 * @param integer $invoiceId
 	 * @return integer Number of rows.
 	 */
-	public static function deleteByCartId( $cartId ) {
+	public static function deleteByInvoiceId( $invoiceId ) {
 
-		return self::deleteAll( 'cartId=:id', [ ':id' => $cartId ] );
+		return self::deleteAll( 'invoiceId=:id', [ ':id' => $invoiceId ] );
 	}
 
 }

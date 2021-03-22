@@ -61,6 +61,17 @@ class m161005_034824_cart_index extends \cmsgears\core\common\base\Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_type', $this->prefix . 'cart_order_item', 'type' );
 		$this->createIndex( 'idx_' . $this->prefix . 'order_item_type_p', $this->prefix . 'cart_order_item', 'parentType' );
 
+		// Invoice
+		//$this->createIndex( 'idx_' . $this->prefix . 'invoice_title', $this->prefix . 'cart_invoice', 'title' );
+		$this->createIndex( 'idx_' . $this->prefix . 'invoice_type', $this->prefix . 'cart_invoice', 'type' );
+		$this->createIndex( 'idx_' . $this->prefix . 'invoice_type_p', $this->prefix . 'cart_invoice', 'parentType' );
+
+		// Invoice Item
+		$this->createIndex( 'idx_' . $this->prefix . 'invoice_item_name', $this->prefix . 'cart_invoice_item', 'name' );
+		$this->createIndex( 'idx_' . $this->prefix . 'invoice_item_sku', $this->prefix . 'cart_invoice_item', 'sku' );
+		$this->createIndex( 'idx_' . $this->prefix . 'invoice_item_type', $this->prefix . 'cart_invoice_item', 'type' );
+		$this->createIndex( 'idx_' . $this->prefix . 'invoice_item_type_p', $this->prefix . 'cart_invoice_item', 'parentType' );
+
 		// Voucher
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_name', $this->prefix . 'cart_voucher', 'name' );
 		$this->createIndex( 'idx_' . $this->prefix . 'voucher_type', $this->prefix . 'cart_voucher', 'type' );
@@ -98,6 +109,17 @@ class m161005_034824_cart_index extends \cmsgears\core\common\base\Migration {
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_sku', $this->prefix . 'cart_order_item' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_type', $this->prefix . 'cart_order_item' );
 		$this->dropIndex( 'idx_' . $this->prefix . 'order_item_type_p', $this->prefix . 'cart_order_item' );
+
+		// Invoice
+		//$this->dropIndex( 'idx_' . $this->prefix . 'invoice_title', $this->prefix . 'cart_invoice' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'invoice_type', $this->prefix . 'cart_invoice' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'invoice_type_p', $this->prefix . 'cart_invoice' );
+
+		// Order Item
+		$this->dropIndex( 'idx_' . $this->prefix . 'invoice_item_name', $this->prefix . 'cart_invoice_item' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'invoice_item_sku', $this->prefix . 'cart_invoice_item' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'invoice_item_type', $this->prefix . 'cart_invoice_item' );
+		$this->dropIndex( 'idx_' . $this->prefix . 'invoice_item_type_p', $this->prefix . 'cart_invoice_item' );
 
 		// Voucher
 		$this->dropIndex( 'idx_' . $this->prefix . 'voucher_name', $this->prefix . 'cart_voucher' );

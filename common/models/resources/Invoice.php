@@ -43,14 +43,12 @@ use cmsgears\core\common\models\traits\mappers\AddressTrait;
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
- * Order represents order either placed by user or created as part of an order specific process.
+ * Invoice represents order either placed by user or created as part of an order specific process.
  *
  * @property integer $id
  * @property integer $siteId
- * @property integer $baseId
- * @property integer $cartId
+ * @property integer $orderId
  * @property integer $userId
- * @property integer $voucherId
  * @property integer $createdBy
  * @property integer $modifiedBy
  * @property integer $parentId
@@ -62,6 +60,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $description
  * @property integer $status
  * @property float $subTotal
+ * @property float $itemDiscount
  * @property float $tax1
  * @property float $tax2
  * @property float $tax3
@@ -72,12 +71,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $discount
  * @property float $grandTotal
  * @property string $currency
- * @property boolean $shipToBilling
  * @property string $token
  * @property datetime $createdAt
  * @property datetime $modifiedAt
- * @property datetime $eta
- * @property datetime $deliveredAt
+ * @property date $issueDate
+ * @property date $dueDate
  * @property string $content
  * @property string $data
  * @property string $gridCache
@@ -86,7 +84,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Order extends \cmsgears\core\common\models\base\ModelResource implements IAddress, IAuthor,
+class Invoice extends \cmsgears\core\common\models\base\ModelResource implements IAddress, IAuthor,
 	IContent, IData, IGridCache, IMultiSite, IOwner {
 
 	// Variables ---------------------------------------------------
@@ -96,83 +94,52 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	// Constants --------------
 
 	/**
-	 * Order is created
+	 * Invoice is created
 	 */
 	const STATUS_NEW		=	  0;
 
 	/**
-	 * Order need approval
+	 * Invoice need approval
 	 */
 	const STATUS_APPROVED	=  1000;
 
 	/**
-	 * Order is placed
-	 */
-	const STATUS_PLACED		=  2000;
-
-	/**
-	 * Order on hold
+	 * Invoice on hold
 	 */
     const STATUS_HOLD       =  2500;
 
 	/**
-	 * Order rejected - most probably by the vendor or site admin
-	 */
-	const STATUS_REJECTED	=  2600;
-
-	/**
-	 * Order cancelled - most probably by the customer(no money return if paid) or vendor(money return if paid)
+	 * Invoice cancelled
 	 */
 	const STATUS_CANCELLED	=  3000;
 
 	/**
-	 * Payment is failed
+	 * Invoice sent to customer
 	 */
-	const STATUS_FAILED		=  3500;
+	const STATUS_SENT		=  3500;
+
+	/**
+	 * Overdue
+	 */
+	const STATUS_OVERDUE	=  4000;
 
 	/**
 	 * Complete payment is done
 	 */
-	const STATUS_PAID		=  4000;
+	const STATUS_PAID		=  5000;
 
 	/**
 	 * Payment confirmed by the vendor
 	 */
-	const STATUS_CONFIRMED	=  5000;
+	const STATUS_CONFIRMED	=  6000;
 
 	/**
-	 * Order refunded - money returned - mutually agreed by the customer and the vendor
-	 * Order might not be delivered by the vendor or returned by the customer(damaged or no satisfaction)
+	 * Invoice refunded - money returned - mutually agreed by the customer and the vendor
 	 */
-	const STATUS_REFUNDED	=  6000;
+	const STATUS_REFUNDED	=  7000;
 
 	/**
-	 * Order processed by the vendor and may be ready for the shipment if required
-	 */
-	const STATUS_PROCESSED	=  7000;
-
-	/**
-	 * Order shipped by the vendor after either paid or confirmed or processed
-	 */
-	const STATUS_SHIPPED	=  8000;
-
-	/**
-	 * Order delivered by the vendor
-	 */
-	const STATUS_DELIVERED	=  9000;
-
-	/**
-	 * Order returned to the vendor - damaged, no satisfaction, no receiver
-	 */
-	const STATUS_RETURNED	= 10000;
-
-	/**
-	 * Order in dispute - useful in case of multi-vendor systems - the system admin will resolve the dispute
-	 */
-	const STATUS_DISPUTE	= 11000;
-
-	/**
-	 * Order signed and received by the customer, fulfilled by the vendor and customer
+	 * Invoice signed and received by the customer, fulfilled by the vendor and customer
 	 */
 	const STATUS_COMPLETED	= 12000;
 
@@ -181,19 +148,13 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	public static $statusMap = [
 		self::STATUS_NEW  => 'New',
 		self::STATUS_APPROVED => 'Approved',
-		self::STATUS_PLACED => 'Placed',
         self::STATUS_HOLD => 'Hold',
-		self::STATUS_REJECTED => 'Rejected',
 		self::STATUS_CANCELLED => 'Cancelled',
-		self::STATUS_FAILED => 'Failed',
+		self::STATUS_SENT => 'Sent',
+		self::STATUS_OVERDUE => 'Overdue',
 		self::STATUS_PAID => 'Paid',
 		self::STATUS_CONFIRMED => 'Confirmed',
 		self::STATUS_REFUNDED => 'Refunded',
-		self::STATUS_PROCESSED => 'Processed',
-		self::STATUS_SHIPPED => 'Shipped',
-		self::STATUS_DELIVERED => 'Delivered',
-		self::STATUS_RETURNED => 'Returned',
-		self::STATUS_DISPUTE => 'Dispute',
 		self::STATUS_COMPLETED => 'Completed'
 	];
 
@@ -201,19 +162,13 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	public static $revStatusMap = [
 		'New' => self::STATUS_NEW,
 		'Approved' => self::STATUS_APPROVED,
-		'Placed' => self::STATUS_PLACED,
         'Hold' => self::STATUS_HOLD,
-		'Rejected' => self::STATUS_REJECTED,
 		'Cancelled' => self::STATUS_CANCELLED,
-		'Failed' => self::STATUS_FAILED,
+		'Sent' => self::STATUS_SENT,
+		'Overdue' => self::STATUS_OVERDUE,
 		'Paid' => self::STATUS_PAID,
 		'Confirmed' => self::STATUS_CONFIRMED,
 		'Refunded' => self::STATUS_REFUNDED,
-		'Processed' => self::STATUS_PROCESSED,
-		'Shipped' => self::STATUS_SHIPPED,
-		'Delivered' => self::STATUS_DELIVERED,
-		'Returned' => self::STATUS_RETURNED,
-		'Dispute' => self::STATUS_DISPUTE,
 		'Completed'  => self::STATUS_COMPLETED
 	];
 
@@ -221,38 +176,26 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	public static $urlRevStatusMap = [
 		'new' => self::STATUS_NEW,
 		'approved' => self::STATUS_APPROVED,
-		'placed' => self::STATUS_PLACED,
         'hold' => self::STATUS_HOLD,
-		'rejected' => self::STATUS_REJECTED,
 		'cancelled' => self::STATUS_CANCELLED,
-		'failed' => self::STATUS_FAILED,
+		'sent' => self::STATUS_SENT,
+		'overdue' => self::STATUS_OVERDUE,
 		'paid' => self::STATUS_PAID,
 		'confirmed' => self::STATUS_CONFIRMED,
 		'refunded' => self::STATUS_REFUNDED,
-		'processed' => self::STATUS_PROCESSED,
-		'shipped' => self::STATUS_SHIPPED,
-		'delivered' => self::STATUS_DELIVERED,
-		'returned' => self::STATUS_RETURNED,
-		'dispute' => self::STATUS_DISPUTE,
 		'completed' => self::STATUS_COMPLETED
 	];
 
 	public static $filterStatusMap = [
 		'new' => 'New',
 		'approved' => 'Approved',
-		'placed' => 'Placed',
         'hold' => 'Hold',
-		'rejected' => 'Rejected',
 		'cancelled' => 'Cancelled',
-		'failed' => 'Failed',
+		'sent' => 'Sent',
+		'overdue' => 'Overdue',
 		'paid' => 'Paid',
 		'confirmed' => 'Confirmed',
 		'refunded' => 'Refunded',
-		'processed' => 'Processed',
-		'shipped' => 'Shipped',
-		'delivered' => 'Delivered',
-		'returned' => 'Returned',
-		'dispute' => 'Dispute',
 		'completed' => 'Completed'
 	];
 
@@ -264,7 +207,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 
 	// Protected --------------
 
-	protected $modelType = CartGlobal::TYPE_ORDER;
+	protected $modelType = CartGlobal::TYPE_INVOICE;
 
 	// Private ----------------
 
@@ -319,16 +262,18 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 			[ 'title', 'required' ],
 			[ [ 'id', 'content' ], 'safe' ],
 			// Text Limit
-			[ [ 'parentType', 'type', 'currency', 'service', 'token' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ [ 'parentType', 'type', 'currency', 'service' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'code', 'title' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'subTotal', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
+			[ [ 'subTotal', 'itemDiscount', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
-			[ [ 'shipToBilling', 'gridCacheValid' ], 'boolean' ],
-			[ [ 'siteId', 'baseId', 'cartId', 'userId', 'voucherId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
+			[ [ 'gridCacheValid' ], 'boolean' ],
+			[ [ 'siteId', 'orderId', 'userId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
+			[ [ 'issueDate', 'dueDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ],
+			[ 'dueDate', 'compareDate', 'compareAttribute' => 'issueDate', 'operator' => '>=', 'type' => 'datetime', 'message' => 'Due date must be greater than or equal to issue date.' ]
 		];
 
 		return $rules;
@@ -341,7 +286,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 
 		return [
 			'siteId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SITE ),
-			'baseId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PARENT_ORDER ),
+			'orderId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ORDER ),
 			'userId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_USER ),
 			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
 			'parentId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PARENT ),
@@ -361,10 +306,8 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
 			'grandTotal' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL_GRAND ),
 			'currency' => Yii::$app->paymentMessage->getMessage( PaymentGlobal::FIELD_CURRENCY ),
-			'shipToBilling' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIP_TO_BILLING ),
-			'token' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TOKEN ),
-			'eta' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_ESTIMATED_DELIVERY ),
-			'deliveredAt' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DELIVERY_DATE ),
+			'issueDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DATE_ISSUED ),
+			'dueDate' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DATE_DUE ),
 			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
 			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
 			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
@@ -407,7 +350,17 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 
 	// Validators ----------------------------
 
-	// Order ---------------------------------
+	// Invoice -------------------------------
+
+	/**
+	 * Returns the corresponding order.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Order
+	 */
+	public function getOrder() {
+
+		return $this->hasOne( Order::class, [ 'id' => 'orderId' ] );
+	}
 
 	/**
 	 * Returns the corresponding user.
@@ -420,61 +373,9 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is child order.
+	 * Returns the successful transaction associated with the invoice.
 	 *
-	 * @return boolean
-	 */
-	public function hasBase() {
-
-		return isset( $this->baseId ) && $this->baseId > 0;
-	}
-
-	/**
-	 * Returns the parent order.
-	 *
-	 * @return Order
-	 */
-	public function getBase() {
-
-		$orderTable = CartTables::getTableName( CartTables::TABLE_ORDER );
-
-		return $this->hasOne( Order::class, [ 'id' => 'baseId' ] )->from( "$orderTable as base" );
-	}
-
-	/**
-	 * Check whether order has child orders.
-	 *
-	 * @return boolean
-	 */
-	public function hasChildren() {
-
-		return count( $this->children ) > 0;
-	}
-
-	/**
-	 * Returns all the child orders associated with the order.
-	 *
-	 * @return Order[]
-	 */
-	public function getChildren() {
-
-		return $this->hasMany( Order::class, [ 'baseId' => 'id' ] );
-	}
-
-	public function getCart() {
-
-		return $this->hasOne( Cart::class, [ 'id' => 'cartId' ] );
-	}
-
-	public function getVoucher() {
-
-		return $this->hasOne( Voucher::class, [ 'id' => 'voucherId' ] );
-	}
-
-	/**
-	 * Returns the successful transaction associated with the order.
-	 *
-	 * It's useful in the cases where only one transaction is required for an order, like virtual goods.
+	 * It's useful in the cases where only one transaction is required for an invoice, like virtual goods.
 	 *
 	 * @return Transaction
 	 */
@@ -485,32 +386,32 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 		$success	= Transaction::STATUS_SUCCESS;
 		$credit		= Transaction::TYPE_CREDIT;
 
-		return $this->hasOne( Transaction::class, [ 'orderId' => 'id' ] )
+		return $this->hasOne( Transaction::class, [ 'invoiceId' => 'id' ] )
 			->where( "$transactionTable.status=$success AND $transactionTable.type=$credit" );
 	}
 
 	/**
-	 * Returns all the transactions associated with the order.
+	 * Returns all the transactions associated with the invoice.
 	 *
 	 * @return Transaction[]
 	 */
 	public function getTransactions() {
 
-		return $this->hasMany( Transaction::class, [ 'orderId' => 'id' ] );
+		return $this->hasMany( Transaction::class, [ 'invoiceId' => 'id' ] );
 	}
 
 	/**
-	 * Returns the items associated with the order.
+	 * Returns the items associated with the invoice.
 	 *
-	 * @return OrderItem[]
+	 * @return InvoiceItem[]
 	 */
 	public function getItems() {
 
-		return $this->hasMany( OrderItem::class, [ 'orderId' => 'id' ] );
+		return $this->hasMany( InvoiceItem::class, [ 'invoiceId' => 'id' ] );
 	}
 
 	/**
-	 * Generate and set the title of cart.
+	 * Generate and set the title of invoice.
 	 *
 	 * @return void
 	 */
@@ -530,7 +431,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is new.
+	 * Check whether invoice is new.
 	 *
 	 * @return boolean
 	 */
@@ -540,7 +441,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is on hold.
+	 * Check whether invoice is on hold.
 	 *
 	 * @return boolean
 	 */
@@ -550,7 +451,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is approved.
+	 * Check whether invoice is approved.
 	 *
 	 * $param boolean $strict
 	 * @return boolean
@@ -566,34 +467,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is rejected.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isRejected() {
-
-		return $this->status == self::STATUS_REJECTED;
-	}
-
-	/**
-	 * Check whether order is placed.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isPlaced( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_PLACED;
-		}
-
-		return $this->status >= self::STATUS_PLACED;
-	}
-
-	/**
-	 * Check whether order is cancelled.
+	 * Check whether invoice is cancelled.
 	 *
 	 * @return boolean
 	 */
@@ -603,7 +477,33 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is paid.
+	 * Check whether invoice is sent.
+	 *
+	 * $param boolean $strict
+	 * @return boolean
+	 */
+	public function isSent( $strict = true ) {
+
+		if( $strict ) {
+
+			return $this->status == self::STATUS_SENT;
+		}
+
+		return $this->status >= self::STATUS_SENT;
+	}
+
+	/**
+	 * Check whether invoice is overdue.
+	 *
+	 * @return boolean
+	 */
+	public function isOverdue() {
+
+		return $this->status == self::STATUS_OVERDUE;
+	}
+
+	/**
+	 * Check whether invoice is paid.
 	 *
 	 * $param boolean $strict
 	 * @return boolean
@@ -619,23 +519,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is refunded.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isRefunded( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_REFUNDED;
-		}
-
-		return $this->status >= self::STATUS_REFUNDED;
-	}
-
-	/**
-	 * Check whether order is confirmed.
+	 * Check whether invoice is confirmed.
 	 *
 	 * $param boolean $strict
 	 * @return boolean
@@ -651,87 +535,23 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
-	 * Check whether order is processed.
+	 * Check whether invoice is refunded.
 	 *
 	 * $param boolean $strict
 	 * @return boolean
 	 */
-	public function isProcessed( $strict = true ) {
+	public function isRefunded( $strict = true ) {
 
 		if( $strict ) {
 
-			return $this->status == self::STATUS_PROCESSED;
+			return $this->status == self::STATUS_REFUNDED;
 		}
 
-		return $this->status >= self::STATUS_PROCESSED;
+		return $this->status >= self::STATUS_REFUNDED;
 	}
 
 	/**
-	 * Check whether order is shipped.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isShipped( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_SHIPPED;
-		}
-
-		return $this->status >= self::STATUS_SHIPPED;
-	}
-
-	/**
-	 * Check whether order is delivered.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isDelivered( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_DELIVERED;
-		}
-
-		return $this->status >= self::STATUS_DELIVERED;
-	}
-
-	/**
-	 * Check whether order is returned.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isReturned( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_RETURNED;
-		}
-
-		return $this->status >= self::STATUS_RETURNED;
-	}
-
-	/**
-	 * Check whether order is under dispute.
-	 *
-	 * $param boolean $strict
-	 * @return boolean
-	 */
-	public function isDispute( $strict = true ) {
-
-		if( $strict ) {
-
-			return $this->status == self::STATUS_DISPUTE;
-		}
-
-		return $this->status >= self::STATUS_DISPUTE;
-	}
-
-	/**
-	 * Check whether order is completed.
+	 * Check whether invoice is completed.
 	 *
 	 * $param boolean $strict
 	 * @return boolean
@@ -746,6 +566,61 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 		return $this->status >= self::STATUS_COMPLETED;
 	}
 
+	public function refreshTotal() {
+
+		$items = $this->items;
+
+		if( count( $items ) > 0 ) {
+
+			$subTotal		= 0;
+			$itemDiscount	= 0;
+			$tax1			= 0;
+			$tax2			= 0;
+			$tax3			= 0;
+			$tax4			= 0;
+			$tax5			= 0;
+
+			foreach( $items as $item ) {
+
+				if( !$item->isCancelled() ) {
+
+					$subTotal += $item->price;
+
+					$itemDiscount += $item->discount;
+
+					$tax1 += $item->tax1;
+					$tax2 += $item->tax2;
+					$tax3 += $item->tax3;
+					$tax4 += $item->tax4;
+					$tax5 += $item->tax5;
+				}
+			}
+
+			$this->subTotal		= $subTotal;
+			$this->itemDiscount	= $itemDiscount;
+
+			$this->tax1	= $tax1;
+			$this->tax2	= $tax2;
+			$this->tax3	= $tax3;
+			$this->tax4	= $tax4;
+			$this->tax5	= $tax5;
+
+			$tax = $tax1 + $tax2 + $tax3 + $tax4 + $tax5;
+
+			$this->total = $this->subTotal - $this->itemDiscount - $tax - $this->shipping;
+
+			$this->grandTotal = $this->total - $this->discount;
+		}
+		else {
+
+			$tax = $this->tax1 + $this->tax2 + $this->tax3 + $this->tax4 + $this->tax5;
+
+			$this->total = $this->subTotal - $this->itemDiscount - $tax - $this->shipping;
+
+			$this->grandTotal = $this->total - $this->discount;
+		}
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------
@@ -757,12 +632,12 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	 */
 	public static function tableName() {
 
-		return CartTables::getTableName( CartTables::TABLE_ORDER );
+		return CartTables::getTableName( CartTables::TABLE_INVOICE );
 	}
 
 	// CMG parent classes --------------------
 
-	// Order ---------------------------------
+	// Invoice ---------------------------------
 
 	// Read - Query -----------
 
@@ -786,10 +661,10 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	// Read - Find ------------
 
 	/**
-	 * Use only if title is unique for order.
+	 * Use only if title is unique for invoice.
 	 *
 	 * @param string $title
-	 * @return Order
+	 * @return Invoice
 	 */
 	public static function findByTitle( $title ) {
 

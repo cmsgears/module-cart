@@ -19,15 +19,16 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cart\common\config\CartGlobal;
 
 use cmsgears\core\common\models\interfaces\base\IAuthor;
-use cmsgears\core\common\models\interfaces\base\IModelResource;
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
-use cmsgears\core\common\models\base\Entity;
-use cmsgears\cart\common\models\resources\Uom;
 use cmsgears\cart\common\models\base\CartTables;
+use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
-use cmsgears\core\common\models\traits\base\ModelResourceTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
@@ -51,9 +52,14 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $name
  * @property string $sku
  * @property integer $status
- * @property integer $price
- * @property integer $discount
- * @property integer $total
+ * @property float $price
+ * @property float $discount
+ * @property float $tax1
+ * @property float $tax2
+ * @property float $tax3
+ * @property float $tax4
+ * @property float $tax5
+ * @property float $total
  * @property integer $primary
  * @property integer $purchase
  * @property integer $quantity
@@ -73,7 +79,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
+class OrderItem extends \cmsgears\core\common\models\base\ModelResource implements IAuthor,
+	IContent, IData, IGridCache {
 
 	// Variables ---------------------------------------------------
 
@@ -83,16 +90,34 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 
 	const STATUS_NEW		=   0;
 	const STATUS_CANCELLED	= 100;
-	const STATUS_RETURNED	= 200;
-	const STATUS_RECEIVED	= 500;
+	const STATUS_DELIVERED	= 200;
+	const STATUS_RETURNED	= 300;
+	const STATUS_RECEIVED	= 400;
 
 	// Public -----------------
 
 	public static $statusMap = [
 		self::STATUS_NEW => 'New',
 		self::STATUS_CANCELLED => 'Cancelled',
+		self::STATUS_DELIVERED => 'Delivered',
 		self::STATUS_RETURNED => 'Returned',
 		self::STATUS_RECEIVED => 'Received'
+	];
+
+	public static $urlRevStatusMap = [
+		'new' => self::STATUS_NEW,
+		'cancelled' => self::STATUS_CANCELLED,
+		'delivered' => self::STATUS_DELIVERED,
+		'returned' => self::STATUS_RETURNED,
+		'received' => self::STATUS_RECEIVED
+	];
+
+	public static $filterStatusMap = [
+		'new' => 'New',
+		'cancelled' => 'Cancelled',
+		'delivered' => 'Delivered',
+		'returned' => 'Returned',
+		'received' => 'Received'
 	];
 
 	// Protected --------------
@@ -103,15 +128,45 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 
 	// Protected --------------
 
+	protected $modelType = CartGlobal::TYPE_ORDER_ITEM;
+
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
 	use AuthorTrait;
+	use ContentTrait;
+	use DataTrait;
 	use GridCacheTrait;
-	use ModelResourceTrait;
 
 	// Constructor and Initialisation ------------------------------
+
+    public function init() {
+
+        parent::init();
+
+        if( $this->isNewRecord ) {
+
+            $this->price = 0;
+			$this->discount = 0;
+			$this->total = 0;
+			$this->primary = 0;
+			$this->purchase = 0;
+			$this->quantity = 0;
+			$this->weight = 0;
+			$this->volume = 0;
+			$this->length = 0;
+			$this->width = 0;
+			$this->height = 0;
+			$this->radius = 0;
+
+			$this->tax1 = 0;
+			$this->tax2 = 0;
+			$this->tax3 = 0;
+			$this->tax4 = 0;
+			$this->tax5 = 0;
+        }
+    }
 
 	// Instance methods --------------------------------------------
 
@@ -150,14 +205,15 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 		$rules = [
 			// Required, Safe
 			[ [ 'orderId', 'name', 'price', 'purchase' ], 'required' ],
-			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			[ [ 'id', 'content' ], 'safe' ],
 			// Unique
-			[ [ 'parentId', 'parentType', 'orderId' ], 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'orderId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
+			[ 'orderId', 'unique', 'targetAttribute' => [ 'parentId', 'parentType', 'orderId' ], 'comboNotUnique' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_EXIST ) ],
 			// Text Limit
 			[ [ 'parentType', 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			// Other
 			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
 			[ 'status', 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ 'gridCacheValid', 'boolean' ],
 			[ [ 'orderId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -189,6 +245,11 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 			'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
 			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'tax1' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax2' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax3' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax4' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'tax5' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'primary' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PRIMARY ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PURCHASE ),
@@ -282,6 +343,36 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
 	}
 
+	public function isNew() {
+
+		return $this->status == self::STATUS_NEW;
+	}
+
+	public function isCancelled() {
+
+		return $this->status == self::STATUS_CANCELLED;
+	}
+
+	public function isDelivered() {
+
+		return $this->status == self::STATUS_DELIVERED;
+	}
+
+	public function isReturned() {
+
+		return $this->status == self::STATUS_RETURNED;
+	}
+
+	public function isReceived() {
+
+		return $this->status == self::STATUS_RECEIVED;
+	}
+
+	public function getStatusStr() {
+
+		return static::$statusMap[ $this->status ];
+	}
+
 	/**
 	 * Returns the total price of the item.
 	 *
@@ -292,7 +383,7 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 	 */
 	public function getTotalPrice( $precision = 2 ) {
 
-		$price	= ( $this->price - $this->discount ) * $this->purchase;
+		$price = ( $this->price - $this->discount ) * $this->purchase;
 
 		return round( $price, $precision );
 	}
@@ -322,8 +413,18 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order', 'purchasingUnit', 'creator' ];
+
+		$config[ 'relations' ] = $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	public static function queryWithUoms( $config = [] ) {
+
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'order', 'primaryUnit', 'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit', 'creator' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}
@@ -344,12 +445,12 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 	/**
 	 * Return the order items associated with given order id.
 	 *
-	 * @param integer $oderId
+	 * @param integer $orderId
 	 * @return OrderItem[]
 	 */
-	public static function findByOrderId( $oderId ) {
+	public static function findByOrderId( $orderId ) {
 
-		return self::queryByOrderId( $oderId )->all();
+		return self::queryByOrderId( $orderId )->all();
 	}
 
 	/**
@@ -360,7 +461,7 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 	 * @param integer $orderId
 	 * @return OrderItem
 	 */
-	public static function findByParentCartId( $parentId, $parentType, $orderId ) {
+	public static function findByParentOrderId( $parentId, $parentType, $orderId ) {
 
 		return self::find()->where( 'parentId=:pid AND parentType=:ptype AND orderId=:oid', [ ':pid' => $parentId, ':ptype' => $parentType, ':oid' => $orderId ] )->one();
 	}
@@ -377,7 +478,7 @@ class OrderItem extends Entity implements IAuthor, IModelResource, IGridCache {
 	 * @param integer $orderId
 	 * @return integer Number of rows.
 	 */
-	public static function deleteByCartId( $orderId ) {
+	public static function deleteByOrderId( $orderId ) {
 
 		return self::deleteAll( 'orderId=:id', [ ':id' => $orderId ] );
 	}

@@ -9,19 +9,20 @@
 
 namespace cmsgears\cart\common\services\resources;
 
+// Yii Imports
+use Yii;
+use yii\data\Sort;
+use yii\helpers\ArrayHelper;
+
 // CMG Imports
-use cmsgears\cart\common\config\CartGlobal;
-
 use cmsgears\cart\common\services\interfaces\resources\ITransactionService;
-
-use cmsgears\payment\common\services\resources\TransactionService as BaseTransactionService;
 
 /**
  * TransactionService provide service methods of transaction model.
  *
  * @since 1.0.0
  */
-class TransactionService extends BaseTransactionService implements ITransactionService {
+class TransactionService extends \cmsgears\payment\common\services\resources\TransactionService implements ITransactionService {
 
 	// Variables ---------------------------------------------------
 
@@ -31,7 +32,7 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\cart\common\models\entities\Transaction';
+	public static $modelClass = '\cmsgears\cart\common\models\resources\Transaction';
 
 	// Protected --------------
 
@@ -63,8 +64,14 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 	public function getPage( $config = [] ) {
 
+		$searchParam	= $config[ 'search-param' ] ?? 'keywords';
+		$searchColParam	= $config[ 'search-col-param' ] ?? 'search';
+
+		$defaultSort = isset( $config[ 'defaultSort' ] ) ? $config[ 'defaultSort' ] : [ 'id' => SORT_DESC ];
+
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
+		$userTable	= Yii::$app->factory->get( 'userService' )->getModelTable();
 
 		// Sorting ----------
 
@@ -76,11 +83,23 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 					'default' => SORT_DESC,
 					'label' => 'Id'
 				],
+				'user' => [
+					'asc' => [ "$userTable.name" => SORT_ASC ],
+					'desc' => [ "$userTable.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'User'
+				],
 				'order' => [
 					'asc' => [ "$modelTable.orderId" => SORT_ASC ],
 					'desc' => [ "$modelTable.orderId" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Order'
+				],
+				'invoice' => [
+					'asc' => [ "$modelTable.invoiceId" => SORT_ASC ],
+					'desc' => [ "$modelTable.invoiceId" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Invoice'
 				],
 				'title' => [
 					'asc' => [ "$modelTable.title" => SORT_ASC ],
@@ -93,6 +112,12 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 					'desc' => [ "$modelTable.type" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Type'
+				],
+				'code' => [
+					'asc' => [ "$modelTable.code" => SORT_ASC ],
+					'desc' => [ "$modelTable.code" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Code'
 				],
 				'mode' => [
 					'asc' => [ "$modelTable.mode" => SORT_ASC ],
@@ -118,6 +143,12 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 					'default' => SORT_DESC,
 					'label' => 'Currency'
 				],
+				'status' => [
+					'asc' => [ "$modelTable.status" => SORT_ASC ],
+					'desc' => [ "$modelTable.status" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Status'
+				],
 				'cdate' => [
 					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
 					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
@@ -137,8 +168,10 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 					'label' => 'Processed At'
 				]
 			],
-			'defaultOrder' => [ 'cdate' => SORT_DESC ]
+			'defaultOrder' => $defaultSort
 		]);
+
+		// Sort -------------
 
 		if( !isset( $config[ 'sort' ] ) ) {
 
@@ -147,28 +180,44 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 		// Query ------------
 
-		if( !isset( $config[ 'query' ] ) ) {
-
-			$config[ 'hasOne' ] = true;
-		}
-
 		// Filters ----------
 
 		// Searching --------
 
-		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+		$searchCol		= Yii::$app->request->getQueryParam( $searchColParam );
+		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
+
+		$search = [
+			'user' => "$userTable.name",
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content",
+			'code' => "$modelTable.code",
+			'mode' => "$modelTable.mode",
+			'service' => "$modelTable.service"
+		];
 
 		if( isset( $searchCol ) ) {
 
-			$search = [ 'title' => "$modelTable.title", 'desc' => "$modelTable.description" ];
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search[ $searchCol ];
+		}
+		else if( isset( $keywordsCol ) ) {
 
-			$config[ 'search-col' ] = $search[ $searchCol ];
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search;
 		}
 
 		// Reporting --------
 
-		$config[ 'report-col' ]	= [
-			'title' => "$modelTable.title", 'desc' => "$modelTable.description"
+		$config[ 'report-col' ]	= $config[ 'report-col' ] ?? [
+			'user' => "$userTable.name",
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content",
+			'status' => "$modelTable.status",
+			'type' => "$modelTable.type",
+			'code' => "$modelTable.code",
+			'mode' => "$modelTable.mode",
+			'service' => "$modelTable.service"
 		];
 
 		// Result -----------
@@ -176,11 +225,22 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 		return parent::getPage( $config );
 	}
 
-	public function getPageByOrderId( $orderId ) {
+	public function getPageByOrderId( $orderId, $config = [] ) {
 
 		$modelTable	= $this->getModelTable();
 
-		return $this->getPage( [ 'conditions' => [ "$modelTable.orderId" => $orderId ] ] );
+		$config[ 'conditions' ][ "$modelTable.orderId" ] = $orderId;
+
+		return $this->getPage( $config );
+	}
+
+	public function getPageByInvoiceId( $invoiceId, $config = [] ) {
+
+		$modelTable	= $this->getModelTable();
+
+		$config[ 'conditions' ][ "$modelTable.invoiceId" ] = $invoiceId;
+
+		return $this->getPage( $config );
 	}
 
 	// Read ---------------
@@ -191,7 +251,28 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 		$modelClass	= static::$modelClass;
 
-		return $modelClass::findByParentIdParentType( $orderId, CartGlobal::TYPE_ORDER );
+		return $modelClass::findByOrderId( $orderId );
+	}
+
+	public function getFirstByOrderId( $orderId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findFirstByOrderId( $orderId );
+	}
+
+	public function getByInvoiceId( $invoiceId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findByInvoiceId( $invoiceId );
+	}
+
+	public function getFirstByInvoiceId( $invoiceId ) {
+
+		$modelClass	= static::$modelClass;
+
+		return $modelClass::findFirstByInvoiceId( $invoiceId );
 	}
 
 	// Read - Lists ----
@@ -206,17 +287,35 @@ class TransactionService extends BaseTransactionService implements ITransactionS
 
 		$model = $this->getModelObject();
 
-		// Required
-		$model->orderId = $params[ 'orderId' ];
+		$model->orderId = isset( $params[ 'orderId' ] ) ? $params[ 'orderId' ] : null;
 
 		// Config
-		$config[ 'transaction' ] = $model;
+		$config[ 'model' ] = $model;
 
 		// Return Transaction
 		return parent::createByParams( $params, $config );
 	}
 
 	// Update -------------
+
+	public function update( $model, $config = [] ) {
+
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+
+		$config[ 'attributes' ]	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'title', 'description', 'mode', 'code',
+			'amount', 'currency', 'service', 'link'
+		];
+
+		if( $admin ) {
+
+			$attributes	= ArrayHelper::merge( $attributes, [
+				'orderId', 'invoiceId'
+			]);
+		}
+
+		return parent::update( $model, $config );
+	}
 
 	// Delete -------------
 

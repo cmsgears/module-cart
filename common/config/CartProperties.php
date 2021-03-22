@@ -12,14 +12,12 @@ namespace cmsgears\cart\common\config;
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
 
-use cmsgears\core\common\config\Properties;
-
 /**
  * CartProperties provide methods to access the properties specific to cart and orders.
  *
  * @since 1.0.0
  */
-class CartProperties extends Properties {
+class CartProperties extends \cmsgears\core\common\config\Properties {
 
 	// Variables ---------------------------------------------------
 
@@ -28,12 +26,12 @@ class CartProperties extends Properties {
 	/**
 	 * The property to find whether cart is active for site.
 	 */
-	const PROP_ACTIVE		= 'active';
+	const PROP_ACTIVE = 'active';
 
 	/**
 	 * The property to check whether cart has to be deleted after converted to order.
 	 */
-	const PROP_CART_REMOVE	= 'remove-cart';
+	const PROP_CART_REMOVE = 'remove_cart';
 
 	// Public -----------------
 

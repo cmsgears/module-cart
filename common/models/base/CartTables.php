@@ -9,15 +9,12 @@
 
 namespace cmsgears\cart\common\models\base;
 
-// CMG Imports
-use cmsgears\core\common\models\base\DbTables;
-
 /**
  * It provide table name constants of db tables available in Cart Module.
  *
  * @since 1.0.0
  */
-class CartTables extends DbTables {
+class CartTables extends \cmsgears\core\common\models\base\DbTables {
 
 	// Entities -------------
 
@@ -28,15 +25,19 @@ class CartTables extends DbTables {
 	const TABLE_UOM_CONVERSION	= 'cmg_cart_uom_conversion';
 
 	// Cart
-	const TABLE_CART			= 'cmg_cart';
-	const TABLE_CART_ITEM		= 'cmg_cart_item';
+	const TABLE_CART		= 'cmg_cart';
+	const TABLE_CART_ITEM	= 'cmg_cart_item';
 
 	// Order
-	const TABLE_ORDER			= 'cmg_cart_order';
-	const TABLE_ORDER_ITEM		= 'cmg_cart_order_item';
+	const TABLE_ORDER		= 'cmg_cart_order';
+	const TABLE_ORDER_ITEM	= 'cmg_cart_order_item';
+
+	// Invoice
+	const TABLE_INVOICE			= 'cmg_cart_invoice';
+	const TABLE_INVOICE_ITEM	= 'cmg_cart_invoice_item';
 
 	// Voucher
-	const TABLE_VOUCHER			= 'cmg_cart_voucher';
+	const TABLE_VOUCHER = 'cmg_cart_voucher';
 
 	// Mappers --------------
 
