@@ -46,7 +46,7 @@ class MessageSource extends \cmsgears\core\common\base\MessageSource {
 		CartGlobal::FIELD_QTY_PRIMARY => 'Primary Quantity',
 		CartGlobal::FIELD_QTY_PURCHASE => 'Purchase Quantity',
 		CartGlobal::FIELD_QUANTITY => 'Quantity',
-		CartGlobal::FIELD_QUANTITY_TRACK => 'Track Quantity',
+		CartGlobal::FIELD_INVENTORY => 'Inventory',
 		CartGlobal::FIELD_QUANTITY_STOCK => 'Stock Quantity',
 		CartGlobal::FIELD_QUANTITY_SOLD => 'Quantity Sold',
 		CartGlobal::FIELD_QUANTITY_WARN => 'Warn Quantity',
