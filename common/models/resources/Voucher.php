@@ -27,7 +27,6 @@ use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 use cmsgears\core\common\models\interfaces\resources\IVisual;
 
-use cmsgears\core\common\models\entities\User;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
@@ -300,16 +299,6 @@ class Voucher extends \cmsgears\core\common\models\base\ModelResource implements
 	// Validators ----------------------------
 
 	// Voucher -------------------------------
-
-	/**
-	 * Returns the corresponding user.
-	 *
-	 * @return \cmsgears\core\common\models\entities\User
-	 */
-	public function getUser() {
-
-		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
-	}
 
 	/**
 	 * Generate and set the code of voucher.

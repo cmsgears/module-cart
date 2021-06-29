@@ -63,6 +63,7 @@ class MessageSource extends \cmsgears\core\common\base\MessageSource {
 		CartGlobal::FIELD_PRICE_UNIT => 'Unit Price',
 		CartGlobal::FIELD_TOTAL_SUB	=> 'Sub Total',
 		CartGlobal::FIELD_TAX => 'Tax',
+		CartGlobal::FIELD_CHARGE => 'Charge',
 		CartGlobal::FIELD_SHIPPING => 'Shipping',
 		CartGlobal::FIELD_TOTAL => 'Total',
 		CartGlobal::FIELD_DISCOUNT => 'Discount',

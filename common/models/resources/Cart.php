@@ -25,7 +25,6 @@ use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 
-use cmsgears\core\common\models\entities\User;
 use cmsgears\cart\common\models\base\CartTables;
 
 use cmsgears\core\common\models\traits\base\AuthorTrait;
@@ -240,16 +239,6 @@ class Cart extends \cmsgears\core\common\models\base\ModelResource implements IA
 	// Validators ----------------------------
 
 	// Cart ----------------------------------
-
-	/**
-	 * Returns the corresponding user.
-	 *
-	 * @return \cmsgears\core\common\models\entities\User
-	 */
-	public function getUser() {
-
-		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
-	}
 
 	/**
 	 * Returns the items available in cart.

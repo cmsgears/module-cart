@@ -27,7 +27,6 @@ use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 use cmsgears\core\common\models\interfaces\mappers\IAddress;
 
-use cmsgears\core\common\models\entities\User;
 use cmsgears\payment\common\models\base\PaymentTables;
 use cmsgears\payment\common\models\resources\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
@@ -360,16 +359,6 @@ class Invoice extends \cmsgears\core\common\models\base\ModelResource implements
 	public function getOrder() {
 
 		return $this->hasOne( Order::class, [ 'id' => 'orderId' ] );
-	}
-
-	/**
-	 * Returns the corresponding user.
-	 *
-	 * @return \cmsgears\core\common\models\entities\User
-	 */
-	public function getUser() {
-
-		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
 	}
 
 	/**

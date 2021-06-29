@@ -151,6 +151,7 @@ class CartGlobal {
 	const FIELD_PRICE_UNIT		= 'priceUnitField';
 	const FIELD_TOTAL_SUB		= 'subTotalField';
 	const FIELD_TAX				= 'taxField';
+	const FIELD_CHARGE			= 'chargeField';
 	const FIELD_SHIPPING		= 'shippingField';
 	const FIELD_TOTAL			= 'totalField';
 	const FIELD_DISCOUNT		= 'discountField';
