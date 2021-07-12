@@ -45,6 +45,8 @@ interface IOrderService extends IModelResourceService, IMultiSite, IStatus {
 
 	public function getCountByUserId( $userId );
 
+	public function getStatusCountByUserIdParentType( $userId, $parentType );
+
 	// Create -------------
 
 	public function createFromCart( $order, $cart, $config = [] );

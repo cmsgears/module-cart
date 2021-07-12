@@ -13,6 +13,7 @@ namespace cmsgears\cart\common\services\resources;
 use Yii;
 use yii\data\Sort;
 use yii\helpers\ArrayHelper;
+use yii\db\Query;
 
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
@@ -282,6 +283,42 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		$modelClass	= static::$modelClass;
 
 		return $modelClass::queryByUserId( $userId )->count();
+	}
+
+	public function getStatusCountByUserIdParentType( $userId, $parentType ) {
+
+		$modelTable = $this->getModelTable();
+
+		$returnArr = [ 'total' => 0 ];
+
+		foreach( Order::$urlRevStatusMap as $key => $value ) {
+
+			$returnArr[ $key ] = 0;
+		}
+
+		$query = new Query();
+
+    	$query->select( [ 'status', 'count(status) as total' ] )
+				->from( $modelTable )
+				->where( [ 'userId' => $userId, 'parentType' => $parentType ] )
+				->groupBy( [ 'status' ] );
+
+		$counts = $query->all();
+
+		foreach( $counts as $count ) {
+
+			$returnArr[ 'total' ] += $count[ 'total' ];
+
+			foreach( Order::$urlRevStatusMap as $key => $value ) {
+
+				if( isset( $count[ $value ] ) ) {
+
+					$returnArr[ $key ] = $count[ 'total' ];
+				}
+			}
+		}
+
+		return $returnArr;
 	}
 
 	// Create -------------
