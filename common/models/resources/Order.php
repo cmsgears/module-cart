@@ -756,6 +756,11 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 		return $this->status >= self::STATUS_COMPLETED;
 	}
 
+	public function getDisplayName() {
+
+		return $this->title;
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------

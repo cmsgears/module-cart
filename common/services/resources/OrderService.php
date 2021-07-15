@@ -285,15 +285,27 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		return $modelClass::queryByUserId( $userId )->count();
 	}
 
-	public function getStatusCountByUserIdParentType( $userId, $parentType ) {
+	public function getStatusCountByUserIdParentType( $userId, $parentType, $config = [] ) {
+
+		$keys = isset( $config[ 'keys' ] ) ? $config[ 'keys' ] : false;
 
 		$modelTable = $this->getModelTable();
 
 		$returnArr = [ 'total' => 0 ];
 
-		foreach( Order::$urlRevStatusMap as $key => $value ) {
+		if( $keys ) {
 
-			$returnArr[ $key ] = 0;
+			foreach( Order::$urlRevStatusMap as $key => $value ) {
+
+				$returnArr[ $key ] = 0;
+			}
+		}
+		else {
+
+			foreach( Order::$statusMap as $key => $value ) {
+
+				$returnArr[ $key ] = 0;
+			}
 		}
 
 		$query = new Query();
@@ -309,11 +321,24 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 			$returnArr[ 'total' ] += $count[ 'total' ];
 
-			foreach( Order::$urlRevStatusMap as $key => $value ) {
+			if( $keys ) {
 
-				if( isset( $count[ $value ] ) ) {
+				foreach( Order::$urlRevStatusMap as $key => $value ) {
 
-					$returnArr[ $key ] = $count[ 'total' ];
+					if( $count[ 'status' ] == $value ) {
+
+						$returnArr[ $key ] = $count[ 'total' ];
+					}
+				}
+			}
+			else {
+
+				foreach( Order::$statusMap as $key => $value ) {
+
+					if( $count[ 'status' ] == $key ) {
+
+						$returnArr[ $key ] = $count[ 'total' ];
+					}
 				}
 			}
 		}
