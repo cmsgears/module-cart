@@ -8,7 +8,9 @@
  */
 
 // CMG Imports
-use cmsgears\core\common\models\resources\Stats;
+use cmsgears\core\common\config\CoreGlobal;
+
+use cmsgears\core\common\models\resources\ModelStats;
 use cmsgears\cart\common\models\base\CartTables;
 
 /**
@@ -50,34 +52,34 @@ class m161005_034912_cart_stats extends \cmsgears\core\common\base\Migration {
 
 	private function insertTables() {
 
-		$columns = [ 'tableName', 'type', 'count' ];
+		$columns = [ 'parentId', 'parentType', 'name', 'type', 'count' ];
 
 		$tableData = [
-			[ $this->prefix . 'cart_uom', 'rows', 0 ],
-			[ $this->prefix . 'cart_uom_conversion', 'rows', 0 ],
-			[ $this->prefix . 'cart', 'rows', 0 ],
-			[ $this->prefix . 'cart_item', 'rows', 0 ],
-			[ $this->prefix . 'cart_order', 'rows', 0 ],
-			[ $this->prefix . 'cart_order_item', 'rows', 0 ],
-			[ $this->prefix . 'cart_invoice', 'rows', 0 ],
-			[ $this->prefix . 'cart_invoice_item', 'rows', 0 ],
-			[ $this->prefix . 'cart_voucher', 'rows', 0 ]
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_uom', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_uom_conversion', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_item', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_order', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_order_item', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_invoice', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_invoice_item', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'cart_voucher', 'rows', 0 ]
 		];
 
-		$this->batchInsert( $this->prefix . 'core_stats', $columns, $tableData );
+		$this->batchInsert( $this->prefix . 'core_model_stats', $columns, $tableData );
 	}
 
 	public function down() {
 
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_UOM ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_UOM_CONVERSION ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_CART ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_CART_ITEM ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_ORDER ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_ORDER_ITEM ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_INVOICE ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_INVOICE_ITEM ) );
-		Stats::deleteByTableName( CartTables::getTableName( CartTables::TABLE_VOUCHER ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_UOM ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_UOM_CONVERSION ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_CART ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_CART_ITEM ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_ORDER ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_ORDER_ITEM ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_INVOICE ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_INVOICE_ITEM ) );
+		ModelStats::deleteByTable( CartTables::getTableName( CartTables::TABLE_VOUCHER ) );
 	}
 
 }

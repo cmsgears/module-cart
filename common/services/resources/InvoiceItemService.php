@@ -356,6 +356,19 @@ class InvoiceItemService extends \cmsgears\core\common\services\base\ModelResour
 
 	// Delete -------------
 
+	public function delete( $model, $config = [] ) {
+
+		if( parent::delete( $model, $config ) ) {
+
+			// Update Invoice Total
+			Yii::$app->factory->get( 'invoiceService' )->refreshTotal( $model->invoice );
+
+			return true;
+		}
+
+		return false;
+	}
+
 	// Bulk ---------------
 
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {

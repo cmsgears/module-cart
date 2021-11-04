@@ -13,6 +13,7 @@ namespace cmsgears\cart\common\services\resources;
 use Yii;
 use yii\data\Sort;
 use yii\helpers\ArrayHelper;
+use yii\db\Query;
 
 // CMG Imports
 use cmsgears\cart\common\config\CartGlobal;
@@ -284,6 +285,67 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		return $modelClass::queryByUserId( $userId )->count();
 	}
 
+	public function getStatusCountByUserIdParentType( $userId, $parentType, $config = [] ) {
+
+		$keys = isset( $config[ 'keys' ] ) ? $config[ 'keys' ] : false;
+
+		$modelTable = $this->getModelTable();
+
+		$returnArr = [ 'total' => 0 ];
+
+		if( $keys ) {
+
+			foreach( Order::$urlRevStatusMap as $key => $value ) {
+
+				$returnArr[ $key ] = 0;
+			}
+		}
+		else {
+
+			foreach( Order::$statusMap as $key => $value ) {
+
+				$returnArr[ $key ] = 0;
+			}
+		}
+
+		$query = new Query();
+
+    	$query->select( [ 'status', 'count(status) as total' ] )
+				->from( $modelTable )
+				->where( [ 'userId' => $userId, 'parentType' => $parentType ] )
+				->groupBy( [ 'status' ] );
+
+		$counts = $query->all();
+
+		foreach( $counts as $count ) {
+
+			$returnArr[ 'total' ] += $count[ 'total' ];
+
+			if( $keys ) {
+
+				foreach( Order::$urlRevStatusMap as $key => $value ) {
+
+					if( $count[ 'status' ] == $value ) {
+
+						$returnArr[ $key ] = $count[ 'total' ];
+					}
+				}
+			}
+			else {
+
+				foreach( Order::$statusMap as $key => $value ) {
+
+					if( $count[ 'status' ] == $key ) {
+
+						$returnArr[ $key ] = $count[ 'total' ];
+					}
+				}
+			}
+		}
+
+		return $returnArr;
+	}
+
 	// Create -------------
 
 	public function createFromCart( $order, $cart, $config = [] ) {
@@ -311,9 +373,20 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		// Set Order Totals
 		$order->subTotal	= $cart->getCartTotal();
 		$order->discount	= 0;
-		$order->tax			= 0;
+		$order->tax1		= 0;
+		$order->tax2		= 0;
+		$order->tax3		= 0;
+		$order->tax4		= 0;
+		$order->tax5		= 0;
+		$tax				= $order->tax1 + $order->tax2 + $order->tax3 + $order->tax4 + $order->tax5;
+		$order->charge1		= 0;
+		$order->charge2		= 0;
+		$order->charge3		= 0;
+		$order->charge4		= 0;
+		$order->charge5		= 0;
+		$charge				= $order->charge1 + $order->charge2 + $order->charge3 + $order->charge4 + $order->charge5;
 		$order->shipping	= 0;
-		$order->total		= $order->subTotal + $order->tax + $order->shipping;
+		$order->total		= $order->subTotal + $tax + $charge + $order->shipping;
 		$order->grandTotal	= $order->total - $order->discount;
 
 		// Init Transaction
@@ -441,12 +514,26 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 		return $model;
 	}
 
+	/**
+	 * Cancel the Order
+	 *
+	 * @param \cmsgears\cart\common\models\resources\Order $model
+	 * @param boolean $checkChildren
+	 * @param boolean $checkBase
+	 * @return boolean
+	 */
 	public function processCancel( $model, $checkChildren = true, $checkBase = true ) {
+
+		// Order can't be cancelled
+		if( !$model->isCancellable() ) {
+
+			return false;
+		}
 
 		// Cancel all child orders
 		if( $checkChildren ) {
 
-			$children = $model->children;
+			$children = !empty( $model->children ) ? $model->children : [];
 
 			foreach( $children as $child ) {
 
@@ -480,6 +567,8 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 				$this->updateStatus( $base, Order::STATUS_CANCELLED );
 			}
 		}
+
+		return true;
 	}
 
 	public function approve( $model, $config = [] ) {
@@ -499,7 +588,7 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 	public function reject( $model, $config = [] ) {
 
-		$this->updateStatus( $model, Order::STATUS_APPROVED );
+		$this->updateStatus( $model, Order::STATUS_REJECTED );
 	}
 
 	public function cancel( $model, $config = [] ) {
@@ -597,6 +686,12 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 				switch( $action ) {
 
+					case 'approve': {
+
+						$this->approve( $model );
+
+						break;
+					}
 					case 'place': {
 
 						$this->place( $model );
@@ -609,15 +704,15 @@ class OrderService extends \cmsgears\core\common\services\base\ModelResourceServ
 
 						break;
 					}
-					case 'cancel': {
+					case 'reject': {
 
-						$this->cancelled( $model );
+						$this->reject( $model );
 
 						break;
 					}
-					case 'approve': {
+					case 'cancel': {
 
-						$this->approve( $model );
+						$this->processCancel( $model );
 
 						break;
 					}

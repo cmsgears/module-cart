@@ -133,7 +133,7 @@ class CartGlobal {
 	const FIELD_QTY_PRIMARY		= 'primaryQtyField';
 	const FIELD_QTY_PURCHASE	= 'purchaseQtyField';
 	const FIELD_QUANTITY		= 'quantityField';
-	const FIELD_QUANTITY_TRACK	= 'quantityTrackField';
+	const FIELD_INVENTORY		= 'inventoryField';
 	const FIELD_QUANTITY_STOCK	= 'quantityStockField';
 	const FIELD_QUANTITY_SOLD	= 'quantitySoldField';
 	const FIELD_QUANTITY_WARN	= 'quantityWarnField';
@@ -151,6 +151,7 @@ class CartGlobal {
 	const FIELD_PRICE_UNIT		= 'priceUnitField';
 	const FIELD_TOTAL_SUB		= 'subTotalField';
 	const FIELD_TAX				= 'taxField';
+	const FIELD_CHARGE			= 'chargeField';
 	const FIELD_SHIPPING		= 'shippingField';
 	const FIELD_TOTAL			= 'totalField';
 	const FIELD_DISCOUNT		= 'discountField';

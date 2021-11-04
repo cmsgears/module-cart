@@ -27,7 +27,6 @@ use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
 use cmsgears\core\common\models\interfaces\mappers\IAddress;
 
-use cmsgears\core\common\models\entities\User;
 use cmsgears\payment\common\models\base\PaymentTables;
 use cmsgears\payment\common\models\resources\Transaction;
 use cmsgears\cart\common\models\base\CartTables;
@@ -67,6 +66,11 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $tax3
  * @property float $tax4
  * @property float $tax5
+ * @property float $charge1
+ * @property float $charge2
+ * @property float $charge3
+ * @property float $charge4
+ * @property float $charge5
  * @property float $shipping
  * @property float $total
  * @property float $discount
@@ -326,6 +330,7 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 			[ [ 'status' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'subTotal', 'shipping', 'total', 'discount', 'grandTotal' ], 'number', 'min' => 0 ],
 			[ [ 'tax1', 'tax2', 'tax3', 'tax4', 'tax5' ], 'number', 'min' => 0 ],
+			[ [ 'charge1', 'charge2', 'charge3', 'charge4', 'charge5' ], 'number', 'min' => 0 ],
 			[ [ 'shipToBilling', 'gridCacheValid' ], 'boolean' ],
 			[ [ 'siteId', 'baseId', 'cartId', 'userId', 'voucherId', 'createdBy', 'modifiedBy', 'parentId' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'eta', 'deliveredAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ]
@@ -356,6 +361,11 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 			'tax3' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
 			'tax4' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
 			'tax5' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TAX ),
+			'charge1' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CHARGE ),
+			'charge2' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CHARGE ),
+			'charge3' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CHARGE ),
+			'charge4' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CHARGE ),
+			'charge5' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_CHARGE ),
 			'shipping' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SHIPPING ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
@@ -408,16 +418,6 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	// Validators ----------------------------
 
 	// Order ---------------------------------
-
-	/**
-	 * Returns the corresponding user.
-	 *
-	 * @return \cmsgears\core\common\models\entities\User
-	 */
-	public function getUser() {
-
-		return $this->hasOne( User::class, [ 'id' => 'userId' ] );
-	}
 
 	/**
 	 * Check whether order is child order.
@@ -593,6 +593,16 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 	}
 
 	/**
+	 * Check whether order can be cancelled.
+	 *
+	 * @return boolean
+	 */
+	public function isCancellable() {
+
+		return !$this->isPaid( false ) && !$this->isCancelled();
+	}
+
+	/**
 	 * Check whether order is cancelled.
 	 *
 	 * @return boolean
@@ -744,6 +754,11 @@ class Order extends \cmsgears\core\common\models\base\ModelResource implements I
 		}
 
 		return $this->status >= self::STATUS_COMPLETED;
+	}
+
+	public function getDisplayName() {
+
+		return $this->title;
 	}
 
 	// Static Methods ----------------------------------------------
